@@ -37,7 +37,8 @@ const parse = (corps: string, vars: Vars): Block[] =>
     .filter(Boolean)
     .map((b) => {
       const m = b.match(/^\[bouton\]\s*(.+?)\s*\|\s*(.+)$/)
-      if (m) return { kind: 'button' as const, label: fill(m[1], vars), href: fill(m[2], vars).trim() }
+      if (m)
+        return { kind: 'button' as const, label: fill(m[1], vars), href: fill(m[2], vars).trim() }
       return { kind: 'p' as const, text: fill(b, vars) }
     })
     .filter((b) => (b.kind === 'button' ? Boolean(b.href) : b.text.trim() !== ''))

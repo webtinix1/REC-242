@@ -6,7 +6,14 @@ const staff = (roles: string[]) => ({ id: 1, collection: 'users', roles, statut:
 
 describe('Matrice des droits (docs/04-roles-et-droits.md)', () => {
   it('reprend la matrice de la maquette', () => {
-    expect(MATRIX.candidatures).toEqual({ superadmin: 'full', admin: 'full', editeur: 'none', evenements: 'none', membres: 'full', tresorier: 'read' })
+    expect(MATRIX.candidatures).toEqual({
+      superadmin: 'full',
+      admin: 'full',
+      editeur: 'none',
+      evenements: 'none',
+      membres: 'full',
+      tresorier: 'read',
+    })
     expect(MATRIX.utilisateurs.admin).toBe('read')
     expect(MATRIX.journal.admin).toBe('read')
     expect(MATRIX.pages.editeur).toBe('partial')
@@ -22,7 +29,13 @@ describe('Matrice des droits (docs/04-roles-et-droits.md)', () => {
   })
 
   it('ne donne aucun droit à un compte désactivé ni à un membre', () => {
-    expect(atLeast({ id: 1, collection: 'users', roles: ['superadmin'], statut: 'desactive' } as never, 'journal', 'read')).toBe(false)
+    expect(
+      atLeast(
+        { id: 1, collection: 'users', roles: ['superadmin'], statut: 'desactive' } as never,
+        'journal',
+        'read',
+      ),
+    ).toBe(false)
     expect(atLeast({ id: 1, collection: 'members' } as never, 'journal', 'read')).toBe(false)
   })
 })

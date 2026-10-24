@@ -16,23 +16,45 @@ export const Nav = async (props: ServerProps) => {
   const collections = new Set((visibleEntities.collections as string[]).filter(canReadC))
   const globals = new Set((visibleEntities.globals as string[]).filter(canReadG))
   const allCollections = new Set(payload.config.collections.map((c) => c.slug as string))
-  const listed = new Set<string>()
+  // Accessibles autrement : les modèles d'e-mails depuis l'onglet « E-mails automatiques » des Paramètres.
+  const listed = new Set<string>(['global:emailTemplates'])
 
   const groups: ResolvedGroup[] = NAV.map((g) => ({
     label: g.label,
     items: g.items.flatMap((it) => {
       if ('collection' in it) {
         listed.add(it.collection)
+        for (const m of it.match ?? [])
+          listed.add(
+            m.replace(/^\/(collections|globals)\//, (_x, t) => (t === 'globals' ? 'global:' : '')),
+          )
         return collections.has(it.collection)
-          ? [{ label: it.label, href: `${adminRoute}/collections/${it.collection}`, badge: it.badge }]
+          ? [
+              {
+                label: it.label,
+                href: `${adminRoute}/collections/${it.collection}`,
+                badge: it.badge,
+                match: it.match?.map((m) => `${adminRoute}${m}`),
+              },
+            ]
           : []
       }
       if ('global' in it) {
         listed.add(`global:${it.global}`)
-        return globals.has(it.global) ? [{ label: it.label, href: `${adminRoute}/globals/${it.global}`, badge: it.badge }] : []
+        return globals.has(it.global)
+          ? [{ label: it.label, href: `${adminRoute}/globals/${it.global}`, badge: it.badge }]
+          : []
       }
-      if (it.requires && !(allCollections.has(it.requires) && collections.has(it.requires))) return []
-      return [{ label: it.label, href: `${adminRoute}${it.path}`, badge: it.badge, exact: it.path === '' }]
+      if (it.requires && !(allCollections.has(it.requires) && collections.has(it.requires)))
+        return []
+      return [
+        {
+          label: it.label,
+          href: `${adminRoute}${it.path}`,
+          badge: it.badge,
+          exact: it.path === '',
+        },
+      ]
     }),
   })).filter((g) => g.items.length > 0)
 
@@ -45,7 +67,10 @@ export const Nav = async (props: ServerProps) => {
       })),
     ...payload.config.globals
       .filter((g) => globals.has(g.slug) && !listed.has(`global:${g.slug}`))
-      .map((g) => ({ label: typeof g.label === 'string' ? g.label : g.slug, href: `${adminRoute}/globals/${g.slug}` })),
+      .map((g) => ({
+        label: typeof g.label === 'string' ? g.label : g.slug,
+        href: `${adminRoute}/globals/${g.slug}`,
+      })),
   ]
   if (others.length) groups.push({ label: 'Autres', items: others })
 

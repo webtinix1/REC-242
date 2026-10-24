@@ -14,7 +14,12 @@ const countIf =
   async (payload, req) => {
     if (!payload.config.collections.some((c) => c.slug === collection)) return 0
     try {
-      const r = await payload.count({ collection: collection as never, where: where as never, req, overrideAccess: false })
+      const r = await payload.count({
+        collection: collection as never,
+        where: where as never,
+        req,
+        overrideAccess: false,
+      })
       return r.totalDocs
     } catch {
       return 0
@@ -35,7 +40,9 @@ export const adminBadges: Endpoint = {
   method: 'get',
   handler: async (req) => {
     if (!isStaff(req.user)) return Response.json({}, { status: 401 })
-    const entries = await Promise.all(Object.entries(BADGES).map(async ([k, fn]) => [k, await fn(req.payload, req)] as const))
+    const entries = await Promise.all(
+      Object.entries(BADGES).map(async ([k, fn]) => [k, await fn(req.payload, req)] as const),
+    )
     return Response.json(Object.fromEntries(entries), { headers: { 'Cache-Control': 'no-store' } })
   },
 }

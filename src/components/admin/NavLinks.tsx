@@ -3,12 +3,24 @@ import { Link, useNav } from '@payloadcms/ui'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
-export type ResolvedItem = { label: string; href: string; badge?: string; exact?: boolean }
+export type ResolvedItem = {
+  label: string
+  href: string
+  badge?: string
+  exact?: boolean
+  match?: string[]
+}
 export type ResolvedGroup = { label: string; items: ResolvedItem[] }
 
 const REFRESH_MS = 60_000
 
-export const NavLinks = ({ groups, adminRoute }: { groups: ResolvedGroup[]; adminRoute: string }) => {
+export const NavLinks = ({
+  groups,
+  adminRoute,
+}: {
+  groups: ResolvedGroup[]
+  adminRoute: string
+}) => {
   const pathname = usePathname()
   const [badges, setBadges] = useState<Record<string, number>>({})
   const { setNavOpen, hydrated } = useNav()
@@ -42,7 +54,9 @@ export const NavLinks = ({ groups, adminRoute }: { groups: ResolvedGroup[]; admi
   }, [])
 
   const isOn = (it: ResolvedItem) =>
-    it.exact ? pathname === adminRoute || pathname === `${adminRoute}/` : pathname?.startsWith(it.href)
+    it.exact
+      ? pathname === adminRoute || pathname === `${adminRoute}/`
+      : Boolean(pathname?.startsWith(it.href) || it.match?.some((m) => pathname?.startsWith(m)))
 
   return (
     <div className="rec-nav__groups">
@@ -53,7 +67,12 @@ export const NavLinks = ({ groups, adminRoute }: { groups: ResolvedGroup[]; admi
             const n = it.badge ? badges[it.badge] : 0
             const on = isOn(it)
             return (
-              <Link key={it.href} href={it.href} className={`rec-nav__item${on ? ' is-on' : ''}`} aria-current={on ? 'page' : undefined}>
+              <Link
+                key={it.href}
+                href={it.href}
+                className={`rec-nav__item${on ? ' is-on' : ''}`}
+                aria-current={on ? 'page' : undefined}
+              >
                 <span className="rec-nav__dot" aria-hidden="true" />
                 <span className="rec-nav__label">{it.label}</span>
                 {n ? (

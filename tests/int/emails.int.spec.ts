@@ -6,7 +6,12 @@ import { renderEmail } from '@/emails/render'
 describe('E-mails', () => {
   it('remplace les variables et crée le bouton', () => {
     const t = TEMPLATES.invitationAdmin
-    const r = renderEmail(t.objet, t.corps, { prenom: 'Eve', invitant: 'Ange Mouandza', role: 'Administrateur', lien: 'https://rec242.cg/admin/reset/abc' })
+    const r = renderEmail(t.objet, t.corps, {
+      prenom: 'Eve',
+      invitant: 'Ange Mouandza',
+      role: 'Administrateur',
+      lien: 'https://rec242.cg/admin/reset/abc',
+    })
     expect(r.subject).toBe('Vous êtes invité(e) à l’administration du site REC 242')
     expect(r.html).toContain('href="https://rec242.cg/admin/reset/abc"')
     expect(r.html).toContain('Créer mon mot de passe')
@@ -16,7 +21,11 @@ describe('E-mails', () => {
 
   it('retire un passage conditionnel sans valeur', () => {
     const t = TEMPLATES.evenementAnnuleReporte
-    const r = renderEmail(t.objet, t.corps, { evenement: 'Afterwork', annule_ou_reporte: 'annulé', message_organisateur: 'Nous sommes désolés.' })
+    const r = renderEmail(t.objet, t.corps, {
+      evenement: 'Afterwork',
+      annule_ou_reporte: 'annulé',
+      message_organisateur: 'Nous sommes désolés.',
+    })
     expect(r.text).not.toContain('Nouvelle date')
   })
 

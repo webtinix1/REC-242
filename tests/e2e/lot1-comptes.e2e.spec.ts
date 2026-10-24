@@ -20,7 +20,10 @@ test.describe.configure({ timeout: 60000 })
 test.describe('Lot 1 : comptes, rôles, journal', () => {
   test.beforeAll(async () => {
     const payload = await getPayload({ config })
-    await payload.db.deleteMany({ collection: 'users', where: { email: { in: ['invite@e2e.test', 'curl@e2e.test'] } } })
+    await payload.db.deleteMany({
+      collection: 'users',
+      where: { email: { in: ['invite@e2e.test', 'curl@e2e.test'] } },
+    })
   })
 
   test('le menu suit les droits du rôle', async ({ page }) => {
@@ -36,7 +39,10 @@ test.describe('Lot 1 : comptes, rôles, journal', () => {
     await expect(page.locator('.rec-nav').getByText('Utilisateurs et rôles')).toBeVisible()
   })
 
-  test('invitation : e-mail, création du mot de passe, première connexion', async ({ page, browser }) => {
+  test('invitation : e-mail, création du mot de passe, première connexion', async ({
+    page,
+    browser,
+  }) => {
     await loginAs(page, 'ange.mouandza@rec242.test')
     await page.goto(`${BASE}/admin/collections/users`)
     await expect(page.getByRole('heading', { name: 'Matrice des permissions' })).toBeVisible()
@@ -71,7 +77,11 @@ test.describe('Lot 1 : comptes, rôles, journal', () => {
       await p2.waitForURL(`${BASE}/admin`)
     }
     const payload = await getPayload({ config })
-    const u = await payload.find({ collection: 'users', where: { email: { equals: 'invite@e2e.test' } }, overrideAccess: true })
+    const u = await payload.find({
+      collection: 'users',
+      where: { email: { equals: 'invite@e2e.test' } },
+      overrideAccess: true,
+    })
     expect(u.docs[0]?.statut).toBe('actif')
     await ctx.close()
   })
@@ -83,6 +93,9 @@ test.describe('Lot 1 : comptes, rôles, journal', () => {
       await page.getByRole('button', { name: 'Connexions' }).click()
       await expect(page).toHaveURL(/categorie/, { timeout: 1500 })
     }).toPass({ timeout: 15000 })
-    await expect(page.getByRole('button', { name: 'Connexions' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Connexions' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 })

@@ -66,7 +66,15 @@ Délai habituel de réponse : 10 jours ouvrés.
 Une question ? Répondez à cet e-mail ou écrivez-nous sur WhatsApp au {{whatsapp}} en rappelant votre numéro de dossier.
 
 [bouton] Suivre la chaîne WhatsApp de REC 242 | {{lien_chaine}}`,
-    variables: ['prenom', 'entreprise', 'categorie', 'numero_dossier', 'situation_paiement', 'whatsapp', 'lien_chaine'],
+    variables: [
+      'prenom',
+      'entreprise',
+      'categorie',
+      'numero_dossier',
+      'situation_paiement',
+      'whatsapp',
+      'lien_chaine',
+    ],
   },
   candidatureAlerte: {
     label: '2. Alerte nouvelle candidature (équipe)',
@@ -74,7 +82,17 @@ Une question ? Répondez à cet e-mail ou écrivez-nous sur WhatsApp au {{whatsa
     corps: `{{prenom}} {{nom}}, {{entreprise}}, {{secteurs}}, {{ville}}. Paiement : {{situation_paiement}}.
 
 [bouton] Ouvrir le dossier | {{lien_back_office}}`,
-    variables: ['numero_dossier', 'prenom', 'nom', 'entreprise', 'categorie', 'secteurs', 'ville', 'situation_paiement', 'lien_back_office'],
+    variables: [
+      'numero_dossier',
+      'prenom',
+      'nom',
+      'entreprise',
+      'categorie',
+      'secteurs',
+      'ville',
+      'situation_paiement',
+      'lien_back_office',
+    ],
   },
   candidatureComplement: {
     label: '3. Complément demandé',
@@ -128,7 +146,15 @@ Votre billet porte le numéro {{numero_billet}}. Présentez le QR code à l'entr
 Le fichier joint ajoute le rendez-vous à votre agenda.
 
 Vous ne pouvez plus venir ? Annulez pour libérer votre place : {{lien_annulation}}`,
-    variables: ['evenement', 'date', 'heure', 'lieu', 'numero_billet', 'lien_billet', 'lien_annulation'],
+    variables: [
+      'evenement',
+      'date',
+      'heure',
+      'lieu',
+      'numero_billet',
+      'lien_billet',
+      'lien_annulation',
+    ],
   },
   inscriptionListeAttente: {
     label: '6 bis. Inscription en liste d’attente',
@@ -162,7 +188,13 @@ Vous ne souhaitez plus attendre ? {{lien_annulation}}`,
     corps: `{{message_organisateur}}
 
 [si nouvelle_date] Nouvelle date : {{nouvelle_date}}. Votre inscription est conservée ; si vous ne pouvez pas venir, annulez ici : {{lien_annulation}} [fin]`,
-    variables: ['evenement', 'annule_ou_reporte', 'message_organisateur', 'nouvelle_date', 'lien_annulation'],
+    variables: [
+      'evenement',
+      'annule_ou_reporte',
+      'message_organisateur',
+      'nouvelle_date',
+      'lien_annulation',
+    ],
   },
   echeanceCotisation: {
     label: '10. Échéance de cotisation',
@@ -186,7 +218,14 @@ Vous pouvez aussi régler au siège contre reçu.
 Les statuts prévoient trois relances écrites ; après la troisième, le comité de direction peut constater la perte de la qualité de membre.
 
 Si vous avez déjà payé, répondez simplement à cet e-mail.`,
-    variables: ['prenom', 'numero_relance', 'montant_du', 'exercice', 'date_limite', 'lien_cotisation'],
+    variables: [
+      'prenom',
+      'numero_relance',
+      'montant_du',
+      'exercice',
+      'date_limite',
+      'lien_cotisation',
+    ],
   },
   recuPaiement: {
     label: '12. Reçu de paiement',

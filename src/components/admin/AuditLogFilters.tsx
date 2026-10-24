@@ -14,7 +14,6 @@ const FILTERS: { label: string; value?: string }[] = [
   { label: 'Discipline', value: 'discipline' },
 ]
 
-
 /** Filtres en pastilles et export du journal (écran 17). */
 export const AuditLogFilters = () => {
   const { query, refineListData } = useListQuery()
@@ -29,12 +28,21 @@ export const AuditLogFilters = () => {
     <div className="rec-bar">
       <div className="rec-chips" role="group" aria-label="Filtrer le journal">
         {FILTERS.map((f) => (
-          <button key={f.label} type="button" className={`rec-chip${current === f.value ? ' is-on' : ''}`} aria-pressed={current === f.value} onClick={() => pick(f.value)}>
+          <button
+            key={f.label}
+            type="button"
+            className={`rec-chip${current === f.value ? ' is-on' : ''}`}
+            aria-pressed={current === f.value}
+            onClick={() => pick(f.value)}
+          >
             {f.label}
           </button>
         ))}
       </div>
-      <a className="rec-btn rec-btn--secondary" href={`/api/auditLog/export${current ? `?categorie=${current}` : ''}`}>
+      <a
+        className="rec-btn rec-btn--secondary"
+        href={`/api/auditLog/export${current ? `?categorie=${current}` : ''}`}
+      >
         Exporter le journal
       </a>
     </div>

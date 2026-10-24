@@ -2,7 +2,9 @@
 import React from 'react'
 
 /** Logo de la page de connexion de l'admin. */
-export const Logo = () => <img src="/images/logo-rec242.jpg" alt="REC 242" className="rec-login-logo" />
+export const Logo = () => (
+  <img src="/images/logo-rec242.jpg" alt="REC 242" className="rec-login-logo" />
+)
 
 /** Icône du fil d'Ariane de l'admin. */
 export const Icon = () => (

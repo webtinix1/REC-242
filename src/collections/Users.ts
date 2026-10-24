@@ -15,7 +15,11 @@ const roleLabel = (r: string) => ROLES.find((x) => x.value === r)?.label ?? r
 const firstName = (name?: string | null) => (name || '').trim().split(/\s+/)[0] || ''
 
 const dateFr = (d: Date) =>
-  d.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Africa/Brazzaville' })
+  d.toLocaleString('fr-FR', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Africa/Brazzaville',
+  })
 
 type UserDoc = {
   id: number
@@ -82,7 +86,8 @@ export const Users: CollectionConfig = {
       path: '/inviter',
       method: 'post',
       handler: async (req) => {
-        if (!hasRole(req.user, 'superadmin')) throw new APIError('Seul un super administrateur peut inviter un utilisateur.', 403)
+        if (!hasRole(req.user, 'superadmin'))
+          throw new APIError('Seul un super administrateur peut inviter un utilisateur.', 403)
         const body = (await req.json?.()) as { name?: string; email?: string; roles?: Role[] }
         const name = (body?.name || '').trim()
         const email = (body?.email || '').trim().toLowerCase()
@@ -91,14 +96,25 @@ export const Users: CollectionConfig = {
           throw new APIError('Nom, e-mail valide et au moins un rôle sont obligatoires.', 400)
         }
         const payload = req.payload
-        const exists = await payload.count({ collection: 'users', where: { email: { equals: email } }, overrideAccess: true })
-        if (exists.totalDocs > 0) throw new APIError('Un utilisateur existe déjà avec cette adresse.', 409)
+        const exists = await payload.count({
+          collection: 'users',
+          where: { email: { equals: email } },
+          overrideAccess: true,
+        })
+        if (exists.totalDocs > 0)
+          throw new APIError('Un utilisateur existe déjà avec cette adresse.', 409)
 
         const user = await payload.create({
           collection: 'users',
           overrideAccess: true,
           context: { invitation: true },
-          data: { name, email, roles, statut: 'invite', password: crypto.randomBytes(24).toString('base64url') },
+          data: {
+            name,
+            email,
+            roles,
+            statut: 'invite',
+            password: crypto.randomBytes(24).toString('base64url'),
+          },
         })
         const token = await payload.forgotPassword({
           collection: 'users',
@@ -109,7 +125,9 @@ export const Users: CollectionConfig = {
         await payload.db.updateOne({
           collection: 'users',
           id: user.id,
-          data: { resetPasswordExpiration: new Date(Date.now() + INVITATION_VALIDITY_MS).toISOString() },
+          data: {
+            resetPasswordExpiration: new Date(Date.now() + INVITATION_VALIDITY_MS).toISOString(),
+          },
         })
         await sendTemplate(payload, {
           to: email,
@@ -134,9 +152,18 @@ export const Users: CollectionConfig = {
   hooks: {
     beforeOperation: [
       ({ args, operation }) => {
-        const pwd = ((args as { data?: { password?: string } } | undefined)?.data)?.password
-        if (['create', 'update', 'resetPassword'].includes(operation) && typeof pwd === 'string' && pwd.length < ADMIN_PASSWORD_MIN) {
-          throw new APIError(`Le mot de passe doit contenir au moins ${ADMIN_PASSWORD_MIN} caractères.`, 400, null, true)
+        const pwd = (args as { data?: { password?: string } } | undefined)?.data?.password
+        if (
+          ['create', 'update', 'resetPassword'].includes(operation) &&
+          typeof pwd === 'string' &&
+          pwd.length < ADMIN_PASSWORD_MIN
+        ) {
+          throw new APIError(
+            `Le mot de passe doit contenir au moins ${ADMIN_PASSWORD_MIN} caractères.`,
+            400,
+            null,
+            true,
+          )
         }
         return args
       },
@@ -155,10 +182,20 @@ export const Users: CollectionConfig = {
         if (operation === 'update' && req.user && originalDoc && req.user.id === originalDoc.id) {
           const wasSuper = (originalDoc.roles || []).includes('superadmin')
           if (wasSuper && data.roles && !data.roles.includes('superadmin')) {
-            throw new APIError('Vous ne pouvez pas retirer votre propre rôle de super administrateur.', 400, null, true)
+            throw new APIError(
+              'Vous ne pouvez pas retirer votre propre rôle de super administrateur.',
+              400,
+              null,
+              true,
+            )
           }
           if (data.statut === 'desactive') {
-            throw new APIError('Vous ne pouvez pas désactiver votre propre compte.', 400, null, true)
+            throw new APIError(
+              'Vous ne pouvez pas désactiver votre propre compte.',
+              400,
+              null,
+              true,
+            )
           }
         }
         return data
@@ -178,8 +215,16 @@ export const Users: CollectionConfig = {
           })
         }
         if (previousDoc?.statut !== doc.statut) {
-          const lib = { actif: 'réactivé', invite: 'remis en invitation', desactive: 'désactivé' }[doc.statut as string] ?? doc.statut
-          await logAction(req.payload, { req, categorie: 'utilisateurs', action: `A ${lib} le compte de ${doc.name}`, cible: doc.email })
+          const lib =
+            { actif: 'réactivé', invite: 'remis en invitation', desactive: 'désactivé' }[
+              doc.statut as string
+            ] ?? doc.statut
+          await logAction(req.payload, {
+            req,
+            categorie: 'utilisateurs',
+            action: `A ${lib} le compte de ${doc.name}`,
+            cible: doc.email,
+          })
         }
         return doc
       },
@@ -187,7 +232,12 @@ export const Users: CollectionConfig = {
     beforeLogin: [
       ({ user }) => {
         if ((user as UserDoc).statut === 'desactive') {
-          throw new APIError('Ce compte est désactivé. Contactez le super administrateur.', 403, null, true)
+          throw new APIError(
+            'Ce compte est désactivé. Contactez le super administrateur.',
+            403,
+            null,
+            true,
+          )
         }
         return user
       },
@@ -211,7 +261,14 @@ export const Users: CollectionConfig = {
           data: {
             lastLogin: now.toISOString(),
             ...(u.statut === 'invite' ? { statut: 'actif' } : {}),
-            ...(known ? {} : { knownDevices: [...devices, { key, label: deviceLabel(ua), ville, firstSeen: now.toISOString() }] }),
+            ...(known
+              ? {}
+              : {
+                  knownDevices: [
+                    ...devices,
+                    { key, label: deviceLabel(ua), ville, firstSeen: now.toISOString() },
+                  ],
+                }),
           },
         })
 
@@ -220,13 +277,19 @@ export const Users: CollectionConfig = {
           await sendTemplate(req.payload, {
             to: u.email,
             template: 'nouvelAppareil',
-            vars: { prenom: firstName(u.name), date: dateFr(now), appareil: deviceLabel(ua), lieu: ville ? `, ${ville}` : '' },
+            vars: {
+              prenom: firstName(u.name),
+              date: dateFr(now),
+              appareil: deviceLabel(ua),
+              lieu: ville ? `, ${ville}` : '',
+            },
           }).catch((err) => req.payload.logger.error({ err }, 'Alerte nouvel appareil non envoyée'))
         }
         await logAction(req.payload, {
           req,
           categorie: 'connexion',
-          action: known || devices.length === 0 ? 'Connexion' : 'Connexion depuis un nouvel appareil',
+          action:
+            known || devices.length === 0 ? 'Connexion' : 'Connexion depuis un nouvel appareil',
           cible: u.email,
           author: { type: 'utilisateur', id: u.id, nom: u.name || u.email },
         })
@@ -269,7 +332,10 @@ export const Users: CollectionConfig = {
         create: ({ req }) => hasRole(req.user, 'superadmin'),
         update: ({ req }) => hasRole(req.user, 'superadmin'),
       },
-      admin: { description: 'Une personne peut cumuler plusieurs rôles ; ses droits sont l’union de ceux de ses rôles.' },
+      admin: {
+        description:
+          'Une personne peut cumuler plusieurs rôles ; ses droits sont l’union de ceux de ses rôles.',
+      },
     },
     {
       name: 'statut',
@@ -286,7 +352,10 @@ export const Users: CollectionConfig = {
         create: ({ req }) => hasRole(req.user, 'superadmin'),
         update: ({ req }) => hasRole(req.user, 'superadmin'),
       },
-      admin: { position: 'sidebar', components: { Cell: '@/components/admin/StatusCell#StatusCell' } },
+      admin: {
+        position: 'sidebar',
+        components: { Cell: '@/components/admin/StatusCell#StatusCell' },
+      },
     },
     {
       name: 'lastLogin',
@@ -321,4 +390,3 @@ export const Users: CollectionConfig = {
     },
   ],
 }
-

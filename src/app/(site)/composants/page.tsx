@@ -17,10 +17,18 @@ export default function Composants() {
 
       <h2>Boutons</h2>
       <div className="rec-row">
-        <button type="button" className="rec-btn rec-btn--primary">Adhérer</button>
-        <button type="button" className="rec-btn rec-btn--accent">Je m&apos;inscris</button>
-        <button type="button" className="rec-btn rec-btn--secondary">Découvrir le réseau</button>
-        <button type="button" className="rec-btn rec-btn--ghost">Voir l&apos;agenda</button>
+        <button type="button" className="rec-btn rec-btn--primary">
+          Adhérer
+        </button>
+        <button type="button" className="rec-btn rec-btn--accent">
+          Je m&apos;inscris
+        </button>
+        <button type="button" className="rec-btn rec-btn--secondary">
+          Découvrir le réseau
+        </button>
+        <button type="button" className="rec-btn rec-btn--ghost">
+          Voir l&apos;agenda
+        </button>
         <button type="button" className="rec-btn rec-btn--primary" disabled>
           Désactivé
         </button>
@@ -43,8 +51,17 @@ export default function Composants() {
         </div>
         <div className="rec-field rec-field--error">
           <label htmlFor="c-tel">Téléphone ou WhatsApp</label>
-          <input id="c-tel" className="rec-input" type="tel" defaultValue="06 12" aria-invalid="true" aria-describedby="c-tel-err" />
-          <span id="c-tel-err" className="rec-error">Numéro incomplet. Format international, +242 par défaut.</span>
+          <input
+            id="c-tel"
+            className="rec-input"
+            type="tel"
+            defaultValue="06 12"
+            aria-invalid="true"
+            aria-describedby="c-tel-err"
+          />
+          <span id="c-tel-err" className="rec-error">
+            Numéro incomplet. Format international, +242 par défaut.
+          </span>
         </div>
       </div>
 

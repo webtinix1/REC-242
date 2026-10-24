@@ -53,7 +53,11 @@ export const EmailTemplates: GlobalConfig = {
         {
           name: 'variables',
           type: 'ui',
-          admin: { components: { Field: '@/components/admin/EmailTemplateVariables#EmailTemplateVariables' } },
+          admin: {
+            components: {
+              Field: '@/components/admin/EmailTemplateVariables#EmailTemplateVariables',
+            },
+          },
         },
       ],
     },

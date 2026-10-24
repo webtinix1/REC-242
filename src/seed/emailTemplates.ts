@@ -9,7 +9,11 @@ export async function seedEmailTemplates(payload: Payload): Promise<void> {
   }
   const current = g.modeles ?? []
   const have = new Set(current.map((m) => m.cle))
-  const missing = TEMPLATE_KEYS.filter((k) => !have.has(k)).map((k) => ({ cle: k, objet: TEMPLATES[k].objet, corps: TEMPLATES[k].corps }))
+  const missing = TEMPLATE_KEYS.filter((k) => !have.has(k)).map((k) => ({
+    cle: k,
+    objet: TEMPLATES[k].objet,
+    corps: TEMPLATES[k].corps,
+  }))
   if (!missing.length) return
   await payload.updateGlobal({
     slug: 'emailTemplates',

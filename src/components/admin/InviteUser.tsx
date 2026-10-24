@@ -54,7 +54,14 @@ export const InviteUser = () => {
           </div>
           <div className="rec-field">
             <label htmlFor="inv-email">E-mail</label>
-            <input id="inv-email" name="email" type="email" className="rec-input" required autoComplete="email" />
+            <input
+              id="inv-email"
+              name="email"
+              type="email"
+              className="rec-input"
+              required
+              autoComplete="email"
+            />
           </div>
           <fieldset className="rec-fieldset">
             <legend>Rôles</legend>
@@ -63,7 +70,11 @@ export const InviteUser = () => {
                 <input
                   type="checkbox"
                   checked={roles.includes(r.value)}
-                  onChange={(ev) => setRoles(ev.target.checked ? [...roles, r.value] : roles.filter((x) => x !== r.value))}
+                  onChange={(ev) =>
+                    setRoles(
+                      ev.target.checked ? [...roles, r.value] : roles.filter((x) => x !== r.value),
+                    )
+                  }
                 />{' '}
                 {r.label}
               </label>

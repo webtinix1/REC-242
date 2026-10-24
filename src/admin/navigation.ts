@@ -4,7 +4,7 @@
  * Les collections visibles qui ne figurent pas ici sont regroupées en bas sous « Autres ».
  */
 export type NavItem =
-  | { label: string; collection: string; badge?: string }
+  | { label: string; collection: string; badge?: string; match?: string[] }
   | { label: string; global: string; badge?: string }
   | { label: string; view: string; path: string; requires?: string; badge?: string }
 
@@ -26,7 +26,13 @@ export const NAV: NavGroupDef[] = [
       { label: 'Événements', collection: 'events' },
       { label: 'Commissions', collection: 'commissions', badge: 'commissions' },
       { label: 'Opportunités', collection: 'opportunities', badge: 'opportunites' },
-      { label: 'Demandes des membres', view: 'demandes', path: '/demandes', requires: 'expertRequests', badge: 'demandes' },
+      {
+        label: 'Demandes des membres',
+        view: 'demandes',
+        path: '/demandes',
+        requires: 'expertRequests',
+        badge: 'demandes',
+      },
       { label: 'Messages', collection: 'contactMessages', badge: 'messages' },
     ],
   },
@@ -34,7 +40,24 @@ export const NAV: NavGroupDef[] = [
     label: 'Contenus',
     items: [
       { label: 'Actualités', collection: 'news' },
-      { label: 'Pages, menus, médias', view: 'contenus', path: '/contenus', requires: 'pages' },
+      {
+        label: 'Pages, menus, médias',
+        collection: 'pages',
+        // Toutes ces listes partagent la barre d'onglets « Contenus » (écran 14).
+        match: [
+          '/collections/pages',
+          '/globals/navigation',
+          '/collections/people',
+          '/collections/faq',
+          '/collections/partners',
+          '/collections/testimonials',
+          '/collections/media',
+          '/collections/sectors',
+          '/collections/localities',
+          '/collections/eventTypes',
+          '/collections/expertiseTags',
+        ],
+      },
       { label: 'Documents', collection: 'documents' },
     ],
   },

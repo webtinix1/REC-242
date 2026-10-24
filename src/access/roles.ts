@@ -69,7 +69,9 @@ type MaybeUser = PayloadRequest['user'] | null | undefined
 
 /** Vrai si l'utilisateur connecté appartient à l'équipe d'administration (collection users). */
 export const isStaff = (user: MaybeUser): boolean =>
-  Boolean(user && user.collection === 'users' && (user as { statut?: string }).statut !== 'desactive')
+  Boolean(
+    user && user.collection === 'users' && (user as { statut?: string }).statut !== 'desactive',
+  )
 
 export const rolesOf = (user: MaybeUser): Role[] =>
   isStaff(user) ? (((user as { roles?: Role[] }).roles ?? []) as Role[]) : []
@@ -96,3 +98,31 @@ export const domainAccess = (domain: Domain) => ({
 })
 
 export const staffOnly: Access = ({ req }) => isStaff(req.user)
+
+/**
+ * Domaines ajoutés depuis la matrice de la maquette (docs/04-roles-et-droits.md, « Domaines ajoutés »).
+ * full : accès complet · read : lecture dans le back-office.
+ */
+export const EXTRA_DOMAINS: Record<string, { full: Role[]; read: Role[] }> = {
+  commissions: { full: ['superadmin', 'admin', 'membres'], read: ['editeur'] },
+  gouvernance: { full: ['superadmin', 'admin'], read: ['editeur', 'membres'] },
+  demandesMembres: { full: ['superadmin', 'admin', 'membres'], read: [] },
+  documents: { full: ['superadmin', 'admin', 'editeur'], read: ['membres'] },
+  discipline: { full: ['superadmin', 'admin'], read: ['membres'] },
+  annuaireImprime: { full: ['superadmin', 'admin', 'membres'], read: ['tresorier'] },
+  contenusAnnexes: { full: ['superadmin', 'admin', 'editeur'], read: [] },
+}
+
+export const extraFull = (user: MaybeUser, domain: keyof typeof EXTRA_DOMAINS): boolean =>
+  hasRole(user, ...EXTRA_DOMAINS[domain].full)
+
+export const extraRead = (user: MaybeUser, domain: keyof typeof EXTRA_DOMAINS): boolean =>
+  hasRole(user, ...EXTRA_DOMAINS[domain].full, ...EXTRA_DOMAINS[domain].read)
+
+/** Accès d'une collection publique (lecture libre côté site) gérée par un domaine ajouté. */
+export const publicExtraAccess = (domain: keyof typeof EXTRA_DOMAINS) => ({
+  read: (() => true) as Access,
+  create: (({ req }) => extraFull(req.user, domain)) as Access,
+  update: (({ req }) => extraFull(req.user, domain)) as Access,
+  delete: (({ req }) => extraFull(req.user, domain)) as Access,
+})

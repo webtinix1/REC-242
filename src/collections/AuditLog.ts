@@ -45,7 +45,8 @@ export const AuditLog: CollectionConfig = {
       path: '/export',
       method: 'get',
       handler: async (req) => {
-        if (!atLeast(req.user, 'journal', 'read')) return Response.json({ message: 'Accès refusé' }, { status: 403 })
+        if (!atLeast(req.user, 'journal', 'read'))
+          return Response.json({ message: 'Accès refusé' }, { status: 403 })
         const categorie = new URL(req.url || '', 'http://x').searchParams.get('categorie')
         const { docs } = await req.payload.find({
           collection: 'auditLog',
@@ -58,10 +59,21 @@ export const AuditLog: CollectionConfig = {
         })
         const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
         const lines = [
-          ['Date', 'Auteur', 'Catégorie', 'Action', 'Cible', 'Adresse IP', 'Ville'].map(esc).join(';'),
-          ...docs.map((d) => [d.createdAt, d.auteurNom, d.categorie, d.action, d.cible, d.ip, d.ville].map(esc).join(';')),
+          ['Date', 'Auteur', 'Catégorie', 'Action', 'Cible', 'Adresse IP', 'Ville']
+            .map(esc)
+            .join(';'),
+          ...docs.map((d) =>
+            [d.createdAt, d.auteurNom, d.categorie, d.action, d.cible, d.ip, d.ville]
+              .map(esc)
+              .join(';'),
+          ),
         ]
-        await logAction(req.payload, { req, categorie: 'export', action: 'A exporté le journal des actions', cible: categorie || 'toutes' })
+        await logAction(req.payload, {
+          req,
+          categorie: 'export',
+          action: 'A exporté le journal des actions',
+          cible: categorie || 'toutes',
+        })
         return new Response('\uFEFF' + lines.join('\r\n'), {
           headers: {
             'Content-Type': 'text/csv; charset=utf-8',
@@ -95,7 +107,13 @@ export const AuditLog: CollectionConfig = {
       ],
       admin: { readOnly: true },
     },
-    { name: 'auteur', label: 'Utilisateur', type: 'relationship', relationTo: 'users', admin: { readOnly: true } },
+    {
+      name: 'auteur',
+      label: 'Utilisateur',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: { readOnly: true },
+    },
     { name: 'auteurNom', label: 'Auteur', type: 'text', admin: { readOnly: true } },
     { name: 'ip', label: 'Adresse IP', type: 'text', admin: { readOnly: true } },
     { name: 'ville', label: 'Ville', type: 'text', admin: { readOnly: true } },

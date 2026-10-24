@@ -8,11 +8,25 @@ import { fr } from '@payloadcms/translations/languages/fr'
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
+import { seoPlugin } from '@payloadcms/plugin-seo'
+
 import { AuditLog } from './collections/AuditLog'
+import { Commissions } from './collections/Commissions'
+import { Documents } from './collections/Documents'
+import { Faq } from './collections/Faq'
 import { Media } from './collections/Media'
+import { News } from './collections/News'
+import { Pages } from './collections/Pages'
+import { Partners } from './collections/Partners'
+import { People } from './collections/People'
+import { EventTypes, ExpertiseTags, Localities, Sectors } from './collections/taxonomies'
+import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { adminBadges } from './endpoints/adminBadges'
 import { EmailTemplates } from './globals/EmailTemplates'
+import { Navigation } from './globals/Navigation'
+import { Settings } from './globals/Settings'
+import { publierProgrammes } from './jobs/publierProgrammes'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -44,8 +58,30 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, AuditLog],
-  globals: [EmailTemplates],
+  collections: [
+    Users,
+    Pages,
+    News,
+    Documents,
+    Media,
+    People,
+    Commissions,
+    Partners,
+    Faq,
+    Testimonials,
+    Sectors,
+    Localities,
+    EventTypes,
+    ExpertiseTags,
+    AuditLog,
+  ],
+  globals: [Settings, Navigation, EmailTemplates],
+  jobs: {
+    tasks: [publierProgrammes],
+    // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
+    autoRun: [{ cron: '* * * * *', queue: 'minute' }],
+    access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },
+  },
   endpoints: [adminBadges],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -66,8 +102,19 @@ export default buildConfig({
       host: process.env.SMTP_HOST || '127.0.0.1',
       port: Number(process.env.SMTP_PORT || 1025),
       secure: Number(process.env.SMTP_PORT) === 465,
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
+      auth: process.env.SMTP_USER
+        ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+        : undefined,
     },
   }),
-  plugins: [],
+  plugins: [
+    seoPlugin({
+      collections: ['pages', 'news'],
+      uploadsCollection: 'media',
+      tabbedUI: false,
+      generateTitle: ({ doc }) =>
+        `${(doc as { title?: string; titre?: string }).title ?? (doc as { titre?: string }).titre ?? ''} · REC 242`,
+      generateDescription: ({ doc }) => (doc as { chapeau?: string }).chapeau ?? '',
+    }),
+  ],
 })

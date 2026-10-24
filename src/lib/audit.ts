@@ -10,9 +10,11 @@ type Author =
   | { type: 'visiteur'; nom?: string }
 
 const authorFromReq = (req?: PayloadRequest | null): Author => {
-  const u = req?.user as { id?: number | string; collection?: string; name?: string; email?: string } | null | undefined
+  const u = req?.user as
+    { id?: number | string; collection?: string; name?: string; email?: string } | null | undefined
   if (!u) return { type: 'systeme' }
-  if (u.collection === 'users') return { type: 'utilisateur', id: u.id, nom: u.name || u.email || '' }
+  if (u.collection === 'users')
+    return { type: 'utilisateur', id: u.id, nom: u.name || u.email || '' }
   return { type: 'membre', nom: u.name || u.email || '' }
 }
 
@@ -44,7 +46,8 @@ export const logAction = async (
         cible: args.cible,
         auteurType: author.type,
         auteur: author.type === 'utilisateur' && author.id ? (author.id as number) : undefined,
-        auteurNom: author.type === 'systeme' ? 'Système' : ('nom' in author ? author.nom : '') || '',
+        auteurNom:
+          author.type === 'systeme' ? 'Système' : ('nom' in author ? author.nom : '') || '',
         ip: clientIp(args.req),
         ville: clientCity(args.req),
       },

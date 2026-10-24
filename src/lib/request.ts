@@ -23,7 +23,8 @@ export const clientCity = (req?: Partial<PayloadRequest> | null): string => {
   }
 }
 
-export const userAgent = (req?: Partial<PayloadRequest> | null): string => req?.headers?.get?.('user-agent') ?? ''
+export const userAgent = (req?: Partial<PayloadRequest> | null): string =>
+  req?.headers?.get?.('user-agent') ?? ''
 
 /** Empreinte d'appareil : navigateur et système, sans numéro de version mineure, pour reconnaître un appareil connu. */
 export const deviceKey = (ua: string): string => {

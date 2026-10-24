@@ -24,7 +24,12 @@ export const DEMO_USERS: { name: string; email: string; roles: Role[] }[] = [
 export async function seedUsers(payload: Payload): Promise<void> {
   const password = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
   for (const u of DEMO_USERS) {
-    const existing = await payload.find({ collection: 'users', where: { email: { equals: u.email } }, limit: 1, overrideAccess: true })
+    const existing = await payload.find({
+      collection: 'users',
+      where: { email: { equals: u.email } },
+      limit: 1,
+      overrideAccess: true,
+    })
     if (existing.docs[0]) continue
     await payload.create({
       collection: 'users',

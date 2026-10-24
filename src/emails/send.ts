@@ -7,13 +7,18 @@ type Attachment = { filename: string; content: Buffer | string; contentType?: st
 
 type StoredTemplate = { cle?: string; objet?: string; corps?: string }
 
-const hasGlobal = (payload: Payload, slug: string) => payload.config.globals.some((g) => g.slug === slug)
+const hasGlobal = (payload: Payload, slug: string) =>
+  payload.config.globals.some((g) => g.slug === slug)
 
 /** Modèle personnalisé dans le back-office, sinon texte par défaut. */
 export const getTemplate = async (payload: Payload, key: TemplateKey) => {
   const def = TEMPLATES[key]
   if (!hasGlobal(payload, 'emailTemplates')) return def
-  const g = (await payload.findGlobal({ slug: 'emailTemplates' as never, depth: 0, overrideAccess: true })) as {
+  const g = (await payload.findGlobal({
+    slug: 'emailTemplates' as never,
+    depth: 0,
+    overrideAccess: true,
+  })) as {
     modeles?: StoredTemplate[]
   }
   const custom = g?.modeles?.find((m) => m.cle === key)
@@ -22,7 +27,11 @@ export const getTemplate = async (payload: Payload, key: TemplateKey) => {
 
 const getFooter = async (payload: Payload): Promise<FooterInfo> => {
   if (!hasGlobal(payload, 'settings')) return {}
-  const s = (await payload.findGlobal({ slug: 'settings' as never, depth: 0, overrideAccess: true })) as {
+  const s = (await payload.findGlobal({
+    slug: 'settings' as never,
+    depth: 0,
+    overrideAccess: true,
+  })) as {
     adresse?: string
     whatsapp?: { numero?: string }
   }
@@ -39,7 +48,10 @@ export type SendTemplateArgs = {
 }
 
 /** Envoie un e-mail à partir d'un modèle. Renvoie le sujet effectivement envoyé (utile pour l'historique). */
-export const sendTemplate = async (payload: Payload, args: SendTemplateArgs): Promise<{ subject: string }> => {
+export const sendTemplate = async (
+  payload: Payload,
+  args: SendTemplateArgs,
+): Promise<{ subject: string }> => {
   const tpl = await getTemplate(payload, args.template)
   const footer = await getFooter(payload)
   const { subject, html, text } = renderEmail(tpl.objet, tpl.corps, args.vars, footer)
