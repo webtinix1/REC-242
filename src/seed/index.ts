@@ -1,11 +1,14 @@
 /**
  * Chargement des données de démonstration (dossier seed/ à la racine).
- * Lancement : pnpm seed
+ * Lancement : pnpm seed. Idempotent : peut être relancé sans créer de doublons.
  * Chaque lot ajoute ici le chargement des collections qu'il crée.
- * Le script est idempotent : il peut être relancé sans créer de doublons.
  */
 import type { Payload } from 'payload'
 
+import { seedEmailTemplates } from './emailTemplates'
+import { seedUsers } from './users'
+
 export async function seed(payload: Payload): Promise<void> {
-  payload.logger.info('Données de démonstration : rien à charger pour l’instant (lot 0).')
+  await seedUsers(payload)
+  await seedEmailTemplates(payload)
 }

@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    auditLog: AuditLog;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    auditLog: AuditLogSelect<false> | AuditLogSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +89,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    emailTemplates: EmailTemplate;
+  };
+  globalsSelect: {
+    emailTemplates: EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -118,11 +124,39 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Mot de passe de 12 caractères minimum, blocage après 5 essais, alerte par e-mail à chaque nouvel appareil. Chaque connexion est inscrite au journal.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name: string;
+  photo?: (number | null) | Media;
+  /**
+   * Une personne peut cumuler plusieurs rôles ; ses droits sont l’union de ceux de ses rôles.
+   */
+  roles: ('superadmin' | 'admin' | 'editeur' | 'evenements' | 'membres' | 'tresorier')[];
+  statut: 'actif' | 'invite' | 'desactive';
+  lastLogin?: string | null;
+  knownDevices?:
+    | {
+        key: string;
+        label?: string | null;
+        ville?: string | null;
+        firstSeen?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  twoFactor?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -149,6 +183,9 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Décrit l’image pour les personnes qui ne la voient pas. Obligatoire.
+   */
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -161,6 +198,24 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auditLog".
+ */
+export interface AuditLog {
+  id: number;
+  action: string;
+  categorie:
+    'connexion' | 'validation' | 'publication' | 'export' | 'parametres' | 'utilisateurs' | 'paiement' | 'discipline';
+  cible?: string | null;
+  auteurType?: ('utilisateur' | 'membre' | 'systeme' | 'visiteur') | null;
+  auteur?: (number | null) | User;
+  auteurNom?: string | null;
+  ip?: string | null;
+  ville?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -193,6 +248,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'auditLog';
+        value: number | AuditLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -241,6 +300,21 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  photo?: T;
+  roles?: T;
+  statut?: T;
+  lastLogin?: T;
+  knownDevices?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        ville?: T;
+        firstSeen?: T;
+        id?: T;
+      };
+  twoFactor?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -276,6 +350,22 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auditLog_select".
+ */
+export interface AuditLogSelect<T extends boolean = true> {
+  action?: T;
+  categorie?: T;
+  cible?: T;
+  auteurType?: T;
+  auteur?: T;
+  auteurNom?: T;
+  ip?: T;
+  ville?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -316,6 +406,72 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Textes des e-mails envoyés aux candidats, aux membres et à l'équipe. Les mots entre doubles accolades sont remplacés à l'envoi. Une ligne « [bouton] Libellé | {{lien}} » crée le bouton principal.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emailTemplates".
+ */
+export interface EmailTemplate {
+  id: number;
+  modeles?:
+    | {
+        cle:
+          | 'candidatureConfirmation'
+          | 'candidatureAlerte'
+          | 'candidatureComplement'
+          | 'bienvenueActivation'
+          | 'refusMotive'
+          | 'inscriptionConfirmation'
+          | 'inscriptionListeAttente'
+          | 'placeLiberee'
+          | 'rappelVeille'
+          | 'evenementAnnuleReporte'
+          | 'echeanceCotisation'
+          | 'relanceCotisation'
+          | 'recuPaiement'
+          | 'constatPerte'
+          | 'demandeExpert'
+          | 'relanceExpert'
+          | 'miseEnRelationRecue'
+          | 'miseEnRelationReponse'
+          | 'reponseAnnonce'
+          | 'decisionModeration'
+          | 'demandeModificationTraitee'
+          | 'disciplineGriefs'
+          | 'disciplineDecision'
+          | 'reinitialisationMotDePasse'
+          | 'nouvelAppareil'
+          | 'invitationAdmin'
+          | 'accuseReceptionFormulaire'
+          | 'nouveauDocument'
+          | 'opportuniteSecteur'
+          | 'lienConnexion';
+        objet: string;
+        corps: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emailTemplates_select".
+ */
+export interface EmailTemplatesSelect<T extends boolean = true> {
+  modeles?:
+    | T
+    | {
+        cle?: T;
+        objet?: T;
+        corps?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
