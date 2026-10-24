@@ -29,7 +29,7 @@ describe('Comptes d’administration', () => {
 
   it('refuse un mot de passe de moins de 12 caractères', async () => {
     await expect(
-      payload.create({ collection: 'users', overrideAccess: true, data: { name: 'Court', email: 'court@int.test', password: 'trop-court', roles: ['editeur'] } }),
+      payload.create({ collection: 'users', overrideAccess: true, data: { name: 'Court', email: 'court@int.test', password: 'trop-court', roles: ['editeur'], statut: 'actif' } }),
     ).rejects.toThrow(/12 caractères/)
   })
 
