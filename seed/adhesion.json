@@ -1,0 +1,239 @@
+{
+ "categories": [
+  null,
+  null,
+  null,
+  {
+   "code": "E",
+   "nom": "Expert",
+   "droit": 15000,
+   "cot": 75000,
+   "note": "Les experts relèvent de la catégorie B des statuts (article 11).",
+   "droitF": "15 000 FCFA",
+   "cotF": "75 000 FCFA",
+   "totalF": "90 000 FCFA",
+   "trancheF": "37 500 FCFA"
+  },
+  {
+   "code": "P",
+   "nom": "Partenaire",
+   "droit": 0,
+   "cot": 0,
+   "conv": true,
+   "note": "Montant fixé par la convention de partenariat (article 11 des statuts).",
+   "droitF": "0 FCFA",
+   "cotF": "0 FCFA",
+   "totalF": "Sur convention",
+   "trancheF": "0 FCFA"
+  },
+  {
+   "code": "H",
+   "nom": "Membre d’honneur",
+   "droit": 0,
+   "cot": 0,
+   "conv": true,
+   "note": "Admission par le comité de direction, conditions fixées par convention (article 11 des statuts).",
+   "droitF": "0 FCFA",
+   "cotF": "0 FCFA",
+   "totalF": "Sur convention",
+   "trancheF": "0 FCFA"
+  }
+ ],
+ "statuts_de_membre": [
+  {
+   "nom": "Membre catégorie A",
+   "pour": "Individuel, informel, porteur de projet",
+   "montant": "10 000 + 25 000 FCFA",
+   "droits": "Annuaire, agenda, opportunités, accompagnement à la formalisation"
+  },
+  {
+   "nom": "Membre catégorie B",
+   "pour": "Établissement, commerçant formalisé",
+   "montant": "15 000 + 75 000 FCFA",
+   "droits": "Annuaire, agenda, opportunités B2B, mise en relation"
+  },
+  {
+   "nom": "Membre catégorie C",
+   "pour": "Entreprise, société",
+   "montant": "25 000 + 150 000 FCFA",
+   "droits": "Annuaire, agenda, opportunités B2B, mise en relation"
+  },
+  {
+   "nom": "Expert",
+   "pour": "Professionnel qui apporte son expertise, rattaché à la catégorie B",
+   "montant": "15 000 + 75 000 FCFA",
+   "droits": "Annuaire, agenda, opportunités B2B, référent par domaine d’expertise"
+  },
+  {
+   "nom": "Partenaire",
+   "pour": "Organisation liée au réseau par une convention",
+   "montant": "Fixé par convention",
+   "droits": "Voix consultative à l’assemblée, visibilité selon la convention"
+  },
+  {
+   "nom": "Membre d’honneur",
+   "pour": "Personnalité admise par le comité de direction",
+   "montant": "Fixé par convention",
+   "droits": "Voix consultative à l’assemblée, participation aux activités"
+  }
+ ],
+ "avantages": [
+  {
+   "t": "Rencontrer des clients et des partenaires",
+   "d": "Rencontres B2B, afterworks et salons entre membres.",
+   "cta": "Voir l’agenda"
+  },
+  {
+   "t": "Être visible dans l’annuaire",
+   "d": "Une fiche pour votre activité, consultable par les membres et le public.",
+   "cta": "Voir l’annuaire"
+  },
+  {
+   "t": "Accéder aux opportunités B2B",
+   "d": "Appels à partenariat, appels d’offres relayés, financements.",
+   "cta": "Voir les opportunités"
+  },
+  {
+   "t": "Sortir de l’informel",
+   "d": "Orientation vers les administrations, ateliers et mentorat.",
+   "cta": "Voir l’accompagnement"
+  },
+  {
+   "t": "Se former",
+   "d": "Ateliers, formations et masterclass du réseau.",
+   "cta": "Voir les ateliers"
+  },
+  {
+   "t": "Compter sur l’entraide",
+   "d": "Une assistance morale et technique entre membres.",
+   "cta": "Nos valeurs"
+  }
+ ],
+ "avec_ou_sans": [
+  {
+   "t": "Consulter l’agenda et les actualités",
+   "sans": true,
+   "avec": true,
+   "sansL": "Oui",
+   "avecL": "Oui",
+   "sansCls": "yes",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Participer aux événements ouverts à tous",
+   "sans": true,
+   "avec": true,
+   "sansL": "Oui",
+   "avecL": "Oui",
+   "sansCls": "yes",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Événements réservés aux membres",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Fiche dans l’annuaire",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Coordonnées des autres membres",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Opportunités réservées (appels d’offres, financements)",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Publier une opportunité",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  },
+  {
+   "t": "Accompagnement à la formalisation",
+   "sans": false,
+   "avec": true,
+   "sansL": "Non",
+   "avecL": "Oui",
+   "sansCls": "no",
+   "avecCls": "yes"
+  }
+ ],
+ "faq": [
+  {
+   "q": "Qui peut adhérer ?",
+   "r": "Toute personne physique majeure ou morale qui exerce une activité économique légale ou porte un projet sérieux, partage les valeurs du réseau et accepte les statuts et le règlement intérieur."
+  },
+  {
+   "q": "Puis-je payer ma cotisation en plusieurs fois ?",
+   "r": "Oui, en deux tranches au maximum. La cotisation doit être soldée dans les 3 mois qui suivent l’adhésion pour rester membre actif."
+  },
+  {
+   "q": "Que se passe-t-il si ma cotisation n’est pas soldée ?",
+   "r": "Le trésorier envoie trois relances écrites espacées d’au moins 15 jours. Sans régularisation, le comité de direction constate la perte de la qualité de membre. Une nouvelle adhésion reste possible ensuite."
+  },
+  {
+   "q": "REC 242 garantit-il des clients ou des financements ?",
+   "r": "Non. Le réseau facilite les rencontres et la circulation des opportunités, mais ne garantit ni contrat, ni financement. Chaque membre reste responsable de ses activités."
+  },
+  {
+   "q": "Qui valide mon adhésion ?",
+   "r": "Le comité de direction, qui peut recueillir l’avis de la Commission Éthique et Vérification."
+  },
+  {
+   "q": "En combien de temps ma candidature est-elle traitée ?",
+   "r": "Le délai habituel de réponse sera communiqué par le comité de direction."
+  }
+ ],
+ "parcours": [
+  {
+   "n": 1,
+   "t": "Je remplis mon dossier",
+   "d": "Identité, entreprise, projet : le formulaire reprend la fiche d’adhésion du réseau."
+  },
+  {
+   "n": 2,
+   "t": "Je choisis ma catégorie et je paie",
+   "d": "En une fois ou en deux tranches au plus, soldées sous 3 mois."
+  },
+  {
+   "n": 3,
+   "t": "Je rencontre le comité de direction",
+   "d": "Vérification de ma pièce d’identité en main propre et signature de la charte."
+  },
+  {
+   "n": 4,
+   "t": "Le comité de direction agrée mon dossier",
+   "d": "L’adhésion n’est pas automatique : chaque dossier est examiné."
+  },
+  {
+   "n": 5,
+   "t": "Je deviens membre actif",
+   "d": "Numéro d’adhérent, carte de membre avec QR code et accès à mon espace."
+  }
+ ]
+}

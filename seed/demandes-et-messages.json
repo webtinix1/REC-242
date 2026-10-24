@@ -1,0 +1,228 @@
+{
+ "messages_contact": [
+  {
+   "motif": "Adhésion",
+   "de": "Ariane Mabiala",
+   "objet": "Question sur la catégorie B",
+   "recu": "Il y a 2 h",
+   "traite": false,
+   "dest": "Responsable membres",
+   "st": "À traiter",
+   "ini": "AM",
+   "qui": "Visiteuse, pas encore membre",
+   "tel": "+242 06 455 12 03",
+   "mail": "ariane.mabiala@gmail.com",
+   "corps": "Bonjour, je tiens un salon de coiffure à Moungali avec deux employées. Mon activité est déclarée mais je n’ai pas encore de RCCM. Est-ce que je dois choisir la catégorie A ou B ? Et est-ce que je peux payer en deux fois ? Merci.",
+   "model": "Informations sur l’adhésion",
+   "rep": "Bonjour Madame Mabiala, merci pour votre message. Sans RCCM, la catégorie A (individuel, informel) vous correspond : 10 000 FCFA de droit d’adhésion et 25 000 FCFA de cotisation annuelle, payable en deux tranches sous 3 mois. La commission Formalisation pourra ensuite vous accompagner pour obtenir votre RCCM. Vous pouvez déposer votre candidature sur rec242.cg/adherer. Bien cordialement, Béryl Bobanda, responsable membres.",
+   "notes": [],
+   "idx": 0,
+   "photo": "design/images/personnes/ariane-mabiala.webp",
+   "sent": false,
+   "done": false,
+   "to": "ariane.mabiala@gmail.com",
+   "unread": false
+  },
+  {
+   "motif": "Partenariat",
+   "de": "Fondation Lumière Congo",
+   "objet": "Proposition de soutien aux ateliers",
+   "recu": "Hier",
+   "traite": false,
+   "dest": "Commission Partenariats",
+   "st": "À traiter",
+   "ini": "FL",
+   "qui": "Fondation, partenaire potentiel",
+   "tel": "+242 05 611 40 22",
+   "mail": "partenariats@lumiere-congo.org",
+   "corps": "Madame, Monsieur, la Fondation Lumière Congo finance des formations pour les jeunes entrepreneurs. Nous souhaiterions soutenir vos ateliers de formalisation en 2027 (prise en charge de la salle et des supports). Pourrions-nous organiser une rencontre avec votre commission Partenariats ?",
+   "model": "Proposer un rendez-vous au siège",
+   "rep": "Madame, Monsieur, merci pour cette proposition qui rejoint pleinement la mission de REC 242. La commission Partenariats vous propose une rencontre au siège le mardi 3 décembre à 10 h, ou à la date de votre choix. Bien cordialement, Pathurel Nkoua Ngassemo.",
+   "notes": [
+    {
+     "who": "Pathurel Nkoua Ngassemo, hier",
+     "t": "Piste sérieuse, à présenter au comité de direction du 15 novembre."
+    }
+   ],
+   "idx": 1,
+   "photo": "",
+   "sent": false,
+   "done": false,
+   "to": "partenariats@lumiere-congo.org",
+   "unread": true
+  },
+  {
+   "motif": "Presse",
+   "de": "Ruth Mavoungou, Congo Business Hebdo",
+   "objet": "Demande d’interview",
+   "recu": "Il y a 3 jours",
+   "traite": false,
+   "dest": "Communication",
+   "st": "À traiter",
+   "ini": "RM",
+   "qui": "Journaliste, Congo Business Hebdo",
+   "tel": "+242 06 302 77 15",
+   "mail": "r.mavoungou@cbhebdo.cg",
+   "corps": "Bonjour, je prépare un dossier sur les réseaux d’entrepreneurs à Brazzaville pour notre numéro de décembre. Serait-il possible d’interviewer la fondatrice de REC 242 la semaine prochaine, de préférence par téléphone ?",
+   "model": "Transmis au bon interlocuteur",
+   "rep": "Bonjour Madame Mavoungou, merci pour votre intérêt. Eve, fondatrice de REC 242, peut vous accorder un entretien téléphonique jeudi entre 10 h et 12 h. Vous trouverez la fiche institutionnelle et les photos officielles dans notre espace presse. Bien cordialement, Yohan Dinga, communication.",
+   "notes": [],
+   "idx": 2,
+   "photo": "design/images/personnes/ruth-mavoungou.webp",
+   "sent": false,
+   "done": false,
+   "to": "r.mavoungou@cbhebdo.cg",
+   "unread": true
+  },
+  {
+   "motif": "Événement",
+   "de": "Mireille Ngoma",
+   "objet": "Accès pour personnes à mobilité réduite",
+   "recu": "Il y a 4 jours",
+   "traite": false,
+   "dest": "Responsable événements",
+   "st": "À traiter",
+   "ini": "MN",
+   "qui": "Membre, inscrite à l’afterwork du 14 novembre",
+   "tel": "+242 04 412 88 09",
+   "mail": "mireille.ngoma@gmail.com",
+   "corps": "Bonjour, je me déplace en fauteuil roulant. La salle de l’afterwork du 14 novembre est-elle accessible ? Y a-t-il des marches à l’entrée du siège ?",
+   "model": "Remerciement et prise en charge",
+   "rep": "Bonjour Madame Ngoma, merci de nous avoir prévenus. L’entrée du siège se fait de plain-pied par la cour, et la salle est au rez-de-chaussée. Une place de stationnement vous sera réservée devant l’entrée. À très bientôt, Lilia Kongo, événements.",
+   "notes": [],
+   "idx": 3,
+   "photo": "design/images/personnes/mireille-ngoma.webp",
+   "sent": false,
+   "done": false,
+   "to": "mireille.ngoma@gmail.com",
+   "unread": true
+  },
+  {
+   "motif": "Autre",
+   "de": "Bienvenu Kaya",
+   "objet": "Horaires du siège",
+   "recu": "Il y a 6 jours",
+   "traite": true,
+   "dest": "Secrétariat",
+   "st": "Traité",
+   "ini": "BK",
+   "qui": "Candidat, dossier papier C-0044",
+   "tel": "+242 06 538 71 09",
+   "mail": "bienvenu.kaya@gmail.com",
+   "corps": "Bonjour, quels sont les horaires d’ouverture du siège ? Je voudrais déposer mon bulletin d’adhésion.",
+   "model": "Remerciement et prise en charge",
+   "rep": "Bonjour Monsieur Kaya, le siège est ouvert du lundi au vendredi de 8 h 30 à 17 h, et le samedi sur rendez-vous. Bien cordialement, le secrétariat.",
+   "notes": [],
+   "sentBefore": true,
+   "idx": 4,
+   "photo": "design/images/personnes/bienvenu-kaya.webp",
+   "sent": true,
+   "done": true,
+   "to": "bienvenu.kaya@gmail.com",
+   "unread": false
+  }
+ ],
+ "questions_experts": [
+  {
+   "m": "Christelle Malonga",
+   "q": "Préparer un dossier de financement pour un local",
+   "tag": "Financement",
+   "to": "Grâce Nkounkou",
+   "d": "17 oct. 2026",
+   "st": "En cours",
+   "photo": "design/images/personnes/christelle-malonga.webp",
+   "ini": "CM"
+  },
+  {
+   "m": "Serge Bouanga",
+   "q": "Quelle TVA appliquer sur la vente de produits agricoles ?",
+   "tag": "Fiscalité",
+   "to": "Patrick Mavoungou",
+   "d": "Il y a 6 jours",
+   "st": "Sans réponse",
+   "late": true,
+   "photo": "design/images/personnes/serge-bouanga.webp",
+   "ini": "SB"
+  },
+  {
+   "m": "Nadège Loubaki",
+   "q": "Contrat type pour un formateur indépendant",
+   "tag": "Juridique",
+   "to": "Georges Mfouli",
+   "d": "Il y a 2 jours",
+   "st": "Transmise",
+   "photo": "design/images/personnes/nadege-loubaki.webp",
+   "ini": "NL"
+  },
+  {
+   "m": "Christelle Malonga",
+   "q": "Quel statut juridique pour vendre en ligne ?",
+   "tag": "Juridique",
+   "to": "Georges Mfouli",
+   "d": "9 oct. 2026",
+   "st": "Répondue",
+   "photo": "design/images/personnes/christelle-malonga.webp",
+   "ini": "CM"
+  }
+ ],
+ "mises_en_relation": [
+  {
+   "a": "Christelle Malonga",
+   "b": "Fako Drop",
+   "o": "Livraisons régulières entre Brazzaville et Pointe-Noire",
+   "d": "Il y a 3 jours",
+   "st": "Acceptée",
+   "photo": "design/images/personnes/christelle-malonga.webp"
+  },
+  {
+   "a": "Hervé Ondongo",
+   "b": "Hôpital Blanche Gomes",
+   "o": "Livraison de matériel médical",
+   "d": "Hier",
+   "st": "En attente",
+   "photo": "design/images/personnes/herve-ondongo.webp"
+  },
+  {
+   "a": "Léon Massamba",
+   "b": "Kimia Créations",
+   "o": "Dépôt-vente de bretelles en boutique",
+   "d": "Aujourd’hui",
+   "st": "En attente",
+   "photo": "design/images/personnes/leon-massamba.webp"
+  }
+ ],
+ "demandes_modification": [
+  {
+   "m": "Kimia Créations",
+   "champ": "Téléphone",
+   "avant": "+242 06 641 22 87",
+   "apres": "+242 05 418 90 12",
+   "d": "Il y a 2 jours"
+  },
+  {
+   "m": "Khazad",
+   "champ": "Secteurs",
+   "avant": "Numérique",
+   "apres": "Numérique, Formation",
+   "d": "Il y a 5 jours"
+  }
+ ],
+ "demandes_commissions": [
+  {
+   "nom": "Christelle Malonga",
+   "ent": "Kimia Créations",
+   "com": "Commission B2B et Opportunités",
+   "motiv": "Je cherche des fournisseurs et je peux relayer les besoins des commerçantes.",
+   "photo": "design/images/personnes/christelle-malonga.webp",
+   "done": false
+  },
+  {
+   "nom": "Rodrigue Itoua",
+   "ent": "Khazad",
+   "com": "Commission Communication",
+   "motiv": "Je peux contribuer à la présence en ligne du réseau.",
+   "photo": "design/images/personnes/rodrigue-itoua.webp",
+   "done": false
+  }
+ ]
+}

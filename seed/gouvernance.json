@@ -1,0 +1,356 @@
+{
+ "comite": [
+  {
+   "ini": "EV",
+   "nom": "Eve",
+   "fn": "Fondatrice de REC 242",
+   "pole": "Direction",
+   "lead": true,
+   "tags": [
+    "Entrepreneuriat",
+    "Réseau"
+   ],
+   "photo": "design/images/personnes/eve.webp"
+  },
+  {
+   "ini": "AM",
+   "nom": "Ange Mouandza",
+   "fn": "Responsable numérique et données",
+   "pole": "Numérique et données",
+   "lead": false,
+   "tags": [
+    "Numérique",
+    "Données"
+   ],
+   "photo": "design/images/personnes/ange-mouandza.webp"
+  },
+  {
+   "ini": "BB",
+   "nom": "Béryl Bobanda",
+   "fn": "Assistant gestion des données",
+   "pole": "Numérique et données",
+   "lead": false,
+   "tags": [
+    "Numérique",
+    "Données"
+   ],
+   "photo": "design/images/personnes/beryl-bobanda.webp"
+  },
+  {
+   "ini": "GM",
+   "nom": "Georges Mfouli",
+   "fn": "Responsable affaires juridiques",
+   "pole": "Juridique",
+   "lead": false,
+   "tags": [
+    "Juridique",
+    "Formalisation"
+   ],
+   "photo": "design/images/personnes/georges-mfouli.webp"
+  },
+  {
+   "ini": "GO",
+   "nom": "Gilles Oniangue",
+   "fn": "Conseiller stratégique, relations avec les adhérents et les experts",
+   "pole": "Programme et relations avec les adhérents",
+   "lead": false,
+   "tags": [
+    "Stratégie",
+    "Accompagnement"
+   ],
+   "photo": "design/images/personnes/gilles-oniangue.webp"
+  },
+  {
+   "ini": "YD",
+   "nom": "Yohan Dinga",
+   "fn": "Assistant en communication et stratégie",
+   "pole": "Communication et stratégie",
+   "lead": false,
+   "tags": [
+    "Communication",
+    "Stratégie"
+   ],
+   "photo": "design/images/personnes/yohan-dinga.webp"
+  },
+  {
+   "ini": "LK",
+   "nom": "Lilia Kongo",
+   "fn": "Assistant communication",
+   "pole": "Communication et stratégie",
+   "lead": false,
+   "tags": [
+    "Communication"
+   ],
+   "photo": "design/images/personnes/lilia-kongo.webp"
+  },
+  {
+   "ini": "PN",
+   "nom": "Pathurel Nkoua Ngassemo",
+   "fn": "Assistant chargé des relations extérieures et des partenaires",
+   "pole": "Relations extérieures",
+   "lead": false,
+   "tags": [
+    "Partenariats",
+    "Institutions"
+   ],
+   "photo": "design/images/personnes/pathurel-nkoua-ngassemo.webp"
+  }
+ ],
+ "experts": [
+  {
+   "ini": "PM",
+   "nom": "Patrick Mavoungou",
+   "fn": "Conseil juridique et fiscal, 3M-Partners & Conseils",
+   "tags": [
+    "Juridique",
+    "Fiscalité",
+    "Formalisation"
+   ],
+   "photo": "design/images/personnes/patrick-mavoungou.webp",
+   "role": "Expert du réseau"
+  },
+  {
+   "ini": "GN",
+   "nom": "Grâce Nkounkou",
+   "fn": "Bâtiment et immobilier, Batimat Congo",
+   "tags": [
+    "BTP",
+    "Immobilier",
+    "Financement"
+   ],
+   "photo": "design/images/personnes/grace-nkounkou.webp",
+   "role": "Expert du réseau"
+  },
+  {
+   "ini": "RI",
+   "nom": "Rodrigue Itoua",
+   "fn": "Transformation numérique, Khazad",
+   "tags": [
+    "Numérique",
+    "Données"
+   ],
+   "photo": "design/images/personnes/rodrigue-itoua.webp",
+   "role": "Expert du réseau"
+  },
+  {
+   "ini": "NL",
+   "nom": "Nadège Loubaki",
+   "fn": "Ressources humaines et formation, Mbongui Formation & RH",
+   "tags": [
+    "Formation",
+    "Ressources humaines"
+   ],
+   "photo": "design/images/personnes/nadege-loubaki.webp",
+   "role": "Expert du réseau"
+  },
+  {
+   "ini": "SB",
+   "nom": "Serge Bouanga",
+   "fn": "Production agricole, Ferme Lékana",
+   "tags": [
+    "Agriculture",
+    "Accompagnement"
+   ],
+   "photo": "design/images/personnes/serge-bouanga.webp",
+   "role": "Expert du réseau"
+  }
+ ],
+ "commissions": [
+  {
+   "t": "Éthique et Vérification",
+   "d": "Examine les dossiers d’adhésion à la demande du comité de direction et instruit les dossiers disciplinaires.",
+   "resp": "Georges Mfouli",
+   "ouverte": false,
+   "x": 2
+  },
+  {
+   "t": "Formalisation",
+   "d": "Accompagne les membres du secteur informel vers la formalisation.",
+   "resp": "Georges Mfouli",
+   "ouverte": true,
+   "x": 3
+  },
+  {
+   "t": "B2B et Opportunités",
+   "d": "Propose et fait circuler les opportunités d’affaires entre membres.",
+   "resp": "Gilles Oniangue",
+   "ouverte": true,
+   "x": 2
+  },
+  {
+   "t": "Communication",
+   "d": "Fait connaître le réseau, ses membres et ses rendez-vous.",
+   "resp": "Yohan Dinga",
+   "ouverte": true,
+   "x": 1
+  },
+  {
+   "t": "Partenariats",
+   "d": "Prépare les conventions avec les partenaires techniques et financiers.",
+   "resp": "Pathurel Nkoua Ngassemo",
+   "ouverte": true,
+   "x": 2
+  }
+ ],
+ "commissions_back_office": [
+  {
+   "nom": "Éthique et Vérification",
+   "obj": "Examine les dossiers d’adhésion à la demande du comité et instruit les dossiers disciplinaires.",
+   "resp": "Georges Mfouli",
+   "n": 5,
+   "x": 2,
+   "ouv": "Sur désignation",
+   "next": "18 nov. 2026",
+   "photo": "design/images/personnes/georges-mfouli.webp",
+   "ocls": ""
+  },
+  {
+   "nom": "Formalisation",
+   "obj": "Accompagne les membres du secteur informel vers la formalisation.",
+   "resp": "Georges Mfouli",
+   "n": 24,
+   "x": 3,
+   "ouv": "Ouverte",
+   "next": "21 nov. 2026",
+   "photo": "design/images/personnes/georges-mfouli.webp",
+   "ocls": "pill-ok"
+  },
+  {
+   "nom": "B2B et Opportunités",
+   "obj": "Propose et fait circuler les opportunités d’affaires entre membres.",
+   "resp": "Gilles Oniangue",
+   "n": 31,
+   "x": 2,
+   "ouv": "Ouverte",
+   "next": "25 nov. 2026",
+   "photo": "design/images/personnes/gilles-oniangue.webp",
+   "ocls": "pill-ok"
+  },
+  {
+   "nom": "Communication",
+   "obj": "Fait connaître le réseau, ses membres et ses rendez-vous.",
+   "resp": "Yohan Dinga",
+   "n": 12,
+   "x": 1,
+   "ouv": "Ouverte",
+   "next": "19 nov. 2026",
+   "photo": "design/images/personnes/yohan-dinga.webp",
+   "ocls": "pill-ok"
+  },
+  {
+   "nom": "Partenariats",
+   "obj": "Prépare les conventions avec les partenaires techniques et financiers.",
+   "resp": "Pathurel Nkoua Ngassemo",
+   "n": 9,
+   "x": 2,
+   "ouv": "Ouverte",
+   "next": "27 nov. 2026",
+   "photo": "design/images/personnes/pathurel-nkoua-ngassemo.webp",
+   "ocls": "pill-ok"
+  }
+ ],
+ "antennes": [
+  {
+   "v": "Brazzaville",
+   "st": "Siège",
+   "d": "165 rue Charles Foucault, Centre-Ville",
+   "ref": "Secrétariat du comité de direction",
+   "confirmed": true
+  },
+  {
+   "v": "Pointe-Noire",
+   "st": "Antenne",
+   "d": "Centre-Ville, permanence le jeudi",
+   "ref": "Patrick Mavoungou",
+   "confirmed": true
+  },
+  {
+   "v": "Dolisie",
+   "st": "En création",
+   "d": "Tsila, sur rendez-vous",
+   "ref": "Serge Bouanga",
+   "confirmed": false
+  },
+  {
+   "v": "Nkayi",
+   "st": "En projet",
+   "d": "Référent à désigner",
+   "ref": "À désigner",
+   "confirmed": false
+  },
+  {
+   "v": "Ouesso",
+   "st": "En projet",
+   "d": "Référent à désigner",
+   "ref": "À désigner",
+   "confirmed": false
+  },
+  {
+   "v": "Diaspora",
+   "st": "En projet",
+   "d": "Référent à désigner",
+   "ref": "À désigner",
+   "confirmed": false
+  }
+ ],
+ "antennes_back_office": [
+  {
+   "v": "Brazzaville (siège)",
+   "ref": "Secrétariat du comité de direction",
+   "tel": "+242 06 725 79 50",
+   "st": "Active"
+  },
+  {
+   "v": "Pointe-Noire",
+   "ref": "Patrick Mavoungou",
+   "tel": "+242 06 877 02 61",
+   "st": "Active"
+  },
+  {
+   "v": "Dolisie",
+   "ref": "Serge Bouanga",
+   "tel": "+242 06 980 13 57",
+   "st": "En création"
+  },
+  {
+   "v": "Nkayi",
+   "ref": "Référent à désigner",
+   "tel": "",
+   "st": "En projet"
+  },
+  {
+   "v": "Ouesso",
+   "ref": "Référent à désigner",
+   "tel": "",
+   "st": "En projet"
+  },
+  {
+   "v": "Diaspora",
+   "ref": "Référent à désigner",
+   "tel": "",
+   "st": "En projet"
+  }
+ ],
+ "organes": [
+  {
+   "n": "1",
+   "t": "Assemblée générale",
+   "d": "Organe suprême. Définit les orientations, élit les organes dirigeants et les contrôleurs aux comptes. Se réunit une fois par an."
+  },
+  {
+   "n": "2",
+   "t": "Comité de direction",
+   "d": "La fondatrice et sept membres répartis en cinq pôles. Exécute les décisions, valide les adhésions, se réunit au moins une fois par mois."
+  },
+  {
+   "n": "3",
+   "t": "Commissions thématiques",
+   "d": "Organes consultatifs créés par le comité de direction. Elles donnent des avis et proposent."
+  },
+  {
+   "n": "4",
+   "t": "Contrôleurs aux comptes",
+   "d": "Deux membres élus, hors comité. Vérifient les comptes et présentent un rapport à l’assemblée."
+  }
+ ]
+}

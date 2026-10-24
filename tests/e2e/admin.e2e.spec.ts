@@ -5,7 +5,7 @@ import { seedTestUser, cleanupTestUser, testUser } from '../helpers/seedUser'
 test.describe('Admin Panel', () => {
   let page: Page
 
-  test.beforeAll(async ({ browser }, testInfo) => {
+  test.beforeAll(async ({ browser }) => {
     await seedTestUser()
 
     const context = await browser.newContext()
@@ -21,14 +21,14 @@ test.describe('Admin Panel', () => {
   test('can navigate to dashboard', async () => {
     await page.goto('http://localhost:3000/admin')
     await expect(page).toHaveURL('http://localhost:3000/admin')
-    const dashboardArtifact = page.locator('span[title="Dashboard"]').first()
+    const dashboardArtifact = page.locator('span[title="Tableau de bord"]').first()
     await expect(dashboardArtifact).toBeVisible()
   })
 
   test('can navigate to list view', async () => {
     await page.goto('http://localhost:3000/admin/collections/users')
     await expect(page).toHaveURL('http://localhost:3000/admin/collections/users')
-    const listViewArtifact = page.locator('h1', { hasText: 'Users' }).first()
+    const listViewArtifact = page.locator('h1', { hasText: /Users|Utilisateurs/ }).first()
     await expect(listViewArtifact).toBeVisible()
   })
 

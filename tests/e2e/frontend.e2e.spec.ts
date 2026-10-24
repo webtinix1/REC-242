@@ -1,20 +1,19 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 
-test.describe('Frontend', () => {
-  let page: Page
-
-  test.beforeAll(async ({ browser }, testInfo) => {
-    const context = await browser.newContext()
-    page = await context.newPage()
+test.describe('Site public', () => {
+  test("la page d'accueil répond en français", async ({ page }) => {
+    await page.goto('http://localhost:3000')
+    await expect(page).toHaveTitle(/REC 242/)
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
+    await expect(page.locator('h1').first()).toHaveText('REC 242')
   })
 
-  test('can go on homepage', async ({ page }) => {
-    await page.goto('http://localhost:3000')
-
-    await expect(page).toHaveTitle(/Payload Blank Template/)
-
-    const heading = page.locator('h1').first()
-
-    await expect(heading).toHaveText('Welcome to your new project.')
+  test('la planche de composants charge les styles de la maquette', async ({ page }) => {
+    await page.goto('http://localhost:3000/composants')
+    await expect(page.locator('h1')).toHaveText('Composants')
+    const bg = await page.locator('.rec-btn--primary').first().evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).toBe('rgb(11, 94, 50)')
+    const font = await page.locator('h1').evaluate(() => getComputedStyle(document.body).fontFamily)
+    expect(font).toContain('Inter')
   })
 })

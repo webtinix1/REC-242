@@ -1,0 +1,386 @@
+{
+ "utilisateurs": [
+  {
+   "nom": "Webtinix (maintenance)",
+   "role": "Super administrateur",
+   "fa": "Il y a 3 jours",
+   "st": "Actif",
+   "photo": ""
+  },
+  {
+   "nom": "Ange Mouandza",
+   "role": "Super administrateur",
+   "fa": "Hier, 19:12",
+   "st": "Actif",
+   "photo": "design/images/personnes/ange-mouandza.webp"
+  },
+  {
+   "nom": "Eve",
+   "role": "Administrateur",
+   "fa": "Aujourd’hui, 09:40",
+   "st": "Actif",
+   "photo": "design/images/personnes/eve.webp"
+  },
+  {
+   "nom": "Gilles Oniangue",
+   "role": "Responsable membres",
+   "fa": "Aujourd’hui, 08:15",
+   "st": "Actif",
+   "photo": "design/images/personnes/gilles-oniangue.webp"
+  },
+  {
+   "nom": "Béryl Bobanda",
+   "role": "Responsable membres",
+   "fa": "Aujourd’hui, 08:02",
+   "st": "Actif",
+   "photo": "design/images/personnes/beryl-bobanda.webp"
+  },
+  {
+   "nom": "Yohan Dinga",
+   "role": "Éditeur",
+   "fa": "Hier, 17:30",
+   "st": "Actif",
+   "photo": "design/images/personnes/yohan-dinga.webp"
+  },
+  {
+   "nom": "Lilia Kongo",
+   "role": "Éditeur",
+   "fa": "Il y a 4 jours",
+   "st": "Actif",
+   "photo": "design/images/personnes/lilia-kongo.webp"
+  },
+  {
+   "nom": "Pathurel Nkoua Ngassemo",
+   "role": "Responsable événements",
+   "fa": "Aujourd’hui, 10:05",
+   "st": "Actif",
+   "photo": "design/images/personnes/pathurel-nkoua-ngassemo.webp"
+  },
+  {
+   "nom": "Georges Mfouli",
+   "role": "Administrateur",
+   "fa": "Jamais",
+   "st": "Invitation envoyée",
+   "photo": "design/images/personnes/georges-mfouli.webp"
+  }
+ ],
+ "roles": [
+  {
+   "label": "Super administrateur"
+  },
+  {
+   "label": "Administrateur"
+  },
+  {
+   "label": "Éditeur"
+  },
+  {
+   "label": "Responsable événements"
+  },
+  {
+   "label": "Responsable membres"
+  },
+  {
+   "label": "Trésorier"
+  }
+ ],
+ "matrice": [
+  {
+   "d": "Pages et menus",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "◐"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Actualités",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "◐"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Événements et inscrits",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "○"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Candidatures",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "○"
+    }
+   ]
+  },
+  {
+   "d": "Fiches membres",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "○"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "○"
+    }
+   ]
+  },
+  {
+   "d": "Exports de données personnelles",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "◐"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "◐"
+    }
+   ]
+  },
+  {
+   "d": "Opportunités",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Cotisations et paiements",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "○"
+    },
+    {
+     "v": "●"
+    }
+   ]
+  },
+  {
+   "d": "Utilisateurs et rôles",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "○"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Paramètres et SEO",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "●"
+    },
+    {
+     "v": "◐"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  },
+  {
+   "d": "Journal des actions",
+   "cells": [
+    {
+     "v": "●"
+    },
+    {
+     "v": "○"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    },
+    {
+     "v": "·"
+    }
+   ]
+  }
+ ],
+ "journal": [
+  {
+   "d": "21 oct. 2026, 14:02",
+   "who": "Béryl Bobanda",
+   "a": "A validé la candidature C-0039",
+   "ip": "Brazzaville"
+  },
+  {
+   "d": "21 oct. 2026, 11:40",
+   "who": "Yohan Dinga",
+   "a": "A programmé « Communiqué : constitution de REC 242 »",
+   "ip": "Brazzaville"
+  },
+  {
+   "d": "20 oct. 2026, 17:15",
+   "who": "Pathurel Nkoua Ngassemo",
+   "a": "A exporté la liste des inscrits (Afterwork)",
+   "ip": "Brazzaville"
+  },
+  {
+   "d": "20 oct. 2026, 09:12",
+   "who": "Ange Mouandza",
+   "a": "A refusé la candidature C-0037 (motif renseigné)",
+   "ip": "Brazzaville"
+  },
+  {
+   "d": "19 oct. 2026, 16:30",
+   "who": "Super administrateur",
+   "a": "A modifié le lien du groupe WhatsApp des membres",
+   "ip": "Brazzaville"
+  }
+ ],
+ "emails": [
+  "Confirmation de candidature",
+  "Complément demandé",
+  "Bienvenue et activation",
+  "Refus motivé",
+  "Confirmation d’inscription",
+  "Rappel la veille",
+  "Relance de cotisation",
+  "Reçu de paiement",
+  "Demande à un expert",
+  "Session et sécurité du compte"
+ ]
+}

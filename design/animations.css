@@ -1,0 +1,385 @@
+/* REC 242 · Direction B · Le Cercle · langage de mouvement (oct. 2026, Webtinix)
+   Vivant et chaleureux : les petites choses rebondissent, les grandes se posent.
+   Signature : tout s'ouvre depuis un cercle (photos, fonds, disques de chiffres).
+   Règles : aucun état « avant » hors de [data-motion="on"] … :not([data-m-in]) ;
+   entrées en @keyframes (remplissage backwards) pour qu'aucune propriété ne reste à la fin ;
+   effets liés au défilement neutres à --p = .5 et aux extrémités (enveloppe). */
+
+/* ---------- Métronome ---------- */
+.sb{
+  --mb-spring:cubic-bezier(.34,1.56,.64,1);   /* petits éléments : disques, pastilles, boutons */
+  --mb-bounce:cubic-bezier(.34,1.3,.64,1);    /* mots, cartes : rebond léger */
+  --mb-soft:cubic-bezier(.22,1,.36,1);        /* grandes surfaces : photos, fonds */
+  --mb-step:90ms;                             /* pas d'une séquence (data-m-d) */
+  --mb-cas:70ms;                              /* pas d'une cascade (--i) */
+  --mb-amp:1;                                 /* amplitude des déplacements */
+  --mb-par:1;                                 /* amplitude de la parallaxe */
+}
+@container site (max-width: 760px){
+  .sb > *{--mb-amp:.6;--mb-par:0;--mb-cas:55ms}
+}
+.sb [data-m-d="1"]{--d:1}.sb [data-m-d="2"]{--d:2}.sb [data-m-d="3"]{--d:3}.sb [data-m-d="4"]{--d:4}
+.sb [data-m-d="5"]{--d:5}.sb [data-m-d="6"]{--d:6}.sb [data-m-d="7"]{--d:7}.sb [data-m-d="8"]{--d:8}
+.sb [data-m-d="9"]{--d:9}.sb [data-m-d="10"]{--d:10}
+
+/* ---------- Bouton du pied de page (seul ajout visible) ---------- */
+.sb .m-toggle{display:inline;background:none;border:0;padding:0;margin:0;font:inherit;font-size:13px;line-height:inherit;color:#cfe5d8;cursor:pointer;position:relative;text-decoration:underline dotted rgba(207,229,216,.6);text-underline-offset:3px}
+.sb .m-toggle::after{content:"";position:absolute;inset:-14px -8px}
+/* sur grand écran, le bouton se pose juste au-dessus du filet de la ligne du bas, aligné à droite, sans déplacer les liens */
+.sb .foot-bottom{position:relative}
+.sb .foot-bottom .m-toggle{position:absolute;right:0;bottom:calc(100% + 8px);line-height:20px}
+@container site (max-width: 760px){ .sb .foot-bottom .m-toggle{position:relative;right:auto;top:auto} }
+.sb .m-toggle:hover{color:#fff}
+.sb .m-toggle .m-off{display:none}
+html:not([data-motion="on"]) .sb .m-toggle .m-on{display:none}
+html:not([data-motion="on"]) .sb .m-toggle .m-off{display:inline}
+
+/* ---------- Focus clavier : toujours très visible, partout ---------- */
+.sb :where(a,button,summary,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--focus-ring,#0b5e32);outline-offset:3px}
+.sb .m-toggle:focus-visible{outline:3px solid var(--gold-300,#fcd27a);outline-offset:4px;border-radius:4px}
+
+@media screen and (prefers-reduced-motion: no-preference){
+
+/* =========================================================
+   1. ENTRÉES (déclenchées par data-m-in)
+   ========================================================= */
+
+/* rise : bloc de texte qui monte et se pose */
+[data-motion="on"] .sb [data-m="rise"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="rise"][data-m-in]{animation:mb-rise 680ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-rise{from{opacity:0;transform:translateY(calc(24px * var(--mb-amp,1)))}}
+
+/* pop : petit élément rond qui éclot avec un rebond */
+[data-motion="on"] .sb [data-m="pop"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="pop"][data-m-in]{animation:mb-pop 620ms var(--mb-spring) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-pop{from{opacity:0;transform:scale(.35) rotate(-14deg)}40%{opacity:1}}
+
+/* lift : panneau ou carte qui se soulève depuis le bas (chevauchements) */
+[data-motion="on"] .sb [data-m="lift"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="lift"][data-m-in]{animation:mb-lift 760ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-lift{from{opacity:0;transform:translateY(calc(56px * var(--mb-amp,1))) scale(.96)}50%{opacity:1}}
+
+/* words : titre révélé mot par mot, chaque mot remonte de derrière sa ligne */
+[data-motion="on"] .sb [data-m="words"] .mw{display:inline-block}
+[data-motion="on"] .sb [data-m="words"] .mw > span{display:inline-block}
+[data-motion="on"] .sb [data-m="words"]:not([data-m-in]) .mw{clip-path:inset(-30% -12% -14% -12%)}
+[data-motion="on"] .sb [data-m="words"]:not([data-m-in]) .mw > span{transform:translateY(118%)}
+[data-motion="on"] .sb [data-m="words"][data-m-in] .mw{animation:mb-mask calc(var(--d,0) * var(--mb-step) + var(--i,0) * 60ms + 760ms) linear backwards}
+[data-motion="on"] .sb [data-m="words"][data-m-in] .mw > span{transform-origin:0 100%;animation:mb-word 720ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step) + var(--i,0) * 60ms) backwards}
+@keyframes mb-mask{from,to{clip-path:inset(-30% -12% -14% -12%)}}
+@keyframes mb-word{from{transform:translateY(118%) rotate(7deg)}}
+
+/* cascade : enfants qui montent l'un après l'autre */
+[data-motion="on"] .sb [data-m="cascade"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="cascade"][data-m-in] > *{animation:mb-rise 660ms var(--mb-soft) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 10) * var(--mb-cas)) backwards}
+
+/* pops : enfants qui éclosent en cascade rapide (puces, logos, pastilles) */
+[data-motion="on"] .sb [data-m="pops"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="pops"][data-m-in] > *{animation:mb-pop2 560ms var(--mb-spring) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 14) * 45ms) backwards}
+@keyframes mb-pop2{from{opacity:0;transform:scale(.6) translateY(10px)}50%{opacity:1}}
+
+/* deal : cartes distribuées en alternance, gauche puis droite, légère rotation */
+[data-motion="on"] .sb [data-m="deal"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="deal"][data-m-in] > *{animation:mb-deal-r 720ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 8) * 90ms) backwards}
+[data-motion="on"] .sb [data-m="deal"][data-m-in] > :nth-child(odd){animation-name:mb-deal-l}
+@keyframes mb-deal-l{from{opacity:0;transform:translate(calc(-40px * var(--mb-amp,1)), 24px) rotate(-2deg)}55%{opacity:1}}
+@keyframes mb-deal-r{from{opacity:0;transform:translate(calc(40px * var(--mb-amp,1)), 24px) rotate(2deg)}55%{opacity:1}}
+/* deal-side : la colonne secondaire arrive de la droite (agenda, actualités) */
+[data-motion="on"] .sb [data-m="deal-side"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="deal-side"][data-m-in] > *{animation:mb-deal-r 720ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step) + var(--i,0) * 110ms) backwards}
+
+/* gather : les visages arrivent écartés et se regroupent */
+[data-motion="on"] .sb [data-m="gather"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="gather"][data-m-in] > *{--mb-g:calc(var(--i,0) - 3.5);animation:mb-gather 820ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 10) * 40ms) backwards}
+@keyframes mb-gather{from{opacity:0;transform:translateX(calc(var(--mb-g) * 22px * var(--mb-amp,1))) scale(.7)}45%{opacity:1}}
+
+/* Règle d'or : l'élément observé n'est jamais masqué par clip-path ou réduit à zéro avant son entrée
+   (l'IntersectionObserver ne le verrait pas) ; seul opacity:0 sert d'état « avant », le masque vit dans l'animation. */
+/* iris : la photo s'ouvre depuis un cercle, le cadrage se desserre puis se pose */
+[data-motion="on"] .sb [data-m="iris"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="iris"][data-m-in]{animation:mb-iris 1050ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-iris{
+  from{clip-path:circle(var(--ir0,9%) at var(--ix,50%) var(--iy,50%));transform:scale(1.1)}
+  to{clip-path:circle(150% at var(--ix,50%) var(--iy,50%));transform:scale(1)}}
+/* iris sur une figure : c'est l'image qui se desserre, pas le cadre */
+[data-motion="on"] .sb figure[data-m="iris"][data-m-in]{animation-name:mb-iris-f}
+[data-motion="on"] .sb figure[data-m="iris"][data-m-in] > img{animation:mb-unzoom 1200ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-iris-f{
+  from{clip-path:circle(var(--ir0,9%) at var(--ix,50%) var(--iy,50%))}
+  to{clip-path:circle(150% at var(--ix,50%) var(--iy,50%))}}
+@keyframes mb-unzoom{from{transform:scale(1.1)}}
+/* points d'ouverture selon la composition : le sujet de la photo est côté clair du voile */
+.sb .pband > img[data-m="iris"]{--ix:74%;--iy:42%}
+.sb .pband-r > img[data-m="iris"]{--ix:26%}
+.sb .pband-b > img[data-m="iris"]{--iy:34%}
+@container site (max-width: 760px){ .sb .pband > img[data-m="iris"]{--ix:62%;--iy:30%} }
+
+/* faces : la mosaïque de visages s'ouvre en cascade, cercle après cercle */
+[data-motion="on"] .sb [data-m="faces"]:not([data-m-in]) > *{clip-path:circle(0% at 50% 50%)}
+[data-motion="on"] .sb [data-m="faces"][data-m-in] > *{animation:mb-iris-f 980ms var(--mb-soft) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 8) * 130ms) backwards}
+[data-motion="on"] .sb [data-m="faces"][data-m-in] > * > img{animation:mb-unzoom 1250ms var(--mb-soft) calc(var(--d,0) * var(--mb-step) + min(var(--i,0), 8) * 130ms) backwards}
+
+/* bloom : passage clair → sombre, le fond grandit comme un cercle depuis le bord haut */
+[data-motion="on"] .sb [data-m="bloom"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="bloom"][data-m-in]{animation:mb-bloom 1150ms var(--mb-soft) backwards}
+@keyframes mb-bloom{from{clip-path:circle(6% at 50% 0%)}to{clip-path:circle(150% at 50% 0%)}}
+/* bloom-l : variante depuis le coin bas gauche (bandeaux or) */
+[data-motion="on"] .sb [data-m="bloom-l"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="bloom-l"][data-m-in]{animation:mb-bloom-l 1100ms var(--mb-soft) backwards}
+@keyframes mb-bloom-l{from{clip-path:circle(4% at 0% 100%)}to{clip-path:circle(160% at 0% 100%)}}
+
+/* le graphe (.net::before) et le halo sont centrés par translateY(-50%) : origine en haut-centre pour tourner sur place */
+[data-motion="on"] .sb .net[data-m-scrub]::before{transform-origin:50% 0}
+/* head : tête de page sombre, le graphe réseau pivote et se pose, les anneaux se propagent */
+[data-motion="on"] .sb [data-m="head"].net[data-m-in]::before,
+[data-motion="on"] .sb [data-m="bloom"].net[data-m-in]::before,
+[data-motion="on"] .sb [data-m="net"].net[data-m-in]::before{animation:mb-net 1400ms var(--mb-soft) 120ms backwards}
+[data-motion="on"] .sb [data-m="head"].net:not([data-m-in])::before,
+[data-motion="on"] .sb [data-m="bloom"].net:not([data-m-in])::before,
+[data-motion="on"] .sb [data-m="net"].net:not([data-m-in])::before{opacity:0}
+@keyframes mb-net{from{opacity:0;transform:translateY(-50%) rotate(-28deg) scale(.82)}}
+[data-motion="on"] .sb [data-m="head"].rings[data-m-in]::after,
+[data-motion="on"] .sb [data-m="ripple"].rings[data-m-in]::after,
+[data-motion="on"] .sb [data-m="bloom-l"].rings[data-m-in]::after{animation:mb-rings 1500ms var(--mb-soft) 150ms backwards}
+[data-motion="on"] .sb [data-m="head"].rings:not([data-m-in])::after,
+[data-motion="on"] .sb [data-m="ripple"].rings:not([data-m-in])::after,
+[data-motion="on"] .sb [data-m="bloom-l"].rings:not([data-m-in])::after{opacity:0}
+@keyframes mb-rings{from{opacity:0;scale:.25}35%{opacity:1}}
+/* trame de points : elle se tisse de gauche à droite */
+[data-motion="on"] .sb [data-m="net"].trame:not([data-m-in])::after,
+[data-motion="on"] .sb [data-m="head"].trame:not([data-m-in])::after{clip-path:inset(0 100% 0 0)}
+[data-motion="on"] .sb [data-m="net"].trame[data-m-in]::after,
+[data-motion="on"] .sb [data-m="head"].trame[data-m-in]::after{animation:mb-weave 1300ms var(--mb-soft) 100ms backwards}
+@keyframes mb-weave{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+/* halo du héros d'accueil. Le halo est masqué sur mobile (display) : une animation posée sur lui
+   repartirait à chaque bascule de mise en page. On anime donc deux propriétés enregistrées
+   portées par la section (--mb-h pour le cercle, --mb-t pour les pastilles), le halo ne fait que les lire. */
+@property --mb-h{syntax:"<number>";inherits:true;initial-value:1}
+@property --mb-t{syntax:"<number>";inherits:true;initial-value:1}
+[data-motion="on"] .sb [data-m="hero"]:not([data-m-in]){--mb-h:0;--mb-t:0}
+[data-motion="on"] .sb [data-m="hero"][data-m-in]{animation:mb-hv 1100ms var(--mb-bounce) 120ms backwards,mb-tv 900ms linear 480ms backwards}
+@keyframes mb-hv{from{--mb-h:0}to{--mb-h:1}}
+@keyframes mb-tv{from{--mb-t:0}to{--mb-t:1}}
+[data-motion="on"] .sb [data-m="hero"] .halo{opacity:min(1, var(--mb-h) * 2.5);rotate:calc((1 - var(--mb-h)) * -75deg);scale:calc(.72 + .28 * var(--mb-h));transform-origin:50% 0}
+[data-motion="on"] .sb [data-m="hero"] .halo > i{scale:clamp(0, (var(--mb-t) - var(--mb-k0,0)) * 2.6, 1)}
+[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(2){--mb-k0:.14}
+[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(3){--mb-k0:.28}
+[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(4){--mb-k0:.42}
+
+/* fill : disques de chiffres qui se remplissent depuis le centre, onde autour */
+[data-motion="on"] .sb [data-m="fill"]:not([data-m-in]) > * > b{opacity:0}
+[data-motion="on"] .sb [data-m="fill"]:not([data-m-in]) > * > span{opacity:0}
+[data-motion="on"] .sb [data-m="fill"][data-m-in] > * > b{position:relative;animation:mb-disc 900ms var(--mb-bounce) calc(var(--d,0) * var(--mb-step) + var(--i,0) * 140ms) backwards}
+[data-motion="on"] .sb [data-m="fill"][data-m-in] > * > b::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--green-700,#0b5e32);opacity:0;pointer-events:none;animation:mb-wave 1100ms var(--mb-soft) calc(var(--d,0) * var(--mb-step) + var(--i,0) * 140ms + 380ms) backwards}
+[data-motion="on"] .sb [data-m="fill"][data-m-in] > * > span{animation:mb-rise 640ms var(--mb-soft) calc(var(--d,0) * var(--mb-step) + var(--i,0) * 140ms + 260ms) backwards}
+@keyframes mb-disc{from{clip-path:circle(0% at 50% 50%);transform:scale(.7)}to{clip-path:circle(75% at 50% 50%);transform:scale(1)}}
+@keyframes mb-wave{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.45)}}
+
+/* verbs : trois verbes géants, la pastille rebondit puis le mot monte */
+[data-motion="on"] .sb [data-m="verbs"]:not([data-m-in]) > * > *{opacity:0}
+[data-motion="on"] .sb [data-m="verbs"][data-m-in] > * > .verb-n{animation:mb-pop 620ms var(--mb-spring) calc(var(--i,0) * 160ms) backwards}
+[data-motion="on"] .sb [data-m="verbs"][data-m-in] > * > :not(.verb-n){animation:mb-verb 780ms var(--mb-bounce) calc(var(--i,0) * 160ms + 120ms) backwards}
+[data-motion="on"] .sb [data-m="verbs"][data-m-in] > * > :not(.verb-n):last-child{animation-delay:calc(var(--i,0) * 160ms + 240ms)}
+@keyframes mb-verb{from{opacity:0;transform:translateY(calc(40px * var(--mb-amp,1)))}}
+
+/* letters : grandes lettres ou numéros qui basculent en place */
+[data-motion="on"] .sb [data-m="letters"]:not([data-m-in]) > * > *{opacity:0}
+[data-motion="on"] .sb [data-m="letters"][data-m-in] > * > :first-child{display:inline-block;transform-origin:50% 80%;animation:mb-letter 700ms var(--mb-spring) calc(min(var(--i,0), 8) * 100ms) backwards}
+[data-motion="on"] .sb [data-m="letters"][data-m-in] > * > :not(:first-child){animation:mb-rise 640ms var(--mb-soft) calc(min(var(--i,0), 8) * 100ms + 140ms) backwards}
+@keyframes mb-letter{from{opacity:0;transform:scale(.4) rotate(-24deg)}45%{opacity:1}}
+
+/* nodes : cartes avec pastille (piliers, avantages, commissions) : la carte monte, la pastille rebondit */
+[data-motion="on"] .sb [data-m="nodes"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="nodes"][data-m-in] > *{animation:mb-rise 700ms var(--mb-soft) calc(min(var(--i,0), 10) * 85ms) backwards}
+[data-motion="on"] .sb [data-m="nodes"][data-m-in] > * > :is(.av,.adv-dot,.advx-dot,.letter){animation:mb-pop 640ms var(--mb-spring) calc(min(var(--i,0), 10) * 85ms + 200ms) backwards}
+
+/* line : parcours et organigrammes, le fil se trace puis les étapes s'allument */
+[data-motion="on"] .sb [data-m="line"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="line"][data-m-in] > *{animation:mb-rise 640ms var(--mb-soft) calc(min(var(--i,0), 8) * 140ms + 80ms) backwards}
+[data-motion="on"] .sb [data-m="line"][data-m-in] > * > :is(.n,.orbit-n){animation:mb-pop 640ms var(--mb-spring) calc(min(var(--i,0), 8) * 140ms) backwards}
+/* le sens du fil change sur mobile (vertical) : on ne change que des variables, jamais le nom de l'animation */
+.sb [data-m="line"]{--mb-lx:0;--mb-ly:1;--mb-lo:0 50%}
+@container site (max-width: 760px){ .sb [data-m="line"]{--mb-lx:1;--mb-ly:0;--mb-lo:50% 0} }
+[data-motion="on"] .sb [data-m="line"][data-m-in] > *::after{transform-origin:var(--mb-lo);animation:mb-line 520ms var(--mb-soft) calc(min(var(--i,0), 8) * 140ms + 260ms) backwards}
+[data-motion="on"] .sb [data-m="line"].orbit[data-m-in]::before{transform-origin:var(--mb-lo);animation:mb-line 1100ms var(--mb-soft) backwards}
+@keyframes mb-line{from{transform:scale(var(--mb-lx),var(--mb-ly))}}
+@keyframes mb-trace{from{transform:scaleX(0)}}
+@keyframes mb-trace-y{from{transform:scaleY(0)}}
+
+/* org : organigramme, la fondatrice puis le fil puis les pôles */
+[data-motion="on"] .sb [data-m="org"]:not([data-m-in]) > *{opacity:0}
+[data-motion="on"] .sb [data-m="org"][data-m-in] > .org-top{animation:mb-pop 640ms var(--mb-spring) backwards}
+[data-motion="on"] .sb [data-m="org"][data-m-in] > .org-line{transform-origin:50% 0;animation:mb-trace-y 420ms var(--mb-soft) 300ms backwards}
+[data-motion="on"] .sb [data-m="org"][data-m-in] > .cdir-poles{animation:mb-fade 200ms linear 600ms backwards}
+[data-motion="on"] .sb [data-m="org"]:not([data-m-in]) > .cdir-poles > *{opacity:0}
+[data-motion="on"] .sb [data-m="org"][data-m-in] > .cdir-poles > *{animation:mb-rise 640ms var(--mb-bounce) calc(620ms + var(--i,0) * 90ms) backwards}
+@keyframes mb-fade{from{opacity:0}}
+
+/* graph : carte des antennes, les liens partent du siège, puis les villes s'allument */
+[data-motion="on"] .sb [data-m="graph"]:not([data-m-in]) svg > *{opacity:0}
+[data-motion="on"] .sb [data-m="graph"] svg *{transform-box:view-box}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:first-child > path{transform-origin:300px 300px;animation:mb-link 760ms var(--mb-soft) backwards}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:first-child > path:nth-child(2){animation-delay:90ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:first-child > path:nth-child(3){animation-delay:180ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:first-child > path:nth-child(4){animation-delay:270ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:first-child > path:nth-child(5){animation-delay:360ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > circle{transform-box:fill-box;transform-origin:50% 50%;animation:mb-node 640ms var(--mb-spring) backwards}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > circle:nth-of-type(1){animation:mb-wave2 1300ms var(--mb-soft) 100ms backwards}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > circle:nth-of-type(3){animation-delay:780ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(2) > circle{transform-box:fill-box;transform-origin:50% 50%;animation:mb-node 600ms var(--mb-spring) backwards}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(2) > circle:nth-child(1){animation-delay:520ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(2) > circle:nth-child(2){animation-delay:600ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(2) > circle:nth-child(3){animation-delay:680ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(2) > circle:nth-child(4){animation-delay:760ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > circle:nth-of-type(2){animation-delay:0ms}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > g:nth-of-type(3){animation:mb-fade 600ms linear 900ms backwards}
+@keyframes mb-link{from{transform:scale(0)}}
+@keyframes mb-node{from{opacity:0;transform:scale(0)}}
+@keyframes mb-wave2{from{opacity:0;transform:scale(.3)}}
+[data-motion="on"] .sb [data-m="graph"][data-m-in] svg > circle:nth-of-type(1){transform-box:fill-box;transform-origin:50% 50%}
+
+/* eco : le cercle de l'écosystème, le cœur éclot puis les acteurs rejoignent l'orbite depuis le centre */
+[data-motion="on"] .sb [data-m="eco"]:not([data-m-in]) > *,
+[data-motion="on"] .sb [data-m="eco"]:not([data-m-in])::before{opacity:0}
+[data-motion="on"] .sb [data-m="eco"][data-m-in]::before{animation:mb-spin 1100ms var(--mb-soft) backwards}
+@keyframes mb-spin{from{opacity:0;transform:rotate(-75deg) scale(.72)}40%{opacity:1}}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .eco-core{animation:mb-pop 700ms var(--mb-spring) 120ms backwards}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .eco-node{animation:mb-orbit 820ms var(--mb-bounce) 360ms backwards}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .n1{--ox:0%;--oy:117%}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .n2{--ox:-117%;--oy:0%;animation-delay:450ms}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .n3{--ox:0%;--oy:-117%;animation-delay:540ms}
+[data-motion="on"] .sb [data-m="eco"][data-m-in] > .n4{--ox:117%;--oy:0%;animation-delay:630ms}
+@keyframes mb-orbit{from{opacity:0;transform:translate(var(--ox),var(--oy)) scale(.3)}40%{opacity:1}}
+
+/* disc : grand disque (404, fondatrice, validation, date) qui rebondit, onde autour */
+[data-motion="on"] .sb [data-m="disc"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="disc"][data-m-in]{animation:mb-bigdisc 900ms var(--mb-spring) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-bigdisc{from{opacity:0;transform:scale(.3) rotate(-30deg)}35%{opacity:1}}
+
+/* draw : tracé progressif d'un trait SVG (coche de validation) */
+[data-motion="on"] .sb [data-m-draw]:not([data-m-in]){stroke-dasharray:var(--len,40);stroke-dashoffset:var(--len,40)}
+[data-motion="on"] .sb [data-m-draw][data-m-in]{animation:mb-draw 620ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-draw{from{stroke-dasharray:var(--len,40);stroke-dashoffset:var(--len,40)}to{stroke-dasharray:var(--len,40);stroke-dashoffset:0}}
+
+/* wipe : un grand numéro qui s'écrit de gauche à droite (WhatsApp, dossier) */
+[data-motion="on"] .sb [data-m="wipe"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="wipe"][data-m-in]{animation:mb-wipe 1000ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+@keyframes mb-wipe{from{clip-path:inset(-10% 100% -10% 0)}to{clip-path:inset(-10% 0 -10% 0)}}
+
+/* grow : la jauge de progression se remplit depuis la gauche */
+[data-motion="on"] .sb [data-m="grow"][data-m-in] > span{transform-origin:0 50%;animation:mb-trace 1000ms var(--mb-soft) calc(var(--d,0) * var(--mb-step)) backwards}
+
+/* table : le tableau se pose, ses lignes défilent */
+[data-motion="on"] .sb [data-m="table"]:not([data-m-in]){opacity:0}
+[data-motion="on"] .sb [data-m="table"][data-m-in]{animation:mb-rise 700ms var(--mb-soft) backwards}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(-n+10){animation:mb-fade 420ms linear backwards}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(2){animation-delay:60ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(3){animation-delay:120ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(4){animation-delay:180ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(5){animation-delay:240ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(6){animation-delay:300ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(7){animation-delay:360ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody > tr:nth-child(8){animation-delay:420ms}
+[data-motion="on"] .sb [data-m="table"][data-m-in] tbody .mark{animation:mb-pop 520ms var(--mb-spring) 380ms backwards}
+
+/* =========================================================
+   2. DÉFILEMENT (data-m-scrub / data-m-parallax, --p de 0 à 1)
+   Enveloppe : effet nul à --p = 0, .5 et 1, pleine amplitude entre .125 et .875.
+   ========================================================= */
+[data-motion="on"] .sb :is([data-m-scrub],[data-m-parallax]){
+  --mb-k:calc((var(--p,.5) - .5) * min(1, var(--p,.5) * 8, (1 - var(--p,.5)) * 8));
+}
+/* drift : la photo glisse plus lentement que la page, le cadrage s'élargit en s'éloignant du centre */
+[data-motion="on"] .sb [data-m-parallax]{
+  translate:0 calc(var(--mb-k,0) * 12% * var(--mb-par,1));
+  scale:calc(1 + max(var(--mb-k,0), -1 * var(--mb-k,0)) * .24 * var(--mb-par,1));
+}
+/* le graphe réseau des aplats sombres tourne lentement avec le défilement */
+[data-motion="on"] .sb .net[data-m-scrub]::before{rotate:calc(var(--mb-k,0) * 46deg)}
+/* les anneaux concentriques respirent */
+[data-motion="on"] .sb .rings[data-m-scrub]::after{scale:calc(1 + var(--mb-k,0) * .3)}
+/* les cercles en pointillés tournent */
+[data-motion="on"] .sb .eco-orbit[data-m-scrub]::before{rotate:calc(var(--mb-k,0) * 140deg)}
+[data-motion="on"] .sb .mosaic-t[data-m-scrub]::after{rotate:calc(var(--mb-k,0) * 90deg);translate:calc(var(--mb-k,0) * -60px) calc(var(--mb-k,0) * -60px)}
+
+/* =========================================================
+   3. MICRO-INTERACTIONS (n'altèrent pas l'état de repos)
+   ========================================================= */
+[data-motion="on"] .sb .rec-btn{transition:background-color .2s,color .2s,box-shadow .35s var(--mb-soft),transform .35s var(--mb-spring)}
+[data-motion="on"] .sb .rec-btn:hover{transform:translateY(-2px);box-shadow:0 0 0 5px rgba(251,181,23,.22)}
+[data-motion="on"] .sb .rec-btn--primary:hover{box-shadow:0 0 0 5px rgba(11,94,50,.16)}
+[data-motion="on"] .sb .dark .rec-btn:hover,[data-motion="on"] .sb .pband .rec-btn:hover{box-shadow:0 0 0 5px rgba(255,255,255,.16)}
+[data-motion="on"] .sb .rec-btn:active{transform:translateY(0) scale(.96);transition-duration:.08s}
+
+/* liens : le soulignement se dessine depuis la gauche */
+[data-motion="on"] .sb .linkbtn{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 calc(100% - 3px);background-size:0 2px;transition:background-size .38s var(--mb-soft),transform .3s var(--mb-spring)}
+[data-motion="on"] .sb .linkbtn:hover{text-decoration:none;background-size:100% 2px}
+[data-motion="on"] .sb .bg-gold .linkbtn:hover{text-decoration:underline}
+[data-motion="on"] .sb .foot button,[data-motion="on"] .sb .foot a.foot-a{transition:transform .3s var(--mb-spring),color .2s}
+[data-motion="on"] .sb .foot-grid button:hover,[data-motion="on"] .sb .foot a.foot-a:hover{transform:translateX(4px);color:#fcd27a}
+
+/* cartes : elles se soulèvent, la pastille ou la date tourne, la photo respire */
+[data-motion="on"] .sb :is(button.card,a.card,.catcard,.evx-side .card,.cdir-card,.opp){transition:transform .42s var(--mb-spring),box-shadow .42s var(--mb-soft),border-color .2s}
+[data-motion="on"] .sb :is(button.card,a.card,.catcard,.evx-side .card,.opp):hover{transform:translateY(-5px);box-shadow:0 18px 34px -20px rgba(3,38,26,.45)}
+[data-motion="on"] .sb :is(button.card,a.card,.catcard,.evx-side .card,.opp):active{transform:translateY(-1px) scale(.99);transition-duration:.1s}
+[data-motion="on"] .sb :is(.datedisc,.logo-tile,.av,.adv-dot,.letter,.orbit-n,.verb-n,.n){transition:transform .45s var(--mb-spring)}
+[data-motion="on"] .sb :is(button.card,a.card,.evx-main,.next,.cdir-card,.card):hover .datedisc{transform:rotate(-10deg) scale(1.06)}
+[data-motion="on"] .sb :is(button.card,a.card,.card,.partner-tile):hover .logo-tile{transform:scale(1.07)}
+[data-motion="on"] .sb :is(.cdir-mini,.cdir-card,.cdir-person,.pil-i,.person,.catcard):hover > .av,
+[data-motion="on"] .sb :is(.catcard):hover .letter,
+[data-motion="on"] .sb :is(.card,.advx-i):hover > :is(.adv-dot,.advx-dot){transform:scale(1.15)}
+[data-motion="on"] .sb :is(.verb,.orbit-item,.path-step):hover > :is(.verb-n,.orbit-n,.n){transform:scale(1.12) rotate(-8deg)}
+[data-motion="on"] .sb .ncover,[data-motion="on"] .sb .newsx-main .photo img,[data-motion="on"] .sb .phead-photo img,[data-motion="on"] .sb .mosaic img,[data-motion="on"] .sb .gal-x img{transition:transform .8s var(--mb-soft)}
+[data-motion="on"] .sb .card:hover .ncover,[data-motion="on"] .sb .newsx-main:hover .photo img,[data-motion="on"] .sb .mosaic figure:hover img,[data-motion="on"] .sb .gal-x figure:hover img{transform:scale(1.05)}
+[data-motion="on"] .sb .newsx-side button{transition:transform .35s var(--mb-spring)}
+[data-motion="on"] .sb .newsx-side button:hover{transform:translateX(6px)}
+
+/* navigation : la pastille active se pose au chargement, les autres réagissent au survol */
+[data-motion="on"] .sb .pill,[data-motion="on"] .sb .chip,[data-motion="on"] .sb .seg-b,[data-motion="on"] .sb .pg{transition:background-color .2s,color .2s,box-shadow .2s,transform .3s var(--mb-spring)}
+[data-motion="on"] .sb .pill:hover,[data-motion="on"] .sb button.chip:hover{transform:translateY(-1px)}
+[data-motion="on"] .sb .pill:active,[data-motion="on"] .sb button.chip:active,[data-motion="on"] .sb .seg-b:active,[data-motion="on"] .sb .pg:active{transform:scale(.94);transition-duration:.08s}
+/* (pas d'animation sur la barre de pastilles : elle est masquée sur mobile, une animation y repartirait à chaque bascule) */
+[data-motion="on"] .sb .subnav .chip.is-on{animation:mb-settle 560ms var(--mb-spring) 80ms backwards}
+@keyframes mb-settle{from{transform:scale(.8);box-shadow:0 0 0 0 rgba(11,94,50,0)}}
+[data-motion="on"] .sb .iconbtn{transition:transform .3s var(--mb-spring),background-color .2s}
+[data-motion="on"] .sb .iconbtn:hover svg{transform:rotate(-12deg) scale(1.08)}
+[data-motion="on"] .sb .iconbtn svg{transition:transform .35s var(--mb-spring)}
+[data-motion="on"] .sb details > summary{transition:color .2s}
+[data-motion="on"] .sb details[open] > p{animation:mb-rise 420ms var(--mb-soft) backwards}
+[data-motion="on"] .sb .tab{transition:transform .3s var(--mb-spring)}
+[data-motion="on"] .sb .tab:active{transform:scale(.92)}
+[data-motion="on"] .sb .tab-cta .tab-disc{transition:transform .4s var(--mb-spring)}
+[data-motion="on"] .sb .tab-cta:hover .tab-disc{transform:rotate(90deg)}
+
+/* menu mobile : la feuille monte, les liens arrivent en cascade */
+[data-motion="on"] .sb .sheet{animation:mb-sheet 460ms var(--mb-bounce) backwards}
+[data-motion="on"] .sb .sheet > *{animation:mb-sl 420ms var(--mb-soft) backwards}
+[data-motion="on"] .sb .sheet > :nth-child(1){animation-delay:60ms}
+[data-motion="on"] .sb .sheet > :nth-child(2){animation-delay:95ms}
+[data-motion="on"] .sb .sheet > :nth-child(3){animation-delay:130ms}
+[data-motion="on"] .sb .sheet > :nth-child(4){animation-delay:165ms}
+[data-motion="on"] .sb .sheet > :nth-child(5){animation-delay:200ms}
+[data-motion="on"] .sb .sheet > :nth-child(6){animation-delay:235ms}
+[data-motion="on"] .sb .sheet > :nth-child(7){animation-delay:270ms}
+[data-motion="on"] .sb .sheet > :nth-child(8){animation-delay:305ms}
+[data-motion="on"] .sb .sheet > :nth-child(9){animation-delay:340ms}
+[data-motion="on"] .sb .sheet > :nth-child(n+10){animation-delay:375ms}
+@keyframes mb-sheet{from{opacity:0;transform:translateY(40px) scale(.97)}}
+@keyframes mb-sl{from{opacity:0;transform:translateY(14px)}}
+[data-motion="on"] .sb .sheet .sl span{transition:transform .3s var(--mb-spring)}
+[data-motion="on"] .sb .sheet .sl:hover span{transform:translateX(5px)}
+
+} /* fin @media screen and (prefers-reduced-motion: no-preference) */
+
+/* Sécurité : préférence système « réduire les animations » */
+@media (prefers-reduced-motion: reduce){
+  .sb *,.sb *::before,.sb *::after{animation:none !important;transition:none !important}
+}
+/* Impression : rien de caché, rien d'animé */
+@media print{
+  .sb *,.sb *::before,.sb *::after{animation:none !important;transition:none !important}
+}
+
+/* Pendant une entrée latérale, un élément décalé ne doit jamais créer de défilement horizontal. */
+[data-motion="on"] .sb{overflow-x:clip}

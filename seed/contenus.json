@@ -1,0 +1,359 @@
+{
+ "partenaires": [
+  {
+   "n": 1,
+   "nom": "Khazad",
+   "logo": "design/images/logos-membres/khazad.png",
+   "type": "Partenaire numérique",
+   "d": "Outils numériques et accompagnement des membres dans leur présence en ligne."
+  },
+  {
+   "n": 2,
+   "nom": "Les Bretelles de Léon",
+   "logo": "design/images/logos-membres/les-bretelles-de-leon.png",
+   "type": "Partenaire artisanat",
+   "d": "Ateliers de savoir-faire et vitrine de l’artisanat congolais."
+  },
+  {
+   "n": 3,
+   "nom": "Hôpital Blanche Gomes",
+   "logo": "design/images/logos-membres/hopital-blanche-gomes.png",
+   "type": "Partenaire santé",
+   "d": "Journées de prévention et offre santé pour les salariés des membres."
+  },
+  {
+   "n": 4,
+   "nom": "Kimia Créations",
+   "logo": "design/images/logos-membres/kimia-creations.png",
+   "type": "Partenaire événementiel",
+   "d": "Habillage et décoration des rencontres du réseau."
+  },
+  {
+   "n": 5,
+   "nom": "3M-Partners & Conseils",
+   "logo": "design/images/logos-membres/3m-partners-conseils.png",
+   "type": "Partenaire conseil",
+   "d": "Permanences juridiques et fiscales pour la formalisation."
+  },
+  {
+   "n": 6,
+   "nom": "Mbongui Formation & RH",
+   "logo": "design/images/logos-membres/mbongui-formation-rh.png",
+   "type": "Partenaire formation",
+   "d": "Modules de formation pour dirigeants et salariés."
+  },
+  {
+   "n": 7,
+   "nom": "Fako Drop",
+   "logo": "design/images/logos-membres/fako-drop.png",
+   "type": "Partenaire logistique",
+   "d": "Livraison à tarif préférentiel entre membres."
+  }
+ ],
+ "documents": [
+  {
+   "t": "Statuts de l’association",
+   "r": "Textes officiels",
+   "v": "Public",
+   "ver": "v2",
+   "maj": "3 oct. 2026",
+   "dl": 186,
+   "cover": "design/images/documents/couverture-statuts.webp",
+   "vcls": "pill-ok"
+  },
+  {
+   "t": "Règlement intérieur",
+   "r": "Textes officiels",
+   "v": "Membres actifs",
+   "ver": "v2",
+   "maj": "3 oct. 2026",
+   "dl": 94,
+   "cover": "design/images/documents/couverture-reglement.webp",
+   "vcls": ""
+  },
+  {
+   "t": "Charte de l’adhérent",
+   "r": "Textes officiels",
+   "v": "Public",
+   "ver": "v1",
+   "maj": "3 oct. 2026",
+   "dl": 151,
+   "cover": "design/images/documents/couverture-charte.webp",
+   "vcls": "pill-ok"
+  },
+  {
+   "t": "Compte rendu du comité de direction",
+   "r": "Vie du réseau",
+   "v": "Membres actifs",
+   "ver": "v1",
+   "maj": "14 oct. 2026",
+   "dl": 63,
+   "cover": "design/images/documents/couverture-compte-rendu.webp",
+   "vcls": ""
+  },
+  {
+   "t": "Support de l’atelier Formalisation",
+   "r": "Ateliers et formations",
+   "v": "Inscrits à un événement",
+   "ver": "v1",
+   "maj": "18 oct. 2026",
+   "dl": 25,
+   "cover": "design/images/documents/couverture-support.webp",
+   "vcls": ""
+  },
+  {
+   "t": "Fiche institutionnelle",
+   "r": "Presse",
+   "v": "Public",
+   "ver": "v3",
+   "maj": "20 oct. 2026",
+   "dl": 41,
+   "cover": "design/images/documents/couverture-fiche-institutionnelle.webp",
+   "vcls": "pill-ok"
+  },
+  {
+   "t": "Biographies du comité de direction",
+   "r": "Presse",
+   "v": "Public",
+   "ver": "v1",
+   "maj": "20 oct. 2026",
+   "dl": 17,
+   "cover": "design/images/documents/couverture-biographies.webp",
+   "vcls": "pill-ok"
+  }
+ ],
+ "chiffres_cles": [
+  {
+   "l": "Membres actifs",
+   "v": "248",
+   "set": true,
+   "shown": "248"
+  },
+  {
+   "l": "Entreprises représentées",
+   "v": "173",
+   "set": true,
+   "shown": "173"
+  },
+  {
+   "l": "Secteurs",
+   "v": "18",
+   "set": true,
+   "shown": "18"
+  },
+  {
+   "l": "Année de fondation",
+   "v": "2026",
+   "set": true,
+   "shown": "2026"
+  }
+ ],
+ "piliers": [
+  {
+   "i": "1",
+   "t": "Se connecter",
+   "d": "Mises en relation B2B entre entrepreneurs, commerçants et entreprises, et rencontres avec investisseurs et clients."
+  },
+  {
+   "i": "2",
+   "t": "Entreprendre",
+   "d": "Accompagnement des entreprenants du secteur informel et des porteurs de projets vers la formalisation."
+  },
+  {
+   "i": "3",
+   "t": "Construire",
+   "d": "Entraide, formation, mentorat et partage d’opportunités, au service du Made in Congo."
+  }
+ ],
+ "objectifs": [
+  {
+   "l": "a",
+   "t": "Faciliter la mise en relation d’affaires B2B entre entrepreneurs formalisés, commerçants, entreprises et sociétés."
+  },
+  {
+   "l": "b",
+   "t": "Accompagner les entreprenants du secteur informel et les porteurs de projets vers la formalisation."
+  },
+  {
+   "l": "c",
+   "t": "Faire rencontrer les porteurs de projets avec les investisseurs, les clients et les entreprises."
+  },
+  {
+   "l": "d",
+   "t": "Créer un écosystème d’entraide, de formation, de mentorat et de partage d’opportunités."
+  },
+  {
+   "l": "e",
+   "t": "Promouvoir le Made in Congo et l’éthique des affaires."
+  }
+ ],
+ "valeurs": [
+  {
+   "t": "Éthique des affaires",
+   "d": "Pas d’escroquerie, pas d’activité pyramidale, des engagements clairs entre membres."
+  },
+  {
+   "t": "Entraide",
+   "d": "Une assistance morale et technique entre membres, fondée sur le volontariat."
+  },
+  {
+   "t": "Indépendance",
+   "d": "Une association apolitique et non confessionnelle, à but non lucratif."
+  }
+ ],
+ "moyens": [
+  "Rencontres B2B",
+  "Ateliers",
+  "Salons",
+  "Formations",
+  "Mentorat",
+  "Plateforme d’entraide",
+  "Orientation vers les administrations",
+  "Partenariats techniques et financiers"
+ ],
+ "pages": [
+  {
+   "t": "Accueil",
+   "st": "Publiée",
+   "maj": "20 oct. 2026"
+  },
+  {
+   "t": "Le réseau",
+   "st": "Publiée",
+   "maj": "18 oct. 2026"
+  },
+  {
+   "t": "Gouvernance",
+   "st": "Publiée",
+   "maj": "15 oct. 2026"
+  },
+  {
+   "t": "Commissions",
+   "st": "Publiée",
+   "maj": "15 oct. 2026"
+  },
+  {
+   "t": "Antennes",
+   "st": "Brouillon",
+   "maj": "12 oct. 2026"
+  },
+  {
+   "t": "Notre écosystème",
+   "st": "Brouillon",
+   "maj": "12 oct. 2026"
+  },
+  {
+   "t": "Formalisation",
+   "st": "Publiée",
+   "maj": "9 oct. 2026"
+  },
+  {
+   "t": "Adhérer",
+   "st": "Publiée",
+   "maj": "8 oct. 2026"
+  },
+  {
+   "t": "Mentions légales",
+   "st": "Publiée",
+   "maj": "3 oct. 2026"
+  },
+  {
+   "t": "Confidentialité",
+   "st": "Publiée",
+   "maj": "3 oct. 2026"
+  }
+ ],
+ "menus": [
+  "Le réseau",
+  "Adhérer",
+  "Membres",
+  "Agenda",
+  "Opportunités",
+  "Actualités",
+  "Contact"
+ ],
+ "taxonomies": [
+  {
+   "t": "Secteurs",
+   "v": "Agriculture, Commerce, Numérique, BTP, Services, Formation, Immobilier, Transport, Artisanat"
+  },
+  {
+   "t": "Localités",
+   "v": "Brazzaville, Pointe-Noire, Dolisie, Nkayi, Ouesso, Diaspora / Autre"
+  },
+  {
+   "t": "Types d’événements",
+   "v": "Afterwork, atelier, masterclass, conférence, déjeuner d’affaires, rencontre B2B, assemblée, formation"
+  },
+  {
+   "t": "Types de contenus",
+   "v": "Article, communiqué, interview, annonce, retour sur événement"
+  }
+ ],
+ "medias": [
+  {
+   "n": 1,
+   "src": "design/images/photos/reunion-table.webp",
+   "t": "image-1.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 2,
+   "src": "design/images/photos/seance-travail.webp",
+   "t": "image-2.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 3,
+   "src": "design/images/photos/entrepreneuses-rencontre.webp",
+   "t": "image-3.webp",
+   "vis": "Membres",
+   "alt": "Texte alternatif manquant",
+   "altOk": false
+  },
+  {
+   "n": 4,
+   "src": "design/images/photos/commercant-boutique.webp",
+   "t": "image-4.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 5,
+   "src": "design/images/photos/commercante-etal.webp",
+   "t": "image-5.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 6,
+   "src": "design/images/photos/couturier-atelier.webp",
+   "t": "image-6.webp",
+   "vis": "Membres",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 7,
+   "src": "design/images/photos/brazzaville-fleuve.webp",
+   "t": "image-7.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  },
+  {
+   "n": 8,
+   "src": "design/images/logos-membres/khazad.png",
+   "t": "image-8.webp",
+   "vis": "Public",
+   "alt": "Texte alternatif renseigné",
+   "altOk": true
+  }
+ ]
+}

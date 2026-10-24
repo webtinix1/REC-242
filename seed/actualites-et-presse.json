@@ -1,0 +1,125 @@
+{
+ "actualites": [
+  {
+   "type": "Retour sur événement",
+   "titre": "REC 242 tient son assemblée générale constitutive",
+   "date": "3 oct. 2026",
+   "sect": "Tous",
+   "ex": false,
+   "res": false,
+   "chapo": "Les statuts et le règlement intérieur ont été adoptés à Brazzaville.",
+   "i": 0,
+   "locked": false,
+   "img": 0,
+   "src": "design/images/photos/reunion-table.webp"
+  },
+  {
+   "type": "Communiqué",
+   "titre": "Communiqué : constitution de REC 242",
+   "date": "3 octobre 2026",
+   "sect": "Tous",
+   "ex": false,
+   "res": false,
+   "chapo": "Annonce officielle de la création de l’association.",
+   "i": 1,
+   "locked": false,
+   "img": 1,
+   "src": "design/images/photos/seance-travail.webp"
+  },
+  {
+   "type": "Annonce",
+   "titre": "Les adhésions bientôt ouvertes en ligne",
+   "date": "20 octobre 2026",
+   "sect": "Tous",
+   "ex": false,
+   "res": false,
+   "chapo": "Dossier, paiement et suivi du statut depuis l’espace adhérent.",
+   "i": 2,
+   "locked": false,
+   "img": 2,
+   "src": "design/images/photos/entrepreneuses-rencontre.webp"
+  },
+  {
+   "type": "Article",
+   "titre": "La commission Formalisation lance ses permanences",
+   "date": "16 octobre 2026",
+   "sect": "Commerce",
+   "ex": false,
+   "res": false,
+   "chapo": "Orientation, conseil et mentorat pour sortir de l’informel.",
+   "i": 3,
+   "locked": false,
+   "img": 0,
+   "src": "design/images/photos/commercant-boutique.webp"
+  },
+  {
+   "type": "Interview",
+   "titre": "Trois questions à la fondatrice de REC 242",
+   "date": "13 octobre 2026",
+   "sect": "Tous",
+   "ex": false,
+   "res": false,
+   "chapo": "Pourquoi un réseau d’entrepreneurs maintenant ?",
+   "i": 4,
+   "locked": false,
+   "img": 1,
+   "src": "design/images/photos/commercante-etal.webp"
+  },
+  {
+   "type": "Article",
+   "titre": "Compte rendu réservé : réunion du comité de direction",
+   "date": "14 octobre 2026",
+   "sect": "Tous",
+   "ex": false,
+   "res": true,
+   "chapo": "Les décisions du mois, réservées aux membres.",
+   "i": 5,
+   "locked": true,
+   "img": 2,
+   "src": "design/images/photos/couturier-atelier.webp"
+  }
+ ],
+ "communiques": [
+  {
+   "date": "3 octobre 2026",
+   "titre": "Constitution de REC 242, Réseau des Entrepreneurs Congolais",
+   "year": "2026",
+   "ex": false
+  },
+  {
+   "date": "2 novembre 2026",
+   "titre": "Ouverture des adhésions en ligne",
+   "year": "2026",
+   "ex": false
+  }
+ ],
+ "kit_media": [
+  {
+   "t": "Logo REC 242",
+   "d": "Version horizontale et version carrée",
+   "f": "PNG",
+   "ok": true
+  },
+  {
+   "cover": "design/images/photos/reunion.webp",
+   "t": "Photos officielles",
+   "d": "Comité de direction, siège, événements",
+   "f": "ZIP",
+   "ok": true
+  },
+  {
+   "cover": "design/images/documents/couverture-fiche-institutionnelle.webp",
+   "t": "Fiche institutionnelle",
+   "d": "Mission, organisation, chiffres clés",
+   "f": "PDF",
+   "ok": true
+  },
+  {
+   "cover": "design/images/documents/couverture-biographies.webp",
+   "t": "Biographies",
+   "d": "Membres du comité de direction",
+   "f": "PDF",
+   "ok": true
+  }
+ ]
+}

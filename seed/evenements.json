@@ -1,0 +1,226 @@
+{
+ "a_venir": [
+  {
+   "id": 1,
+   "d": "14",
+   "m": "nov.",
+   "date": "14 novembre 2026",
+   "type": "Afterwork",
+   "titre": "Afterwork des entrepreneurs de Brazzaville",
+   "ville": "Brazzaville",
+   "lieu": "Siège de REC 242, Centre-Ville",
+   "heure": "18 h",
+   "acces": "Ouvert à tous",
+   "places": 60,
+   "inscrits": 42,
+   "left": 18,
+   "full": false,
+   "placesL": "18 places restantes",
+   "statusCls": "open"
+  },
+  {
+   "id": 2,
+   "d": "28",
+   "m": "nov.",
+   "date": "28 novembre 2026",
+   "type": "Atelier",
+   "titre": "Formaliser son activité : par où commencer ?",
+   "ville": "Brazzaville",
+   "lieu": "Siège de REC 242",
+   "heure": "9 h 30",
+   "acces": "Réservé aux membres",
+   "places": 25,
+   "inscrits": 25,
+   "left": 0,
+   "full": true,
+   "placesL": "Complet, liste d’attente",
+   "statusCls": "full"
+  },
+  {
+   "id": 3,
+   "d": "05",
+   "m": "déc.",
+   "date": "5 décembre 2026",
+   "type": "Rencontre B2B",
+   "titre": "Rencontre B2B commerce et distribution",
+   "ville": "Pointe-Noire",
+   "lieu": "Pointe-Noire, Centre-Ville",
+   "heure": "10 h",
+   "acces": "Ouvert à tous",
+   "places": 40,
+   "inscrits": 12,
+   "left": 28,
+   "full": false,
+   "placesL": "28 places restantes",
+   "statusCls": "open"
+  },
+  {
+   "id": 4,
+   "d": "12",
+   "m": "déc.",
+   "date": "12 décembre 2026",
+   "type": "Conférence",
+   "titre": "Porteurs de projets et investisseurs",
+   "ville": "Brazzaville",
+   "lieu": "Brazzaville, salle de conférence du Centre-Ville",
+   "heure": "15 h",
+   "acces": "Sur invitation",
+   "places": 80,
+   "inscrits": 31,
+   "left": 49,
+   "full": false,
+   "placesL": "49 places restantes",
+   "statusCls": "open"
+  }
+ ],
+ "passes": [
+  {
+   "id": 9,
+   "d": "03",
+   "m": "oct.",
+   "date": "3 octobre 2026",
+   "type": "Assemblée",
+   "titre": "Assemblée générale constitutive",
+   "ville": "Brazzaville",
+   "lieu": "Brazzaville",
+   "heure": "2026",
+   "acces": "Membres fondateurs",
+   "placesL": "Compte rendu disponible",
+   "statusCls": "past"
+  }
+ ],
+ "programme_exemple": [
+  {
+   "h": "18 h 00",
+   "t": "Accueil des participants"
+  },
+  {
+   "h": "18 h 30",
+   "t": "Mot du comité de direction"
+  },
+  {
+   "h": "18 h 45",
+   "t": "Tour de table : chaque participant présente son activité en une minute"
+  },
+  {
+   "h": "19 h 30",
+   "t": "Échanges libres"
+  }
+ ],
+ "intervenants_exemple": [
+  {
+   "ini": "EV",
+   "nom": "Eve",
+   "fn": "Fondatrice de REC 242, ouverture et mot d’accueil",
+   "photo": "design/images/personnes/eve.webp"
+  },
+  {
+   "ini": "PM",
+   "nom": "Patrick Mavoungou",
+   "fn": "Gérant, 3M-Partners & Conseils",
+   "photo": "design/images/personnes/patrick-mavoungou.webp"
+  }
+ ],
+ "inscrits_exemple": [
+  {
+   "i": 0,
+   "nom": "Ariane Mabiala",
+   "photo": "design/images/personnes/ariane-mabiala.webp",
+   "ent": "Visiteur",
+   "tel": "+242 06 455 12 03",
+   "present": true,
+   "presentL": "Présent"
+  },
+  {
+   "i": 1,
+   "nom": "Grâce Nkounkou",
+   "photo": "design/images/personnes/grace-nkounkou.webp",
+   "ent": "Membre",
+   "tel": "+242 05 377 64 21",
+   "present": false,
+   "presentL": "Absent"
+  },
+  {
+   "i": 2,
+   "nom": "Serge Bouanga",
+   "photo": "design/images/personnes/serge-bouanga.webp",
+   "ent": "Visiteur",
+   "tel": "+242 06 980 13 57",
+   "present": true,
+   "presentL": "Présent"
+  },
+  {
+   "i": 3,
+   "nom": "Mireille Ngoma",
+   "photo": "design/images/personnes/mireille-ngoma.webp",
+   "ent": "Membre",
+   "tel": "+242 04 412 88 09",
+   "present": true,
+   "presentL": "Présent"
+  },
+  {
+   "i": 4,
+   "nom": "Hervé Ondongo",
+   "photo": "design/images/personnes/herve-ondongo.webp",
+   "ent": "Visiteur",
+   "tel": "+242 06 903 47 25",
+   "present": false,
+   "presentL": "Absent"
+  },
+  {
+   "i": 5,
+   "nom": "Christelle Malonga",
+   "photo": "design/images/personnes/christelle-malonga.webp",
+   "ent": "Membre",
+   "tel": "+242 06 641 22 87",
+   "present": false,
+   "presentL": "Absent"
+  }
+ ],
+ "back_office": [
+  {
+   "titre": "Afterwork des entrepreneurs de Brazzaville",
+   "date": "14 nov. 2026",
+   "statut": "Publié",
+   "places": 60,
+   "inscrits": 42,
+   "pct": 70,
+   "pctStyle": "width: 70%",
+   "pctL": "70 %",
+   "fill": "42 / 60"
+  },
+  {
+   "titre": "Formaliser son activité : par où commencer ?",
+   "date": "28 nov. 2026",
+   "statut": "Complet",
+   "places": 25,
+   "inscrits": 25,
+   "pct": 100,
+   "pctStyle": "width: 100%",
+   "pctL": "100 %",
+   "fill": "25 / 25"
+  },
+  {
+   "titre": "Rencontre B2B commerce et distribution",
+   "date": "5 déc. 2026",
+   "statut": "Publié",
+   "places": 40,
+   "inscrits": 12,
+   "pct": 30,
+   "pctStyle": "width: 30%",
+   "pctL": "30 %",
+   "fill": "12 / 40"
+  },
+  {
+   "titre": "Porteurs de projets et investisseurs",
+   "date": "12 déc. 2026",
+   "statut": "Brouillon",
+   "places": 80,
+   "inscrits": 0,
+   "pct": 0,
+   "pctStyle": "width: 0%",
+   "pctL": "0 %",
+   "fill": "0 / 80"
+  }
+ ]
+}

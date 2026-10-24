@@ -1,0 +1,102 @@
+{
+ "cotisations": [
+  {
+   "m": "Kimia Créations",
+   "cat": "B",
+   "echeance": "2e tranche · 37 500 FCFA",
+   "limite": "6 janv. 2027",
+   "statut": "À venir",
+   "relances": "0 / 3",
+   "perte": false
+  },
+  {
+   "m": "Les Bretelles de Léon",
+   "cat": "B",
+   "echeance": "2e tranche · 37 500 FCFA",
+   "limite": "Dépassée",
+   "statut": "En relance",
+   "relances": "3 / 3",
+   "perte": true
+  },
+  {
+   "m": "Ferme Lékana",
+   "cat": "A",
+   "echeance": "Soldée",
+   "limite": "–",
+   "statut": "À jour",
+   "relances": "–",
+   "perte": false
+  },
+  {
+   "m": "Khazad",
+   "cat": "C",
+   "echeance": "Soldée",
+   "limite": "–",
+   "statut": "À jour",
+   "relances": "–",
+   "perte": false
+  }
+ ],
+ "paiements": [
+  {
+   "d": "6 oct. 2026",
+   "m": "Kimia Créations",
+   "o": "Droit d’adhésion",
+   "mt": "15 000 FCFA",
+   "mode": "MTN MoMo",
+   "ref": "PAY-0001"
+  },
+  {
+   "d": "6 oct. 2026",
+   "m": "Kimia Créations",
+   "o": "Cotisation 2026, 1re tranche",
+   "mt": "37 500 FCFA",
+   "mode": "MTN MoMo",
+   "ref": "PAY-0002"
+  },
+  {
+   "d": "8 oct. 2026",
+   "m": "Ferme Lékana",
+   "o": "Droit d’adhésion + cotisation",
+   "mt": "35 000 FCFA",
+   "mode": "Espèces, au siège",
+   "ref": "PAY-0003"
+  }
+ ],
+ "echeancier_membre": [
+  {
+   "objet": "Droit d’adhésion",
+   "montant": "15 000 FCFA",
+   "statut": "Payé",
+   "date": "6 oct. 2026"
+  },
+  {
+   "objet": "Cotisation 2026, 1re tranche",
+   "montant": "37 500 FCFA",
+   "statut": "Payé",
+   "date": "6 oct. 2026"
+  },
+  {
+   "objet": "Cotisation 2026, 2e tranche",
+   "montant": "37 500 FCFA",
+   "statut": "À payer",
+   "date": "Avant la fin du 3e mois"
+  }
+ ],
+ "recus_membre": [
+  {
+   "ref": "PAY-0001",
+   "objet": "Droit d’adhésion",
+   "montant": "15 000 FCFA",
+   "mode": "MTN MoMo",
+   "date": "6 oct. 2026"
+  },
+  {
+   "ref": "PAY-0002",
+   "objet": "Cotisation, 1re tranche",
+   "montant": "37 500 FCFA",
+   "mode": "MTN MoMo",
+   "date": "6 oct. 2026"
+  }
+ ]
+}

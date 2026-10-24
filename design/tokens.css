@@ -1,0 +1,39 @@
+/* REC 242 : variables du design system (thème clair), reprises de tokens.json. */
+:root{
+  --green-50:#e9f3ee;--green-100:#cfe5d8;--green-300:#6fcb95;--green-500:#1c7a47;--green-700:#0b5e32;--green-900:#063a1f;
+  --gold-100:#fef1cf;--gold-300:#fdd06a;--gold-500:#fbb517;--gold-800:#7a5400;
+  --red-100:#fce3e4;--red-300:#ff8a90;--red-500:#df1521;--red-700:#a80f18;
+  --sand-0:#ffffff;--sand-25:#faf8f3;--sand-50:#f3f1ea;--sand-100:#e7e4da;--sand-200:#d3d0c5;
+  --ink-400:#878b83;--ink-500:#62675f;--ink-800:#262a26;--ink-900:#171a17;
+
+  --bg-page:var(--sand-25);--bg-surface:var(--sand-0);--bg-sunken:var(--sand-50);
+  --bg-brand:var(--green-700);--bg-brand-soft:var(--green-50);
+  --border:var(--sand-100);--border-strong:var(--ink-400);
+  --text:var(--ink-900);--text-muted:var(--ink-500);--text-brand:var(--green-700);
+  --text-on-brand:var(--sand-0);--text-accent:var(--gold-800);--text-danger:var(--red-700);
+  --action-primary:var(--green-700);--action-primary-hover:var(--green-900);
+  --action-accent:var(--gold-500);--on-accent:var(--ink-900);--focus-ring:var(--green-700);
+  --status-active-bg:var(--green-100);--status-active-fg:var(--green-900);
+  --status-pending-bg:var(--gold-100);--status-pending-fg:var(--gold-800);
+  --status-suspended-bg:var(--red-100);--status-suspended-fg:var(--red-700);
+  --flag-green:var(--green-700);--flag-gold:var(--gold-500);--flag-red:var(--red-500);
+  --qr-bg:var(--sand-0);--qr-fg:var(--ink-900);
+
+  --font-display:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-12:48px;--space-16:64px;--space-24:96px;
+  --radius-0:0px;--radius-sm:8px;--radius-md:12px;--radius-lg:20px;--radius-full:9999px;
+  --shadow-raised:0 1px 2px rgba(23,26,23,0.06),0 4px 12px rgba(23,26,23,0.06);
+  --opacity-disabled:0.42;
+}
+/* Extension limitée (rythme visuel, oct. 2026) : deux profondeurs sombres de la même famille,
+   deux teintes claires chaudes pour varier les fonds clairs, un voile pour le texte sur photo. */
+:root{
+  --green-950:#03261a;   /* vert nuit : sections de prestige, déclarations */
+  --ink-950:#0e110e;     /* anthracite : sections immersives, pied de page */
+  --gold-50:#fff8e6;     /* clair chaud : citations, chiffres */
+  --green-25:#f2f8f4;    /* clair vert : listes, informations pratiques */
+  --veil-dark:linear-gradient(180deg,rgba(3,38,26,.15) 0%,rgba(3,38,26,.78) 100%);
+}

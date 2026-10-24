@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Cahier des charges, refonte du site REC 242</title>
+<style>
+@font-face{font-family:'Archivo';src:url('archivo-variable.ttf') format('truetype');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Martian Mono';src:url('martian-mono-variable.ttf') format('truetype');font-weight:100 800}
+:root{
+  --blue:#0A3EAB;--blue6:#004AD6;--navy:#142C6C;--navy2:#0B1E46;--blue50:#EEF3FE;--blue100:#D7E2FB;
+  --orange:#FF5100;--amber:#FC9408;--ink:#2E2E2E;--ink2:#3A3A3A;--muted:#686868;--line:#D7DBE1;--sunk:#F4F6F8;
+  --rec-green:#02673F;--rec-gold:#E8AE0D;--rec-red:#D8131C;--rec-green50:#E8F3EE;--gold50:#FDF6E1;
+}
+@page{size:A4;margin:22mm 18mm 20mm 18mm}
+@page cover{margin:0}
+@page back{margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Archivo',Helvetica,Arial,sans-serif;color:var(--ink);font-size:9.6pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-variant-numeric:lining-nums}
+p{margin:0 0 7pt}
+strong{color:#222;font-weight:650}
+.mono{font-family:'Martian Mono',monospace}
+
+/* ---------- COVER ---------- */
+.cover{page:cover;width:210mm;height:297mm;position:relative;overflow:hidden;background:var(--navy);color:#fff;break-after:page}
+.cover .net{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
+.cover .top{position:absolute;top:18mm;left:18mm;right:18mm;display:flex;justify-content:space-between;align-items:center}
+.cover .top img{height:15mm}
+.cover .top .tag{font-weight:600;font-size:7.5pt;letter-spacing:.14em;text-transform:uppercase;color:#cdd8f2}
+.cover .slab{position:absolute;top:44mm;left:18mm;width:86mm;height:86mm;background:#fff;border-radius:0;display:flex;align-items:center;justify-content:center}
+.cover .slab img{width:74mm}
+.cover .tri{position:absolute;top:136mm;left:18mm;display:flex;height:2.2mm;width:86mm}
+.cover .tri span{flex:1}
+.cover .title{position:absolute;top:150mm;left:18mm;right:18mm}
+.cover .kicker{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:8pt;letter-spacing:.12em;text-transform:uppercase;padding:2.2mm 3.5mm;margin-bottom:6mm}
+.cover h1{font-size:34pt;line-height:1.02;font-weight:800;letter-spacing:-.01em;margin:0 0 5mm;text-transform:uppercase}
+.cover h1 .l2{display:block;color:#AEC4F7}
+.cover .sub{font-size:13pt;line-height:1.35;font-weight:500;max-width:150mm;color:#fff}
+.cover .meta{position:absolute;left:18mm;right:18mm;bottom:18mm;display:grid;grid-template-columns:repeat(4,1fr);gap:6mm;border-top:1px solid rgba(255,255,255,.25);padding-top:5mm}
+.cover .meta div{font-size:8pt;color:#cdd8f2;line-height:1.4}
+.cover .meta b{display:block;color:#fff;font-weight:650;font-size:9pt}
+
+/* ---------- PARTS & HEADINGS ---------- */
+.part{break-before:page;margin:0 0 9mm;padding:0 0 5mm;border-bottom:2px solid var(--blue);display:flex;align-items:flex-end;justify-content:space-between}
+.part .pl{font-family:'Martian Mono',monospace;font-size:7.5pt;color:var(--orange);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2mm}
+.part h1{margin:0;font-size:22pt;line-height:1.05;font-weight:800;text-transform:uppercase;color:var(--navy);letter-spacing:-.01em}
+.part .pn{font-weight:800;font-size:40pt;line-height:.8;color:var(--blue100)}
+.sec{margin-top:8mm}
+.sec:first-of-type{margin-top:0}
+.eyebrow{font-family:'Martian Mono',monospace;font-size:7pt;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2mm}
+h2{font-size:15pt;line-height:1.15;font-weight:750;color:var(--blue);margin:0 0 3.5mm;break-after:avoid}
+h2 .n{color:var(--orange);margin-right:2.5mm}
+h3{font-size:10.8pt;font-weight:700;color:var(--ink);margin:5mm 0 2mm;break-after:avoid}
+h4{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--blue);margin:4mm 0 1.5mm;break-after:avoid}
+.head-keep{break-inside:avoid}
+.lead{font-size:10.6pt;line-height:1.55;color:var(--ink2)}
+
+/* ---------- LISTS ---------- */
+ul{margin:0 0 7pt;padding:0;list-style:none}
+ul li{position:relative;padding-left:4.2mm;margin-bottom:1.4mm}
+ul li:before{content:"";position:absolute;left:0;top:1.9mm;width:1.6mm;height:1.6mm;background:var(--blue)}
+ul.check li:before{content:"✓";background:none;color:var(--rec-green);font-weight:800;top:0;width:auto;height:auto;font-size:9pt}
+ol{margin:0 0 7pt;padding-left:5mm}
+ol li{margin-bottom:1.2mm}
+
+/* ---------- TABLES ---------- */
+table{width:100%;border-collapse:collapse;margin:2mm 0 5mm;font-size:8.2pt;line-height:1.4}
+thead{display:table-header-group}
+tr{break-inside:avoid}
+th{background:var(--navy);color:#fff;text-align:left;font-weight:650;padding:2mm 2.4mm;font-size:7.6pt;letter-spacing:.02em;vertical-align:bottom}
+td{padding:1.9mm 2.4mm;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:#FAFBFC}
+td.k{font-weight:650;color:#222;white-space:nowrap}
+td.c,th.c{text-align:center}
+table.compact{font-size:7.8pt}
+table.compact td{padding:1.5mm 2mm}
+
+/* chips */
+.chip{display:inline-block;font-weight:700;font-size:6.6pt;letter-spacing:.05em;text-transform:uppercase;padding:.6mm 1.8mm;color:#fff;white-space:nowrap;line-height:1.5}
+.must{background:var(--blue)}.should{background:#0C64CC;background:#4F7FD9}.could{background:#8F959F}.future{background:#fff;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.mvp{background:var(--rec-green)}.v2{background:var(--amber)}.v3{background:var(--ink)}
+.kc{display:inline-block;font-weight:700;font-size:6.6pt;letter-spacing:.05em;text-transform:uppercase;padding:.6mm 1.8mm;background:var(--sunk);color:var(--ink2);white-space:nowrap}
+.cx{font-family:'Martian Mono',monospace;font-size:7.4pt;font-weight:600}
+
+/* ---------- CALLOUTS ---------- */
+.box{border-radius:0;padding:3.6mm 4.4mm;margin:3mm 0 5mm;break-inside:avoid;font-size:9pt}
+.box .bt{font-weight:750;font-size:7.4pt;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.4mm}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+.valid{background:var(--gold50);border-left:3px solid var(--rec-gold)}
+.valid .bt{color:#8a6500}
+.warn{background:#FFF2EC;border-left:3px solid var(--orange)}
+.warn .bt{color:#BF2A17}
+.reco{background:var(--blue50);border-left:3px solid var(--blue)}
+.reco .bt{color:var(--blue)}
+.note{background:var(--sunk);border-left:3px solid var(--muted)}
+.note .bt{color:var(--ink2)}
+.av{display:inline;background:var(--gold50);color:#7a5a00;font-weight:650;padding:0 1mm;box-shadow:inset 0 -1px 0 var(--rec-gold);white-space:nowrap}
+
+/* ---------- CARDS / GRIDS ---------- */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin:2mm 0 5mm}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3.5mm;margin:2mm 0 5mm}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin:2mm 0 5mm}
+.card{border:1px solid var(--line);border-radius:12px;padding:3.8mm 4mm;break-inside:avoid;background:#fff}
+.card h4{margin-top:0}
+.card p:last-child,.card ul:last-child{margin-bottom:0}
+.card.fill{background:var(--blue);border-color:var(--blue);color:#fff}
+.card.fill h4,.card.fill strong{color:#fff}
+.card.soft{background:var(--sunk);border-color:var(--sunk)}
+.big{font-weight:800;font-size:20pt;line-height:1;color:var(--blue);margin-bottom:1.5mm}
+.q{font-weight:800;font-size:11pt;color:var(--navy);margin-bottom:1.5mm;line-height:1.2}
+
+/* persona */
+.persona{border:1px solid var(--line);border-radius:12px;overflow:hidden;break-inside:avoid;margin-bottom:4mm}
+.persona .ph{background:var(--navy);color:#fff;padding:3mm 4mm;display:flex;justify-content:space-between;align-items:baseline}
+.persona .ph b{font-size:10.5pt;color:#fff}
+.persona .ph span{font-size:7.4pt;color:#cdd8f2;letter-spacing:.06em;text-transform:uppercase}
+.persona .pb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm;padding:3.4mm 4mm;font-size:8.4pt}
+.persona .pb h4{margin:0 0 1mm;font-size:7.4pt}
+.persona .pb ul li{margin-bottom:.8mm}
+
+/* audit verdict */
+.v{display:inline-block;font-weight:700;font-size:6.6pt;letter-spacing:.05em;text-transform:uppercase;padding:.6mm 1.8mm;white-space:nowrap}
+.v.keep{background:var(--rec-green);color:#fff}
+.v.imp{background:var(--blue);color:#fff}
+.v.re{background:var(--amber);color:#fff}
+.v.del{background:var(--rec-red);color:#fff}
+.v.add{background:var(--ink);color:#fff}
+
+/* flow diagram */
+.flow{display:flex;align-items:stretch;gap:0;margin:3mm 0 5mm;break-inside:avoid}
+.flow .st{flex:1;background:var(--blue50);padding:3mm 2.6mm;position:relative;font-size:7.8pt;line-height:1.35}
+.flow .st:nth-child(odd){background:var(--blue100)}
+.flow .st b{display:block;font-size:8.4pt;color:var(--navy);margin-bottom:1mm}
+.flow .st .i{font-family:'Martian Mono',monospace;font-size:6.6pt;color:var(--orange);display:block;margin-bottom:1mm}
+.flow .st:after{content:"";position:absolute;right:-2.4mm;top:50%;margin-top:-2.4mm;border-left:2.4mm solid var(--blue100);border-top:2.4mm solid transparent;border-bottom:2.4mm solid transparent;z-index:2}
+.flow .st:nth-child(even):after{border-left-color:var(--blue50)}
+.flow .st:last-child:after{display:none}
+.flow .st.end{background:var(--rec-green);color:#fff}.flow .st.end b{color:#fff}
+
+/* tree */
+.tree{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin:3mm 0 4mm}
+.tree .root{grid-column:1/-1;background:var(--navy);color:#fff;padding:2.6mm 4mm;font-weight:700;display:flex;justify-content:space-between;font-size:9pt}
+.tree .root span{font-weight:500;color:#cdd8f2;font-size:7.6pt}
+.tree .br{border-top:3px solid var(--blue);background:var(--sunk);padding:2.6mm 3mm;break-inside:avoid;font-size:7.8pt;line-height:1.35}
+.tree .br.alt{border-top-color:var(--orange)}
+.tree .br.gr{border-top-color:var(--rec-green)}
+.tree .br b{display:block;font-size:8.6pt;color:var(--navy);margin-bottom:1.2mm}
+.tree .br div{padding:.5mm 0 .5mm 2.6mm;border-left:1px solid var(--line);margin-left:.5mm;color:var(--ink2)}
+.tree .br code{font-family:'Martian Mono',monospace;font-size:6.4pt;color:var(--muted);display:block}
+
+/* arch diagram */
+.arch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3mm;margin:3mm 0 5mm;break-inside:avoid}
+.arch .col{background:var(--sunk);padding:3mm}
+.arch .col .lbl{font-family:'Martian Mono',monospace;font-size:6.6pt;color:var(--orange);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2mm}
+.arch .bx{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2mm 2.6mm;margin-bottom:2mm;font-size:7.8pt;line-height:1.35}
+.arch .bx b{display:block;color:var(--navy);font-size:8.4pt}
+.arch .bx.main{border-color:var(--blue);box-shadow:inset 3px 0 0 var(--blue)}
+
+/* wireframe */
+.wf{border:1px solid var(--line);border-radius:12px;padding:3mm;background:#fff;break-inside:avoid;margin:2mm 0 5mm}
+.wf .blk{display:flex;gap:3mm;align-items:flex-start;padding:2mm 2.4mm;border-bottom:1px dashed var(--line);font-size:8pt;line-height:1.35}
+.wf .blk:last-child{border-bottom:none}
+.wf .blk .idx{flex:none;width:7mm;height:7mm;background:var(--blue);color:#fff;font-weight:800;font-size:8pt;display:flex;align-items:center;justify-content:center}
+.wf .blk.hero .idx{background:var(--rec-green)}
+.wf .blk b{color:var(--navy)}
+
+/* gantt */
+.gantt{margin:3mm 0 5mm;break-inside:avoid;font-size:7.8pt}
+.gantt .row{display:grid;grid-template-columns:48mm 1fr;align-items:center;border-bottom:1px solid var(--line);min-height:7mm}
+.gantt .row .lab{padding-right:2mm;font-weight:600}
+.gantt .track{position:relative;height:7mm;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/16 - 1px),#E9ECF0 calc(100%/16 - 1px),#E9ECF0 calc(100%/16))}
+.gantt .bar{position:absolute;top:1.6mm;height:3.8mm;background:var(--blue)}
+.gantt .bar.o{background:var(--orange)}.gantt .bar.g{background:var(--rec-green)}.gantt .bar.n{background:var(--navy)}
+.gantt .hdr{display:grid;grid-template-columns:48mm 1fr;font-family:'Martian Mono',monospace;font-size:6.4pt;color:var(--muted)}
+.gantt .hdr .wk{display:grid;grid-template-columns:repeat(16,1fr)}
+.gantt .hdr .wk span{text-align:center}
+
+/* swatches */
+.sw{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm;margin:2mm 0 5mm}
+.sw div{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:7.4pt;break-inside:avoid}
+.sw i{display:block;height:14mm}
+.sw span{display:block;padding:1.8mm 2.2mm;line-height:1.35}
+.sw b{display:block;font-size:8pt}
+
+/* TOC */
+.toc{break-before:page}
+.toc h1{font-size:22pt;font-weight:800;text-transform:uppercase;color:var(--navy);margin:0 0 6mm;border-bottom:2px solid var(--blue);padding-bottom:4mm}
+.toc .cols{columns:2;column-gap:10mm}
+.toc .pt{break-inside:avoid;margin-bottom:4mm}
+.toc .pt .ph{font-family:'Martian Mono',monospace;font-size:7pt;color:var(--orange);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2mm;border-bottom:1px solid var(--line);padding-bottom:1mm}
+.toc .it{display:flex;font-size:8.6pt;line-height:1.55}
+.toc .it .nn{width:7mm;color:var(--blue);font-weight:700}
+.toc .it .tt{flex:1;display:flex}
+.toc .it .tt:after{content:"";flex:1;border-bottom:1px dotted #B9BFC8;margin:0 1.5mm 1.3mm}
+.toc .it .pg{font-family:'Martian Mono',monospace;font-size:7.4pt;color:var(--muted);width:6mm;text-align:right}
+
+/* ident */
+.idt{display:grid;grid-template-columns:44mm 1fr;border-top:2px solid var(--navy);margin:2mm 0 5mm}
+.idt div{padding:2.1mm 2.4mm;border-bottom:1px solid var(--line);font-size:8.6pt}
+.idt div:nth-child(odd){font-weight:650;color:var(--navy);background:var(--sunk)}
+.sig{display:flex;gap:4mm;align-items:center;margin-top:3mm}
+.sig img{height:12mm}
+
+/* back cover */
+.back{page:back;break-before:page;width:210mm;height:297mm;position:relative;background:var(--navy);color:#fff;overflow:hidden}
+.back .net{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
+.back .in{position:absolute;left:18mm;right:18mm;bottom:22mm}
+.back img.l{height:22mm;margin-bottom:8mm}
+.back p{color:#cdd8f2;font-size:9pt;margin:0 0 2mm}
+.back .big2{font-size:20pt;font-weight:800;line-height:1.1;text-transform:uppercase;color:#fff;margin-bottom:8mm;max-width:150mm}
+.back .uc{margin-top:8mm;display:inline-flex;gap:3mm;align-items:center;border:1px solid rgba(255,255,255,.35);padding:2.4mm 3.6mm;font-size:8pt;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.uni{display:inline-flex;align-items:center;gap:2.5mm;border:1px solid var(--line);padding:2mm 3.2mm;font-size:7.6pt;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);font-weight:650}
+.uni i{font-style:normal;font-weight:800;color:var(--navy);letter-spacing:.08em}
+.keep{break-inside:avoid}
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="cover">
+  <img class="net" src="network-navy.svg" alt="">
+  <div class="top"><img src="wx-logo-white.png" alt="Webtinix"><span class="tag">Document de conception · Version 1.0</span></div>
+  <div class="slab"><img src="rec-logo.png" alt="Logo REC 242"></div>
+  <div class="tri"><span style="background:#02673F"></span><span style="background:#E8AE0D"></span><span style="background:#D8131C"></span></div>
+  <div class="title">
+    <span class="kicker">Cahier des charges</span>
+    <h1>Refonte du site internet <span class="l2">de REC 242</span></h1>
+    <div class="sub">Plateforme digitale du réseau des entrepreneurs et dirigeants de TPE-PME du Congo-Brazzaville</div>
+  </div>
+  <div class="meta">
+    <div><b>Client</b>REC 242, Réseau des Entrepreneurs Congolais</div>
+    <div><b>Proposé par</b>Webtinix, Brazzaville</div>
+    <div><b>Date</b>Septembre 2026</div>
+    <div><b>Statut</b>Version de travail à valider</div>
+  </div>
+</section>
+
+<!-- ================= TOC ================= -->
+<section class="toc">
+  <h1>Sommaire</h1>
+  <div class="cols">
+    <div class="pt"><div class="ph">A · Cadrage du projet</div>
+      <div class="it"><span class="nn">02</span><span class="tt">Identification du projet</span><span class="pg">{{p02}}</span></div>
+      <div class="it"><span class="nn">03</span><span class="tt">Résumé exécutif</span><span class="pg">{{p03}}</span></div>
+      <div class="it"><span class="nn">04</span><span class="tt">Contexte</span><span class="pg">{{p04}}</span></div>
+      <div class="it"><span class="nn">05</span><span class="tt">Présentation de REC 242</span><span class="pg">{{p05}}</span></div>
+      <div class="it"><span class="nn">06</span><span class="tt">Objectifs du projet</span><span class="pg">{{p06}}</span></div>
+      <div class="it"><span class="nn">07</span><span class="tt">Positionnement digital</span><span class="pg">{{p07}}</span></div>
+      <div class="it"><span class="nn">08</span><span class="tt">Cibles et personas</span><span class="pg">{{p08}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">B · Analyse</div>
+      <div class="it"><span class="nn">09</span><span class="tt">Audit de l'existant</span><span class="pg">{{p09}}</span></div>
+      <div class="it"><span class="nn">10</span><span class="tt">Benchmark</span><span class="pg">{{p10}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">C · Conception de l'expérience</div>
+      <div class="it"><span class="nn">11</span><span class="tt">Principes UX</span><span class="pg">{{p11}}</span></div>
+      <div class="it"><span class="nn">12</span><span class="tt">Architecture de l'information</span><span class="pg">{{p12}}</span></div>
+      <div class="it"><span class="nn">13</span><span class="tt">Arborescence</span><span class="pg">{{p13}}</span></div>
+      <div class="it"><span class="nn">14</span><span class="tt">Description détaillée des pages</span><span class="pg">{{p14}}</span></div>
+      <div class="it"><span class="nn">15</span><span class="tt">Fonctionnalités</span><span class="pg">{{p15}}</span></div>
+      <div class="it"><span class="nn">16</span><span class="tt">Parcours utilisateurs</span><span class="pg">{{p16}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">D · Modules fonctionnels</div>
+      <div class="it"><span class="nn">17</span><span class="tt">Espace membre</span><span class="pg">{{p17}}</span></div>
+      <div class="it"><span class="nn">18</span><span class="tt">Annuaire</span><span class="pg">{{p18}}</span></div>
+      <div class="it"><span class="nn">19</span><span class="tt">Événements</span><span class="pg">{{p19}}</span></div>
+      <div class="it"><span class="nn">20</span><span class="tt">Adhésion</span><span class="pg">{{p20}}</span></div>
+      <div class="it"><span class="nn">21</span><span class="tt">Plaidoyer</span><span class="pg">{{p21}}</span></div>
+      <div class="it"><span class="nn">22</span><span class="tt">Opportunités</span><span class="pg">{{p22}}</span></div>
+      <div class="it"><span class="nn">23</span><span class="tt">Actualités et médias</span><span class="pg">{{p23}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">E · Administration</div>
+      <div class="it"><span class="nn">24</span><span class="tt">Back-office</span><span class="pg">{{p24}}</span></div>
+      <div class="it"><span class="nn">25</span><span class="tt">Gestion des rôles</span><span class="pg">{{p25}}</span></div>
+      <div class="it"><span class="nn">26</span><span class="tt">CMS</span><span class="pg">{{p26}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">F · Design</div>
+      <div class="it"><span class="nn">27</span><span class="tt">Design system</span><span class="pg">{{p27}}</span></div>
+      <div class="it"><span class="nn">28</span><span class="tt">Direction artistique</span><span class="pg">{{p28}}</span></div>
+      <div class="it"><span class="nn">29</span><span class="tt">Responsive</span><span class="pg">{{p29}}</span></div>
+      <div class="it"><span class="nn">30</span><span class="tt">Accessibilité</span><span class="pg">{{p30}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">G · Technique</div>
+      <div class="it"><span class="nn">31</span><span class="tt">SEO</span><span class="pg">{{p31}}</span></div>
+      <div class="it"><span class="nn">32</span><span class="tt">Sécurité</span><span class="pg">{{p32}}</span></div>
+      <div class="it"><span class="nn">33</span><span class="tt">Analytics</span><span class="pg">{{p33}}</span></div>
+      <div class="it"><span class="nn">34</span><span class="tt">Architecture technique</span><span class="pg">{{p34}}</span></div>
+      <div class="it"><span class="nn">35</span><span class="tt">Hébergement</span><span class="pg">{{p35}}</span></div>
+      <div class="it"><span class="nn">36</span><span class="tt">Maintenance</span><span class="pg">{{p36}}</span></div>
+    </div>
+    <div class="pt"><div class="ph">H · Pilotage</div>
+      <div class="it"><span class="nn">37</span><span class="tt">Évolutions V2 et V3</span><span class="pg">{{p37}}</span></div>
+      <div class="it"><span class="nn">38</span><span class="tt">Planning indicatif</span><span class="pg">{{p38}}</span></div>
+      <div class="it"><span class="nn">39</span><span class="tt">Critères de recette</span><span class="pg">{{p39}}</span></div>
+      <div class="it"><span class="nn">40</span><span class="tt">Livrables</span><span class="pg">{{p40}}</span></div>
+      <div class="it"><span class="nn">41</span><span class="tt">Informations à fournir par REC 242</span><span class="pg">{{p41}}</span></div>
+      <div class="it"><span class="nn">42</span><span class="tt">Points à arbitrer</span><span class="pg">{{p42}}</span></div>
+      <div class="it"><span class="nn">43</span><span class="tt">Conclusion</span><span class="pg">{{p43}}</span></div>
+      <div class="it"><span class="nn">&nbsp;</span><span class="tt">À propos de Webtinix</span><span class="pg">{{pwx}}</span></div>
+    </div>
+  </div>
+  <div class="box note" style="margin-top:6mm">
+    <div class="bt">Comment lire ce document</div>
+    <p>Chaque exigence porte une priorité : <span class="chip must">Must</span> indispensable au lancement, <span class="chip should">Should</span> important mais décalable, <span class="chip could">Could</span> évolution intéressante, <span class="chip future">Future</span> à envisager plus tard. Les versions sont notées <span class="chip mvp">MVP</span> <span class="chip v2">V2</span> <span class="chip v3">V3</span>.</p>
+    <p>Tout ce qui n'a pas pu être confirmé dans les sources est signalé <span class="av">À valider par REC 242</span>. Aucun chiffre, nom, montant ou partenaire n'a été ajouté sans source. La liste complète figure en section 41.</p>
+  </div>
+</section>
+
+<!-- ================= PART A ================= -->
+<div class="part"><div><div class="pl">Partie A</div><h1>Cadrage du projet</h1></div><div class="pn">A</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 02</div>
+  <h2><span class="n">02</span>Identification du projet</h2>
+  <div class="idt">
+    <div>Intitulé</div><div>Refonte du site internet de REC 242 : plateforme digitale du réseau des entrepreneurs et dirigeants de TPE-PME du Congo-Brazzaville</div>
+    <div>Maître d'ouvrage</div><div>REC 242, Brazzaville, République du Congo. Interlocuteur projet : <span class="av">À valider par REC 242</span></div>
+    <div>Proposé par</div><div>Webtinix, entreprise de services numériques, 68 rue Mpangala, Brazzaville. Membre de UNICONGO.</div>
+    <div>Nature du document</div><div>Cahier des charges fonctionnel et technique, base de validation, de chiffrage, de conception UX/UI, de développement et de recette</div>
+    <div>Version</div><div>1.0, version de travail soumise à REC 242 pour relecture et arbitrages</div>
+    <div>Sources exploitées</div><div>Site actuel rec242.vercel.app (audité le 24 septembre 2026) · Cahier des charges technique et fonctionnel REC (6 pages) · Logo officiel REC 242 · Sites de référence : FEC (RDC), CBI (Royaume-Uni), NEASA (Afrique du Sud), MEDEF International, MEDEF · Design system Webtinix</div>
+    <div>Confidentialité</div><div>Document destiné aux responsables de REC 242. Diffusion externe soumise à l'accord des deux parties.</div>
+  </div>
+  <h3>Historique des versions</h3>
+  <table class="compact"><thead><tr><th style="width:16mm">Version</th><th style="width:30mm">Date</th><th>Objet</th><th style="width:40mm">Auteur</th></tr></thead>
+  <tbody><tr><td class="k">1.0</td><td>Septembre 2026</td><td>Première version complète, à relire par REC 242</td><td>Webtinix</td></tr>
+  <tr><td class="k">1.1</td><td>À planifier</td><td>Intégration des réponses de REC 242 (sections 41 et 42)</td><td>Webtinix et REC 242</td></tr></tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 03</div>
+  <h2><span class="n">03</span>Résumé exécutif</h2>
+  <p class="lead">REC 242 dispose aujourd'hui d'une page unique, mise en ligne rapidement, qui explique bien pourquoi le réseau existe mais ne permet pas encore de le faire vivre. Le projet consiste à passer de cette page de présentation à la porte d'entrée digitale d'un réseau patronal : un site qui rassure les institutions, convainc les dirigeants d'adhérer, et donne aux membres une raison concrète de revenir.</p>
+  <div class="g3">
+    <div class="card fill"><h4>Ce que le site doit faire</h4><p>Présenter le réseau avec crédibilité, transformer l'intérêt en candidatures qualifiées, rendre visibles les membres, l'agenda et les prises de position.</p></div>
+    <div class="card"><h4>Ce que nous proposons</h4><p>Un MVP resserré autour de six briques : site institutionnel, adhésion avec validation, espace membre simple, annuaire, agenda avec inscriptions, actualités et plaidoyer.</p></div>
+    <div class="card"><h4>Ce que nous repoussons</h4><p>Paiement en ligne des cotisations, messagerie entre membres, opportunités déposées par les membres, QR codes d'accès. Utiles, mais seulement quand le réseau aura prouvé l'usage.</p></div>
+  </div>
+  <h3>Les constats qui orientent la proposition</h3>
+  <ul>
+    <li><strong>Le site actuel est une bonne base de discours</strong>, pas une base technique. Ses textes (trois piliers, six avantages, quatre actions, quatre niveaux d'organisation) sont réutilisables. Son code (une page HTML statique, un formulaire envoyé à un service tiers puis à WhatsApp) ne peut pas porter une base de membres, une validation ou un espace connecté.</li>
+    <li><strong>Plusieurs sources se contredisent</strong> sur des points qui changent la conception : le nom du réseau, la cible (dirigeants de TPE-PME ou aussi porteurs de projet), la palette de couleurs, l'accès au groupe WhatsApp avant validation, la nature de l'annuaire. Ces points sont listés en section 42 et doivent être tranchés avant la maquette.</li>
+    <li><strong>Le plaidoyer est ce qui distingue un réseau patronal</strong> d'un club d'affaires. Aucune des sources existantes ne le traite au-delà d'une phrase. Nous proposons une rubrique dédiée qui sépare clairement positions officielles, actions menées, actualités et documents.</li>
+    <li><strong>Le mobile est le premier écran</strong>. Le cahier des charges initial l'affirme et le benchmark le confirme : pages légères, bouton d'adhésion toujours accessible, WhatsApp comme canal de contact naturel.</li>
+  </ul>
+  <div class="box reco"><div class="bt">Recommandation Webtinix</div><p>Lancer un MVP réaliste en quatre mois environ, avec des contenus prêts dès le départ, plutôt qu'une plateforme complète qui attendrait des contenus et des règles d'adhésion non encore arrêtés. Le budget sera établi à partir du périmètre validé ; ce document propose des lots et une estimation relative de complexité (section 38).</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 04</div>
+  <h2><span class="n">04</span>Contexte</h2>
+  <p>REC 242 s'est doté d'une première présence en ligne sous la forme d'une page vitrine hébergée sur Vercel. Cette page a été conçue vite, pour exister et collecter les premières demandes d'adhésion. Elle remplit ce rôle, mais le réseau a désormais besoin d'un outil qui soutienne son développement : recruter et qualifier des membres, organiser des rencontres, prendre la parole au nom des entreprises et être identifié comme un interlocuteur sérieux par les pouvoirs publics et les partenaires.</p>
+  <p>Un premier cahier des charges a été rédigé par REC. Il fixe des intentions claires sur la qualification des membres, la validation humaine des candidatures, la sécurité et le mobile. Il reste volontairement léger sur l'architecture, le plaidoyer, les événements et l'administration. Le présent document part de ces intentions et les transforme en exigences testables.</p>
+  <h3>Contraintes de terrain prises en compte</h3>
+  <div class="g2">
+    <div class="card soft"><h4>Usage</h4><ul><li>Navigation majoritairement sur smartphone, souvent en données mobiles, parfois sur des réseaux instables.</li><li>WhatsApp est le canal de contact le plus utilisé par les entrepreneurs ciblés.</li><li>Une part des futurs membres est peu habituée aux formulaires longs et aux mots de passe.</li></ul></div>
+    <div class="card soft"><h4>Organisation</h4><ul><li>L'équipe qui administrera le site est bénévole ou à temps partiel <span class="av">À valider par REC 242</span> : le back-office doit être simple et les tâches répétitives automatisées.</li><li>Les contenus institutionnels (gouvernance, statuts, critères d'adhésion, cotisations) ne sont pas encore fournis.</li></ul></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 05</div>
+  <h2><span class="n">05</span>Présentation de REC 242</h2>
+  <p>Ce qui suit reprend uniquement ce que disent les sources fournies. Les éléments absents sont signalés.</p>
+  <h3>Ce que REC 242 dit de lui-même</h3>
+  <table class="compact"><thead><tr><th style="width:38mm">Élément</th><th>Contenu dans les sources</th><th style="width:36mm">Source</th></tr></thead><tbody>
+  <tr><td class="k">Nom</td><td>« REC 242, Réseau des Entrepreneurs Congolais » sur le logo ; « REC, Réseau des Entrepreneurs du Congo » sur le site et dans le cahier des charges</td><td>Logo, site, CdC</td></tr>
+  <tr><td class="k">Devise</td><td>« Se connecter. Entreprendre. Construire. »</td><td>Site</td></tr>
+  <tr><td class="k">Vision</td><td>« Construire une communauté entrepreneuriale nationale de référence. »</td><td>Site</td></tr>
+  <tr><td class="k">Raison d'être</td><td>« Créer un écosystème où les entrepreneurs ne restent plus isolés. »</td><td>Site</td></tr>
+  <tr><td class="k">Trois piliers</td><td>Connecter · Faire progresser · Représenter</td><td>Site</td></tr>
+  <tr><td class="k">Organisation</td><td>Présidence générale · Bureau exécutif · Commissions (formation, financement, agriculture, immobilier, commerce, numérique, jeunesse…) · Communautés et antennes</td><td>Site</td></tr>
+  <tr><td class="k">Cible</td><td>Dirigeants et patrons de TPE-PME (brief Webtinix) ; « entrepreneurs, porteurs de projets et acteurs économiques » (site et CdC)</td><td>Brief, site, CdC</td></tr>
+  <tr><td class="k">Appartenance</td><td>Membre de UNICONGO</td><td>Brief</td></tr>
+  <tr><td class="k">Contact</td><td>Brazzaville · WhatsApp (+242) 06 725 79 50 · Rec242.Contact@gmail.com (CdC) · « Email à renseigner » (site)</td><td>Site, CdC</td></tr>
+  <tr><td class="k">Date de création, statut juridique, nombre de membres, dirigeants</td><td>Non communiqués</td><td><span class="av">À valider par REC 242</span></td></tr>
+  </tbody></table>
+  <div class="box warn"><div class="bt">Deux incohérences à corriger avant tout</div>
+  <p><strong>Le nom.</strong> Le logo dit « Réseau des Entrepreneurs Congolais », le site et le cahier des charges disent « Réseau des Entrepreneurs du Congo ». Le site ne mentionne jamais « 242 ». Pour le référencement comme pour la crédibilité, un seul nom officiel doit être utilisé partout (site, e-mails, documents, réseaux sociaux).</p>
+  <p><strong>La cible.</strong> Le brief parle d'un réseau patronal de dirigeants de TPE-PME. Le site et le formulaire actuels s'adressent aussi aux porteurs de projet et aux 18-25 ans. Ce n'est pas un détail : un réseau patronal qui parle aux pouvoirs publics au nom des entreprises doit pouvoir dire combien d'entreprises il représente. Nous proposons de distinguer deux statuts (membre entreprise et membre associé ou porteur de projet), à arbitrer en section 42.</p></div>
+  <h3>Traitement de l'appartenance à UNICONGO</h3>
+  <p>REC 242 est membre de UNICONGO. Le site doit le dire sans laisser penser que REC 242 en est une antenne. Nous recommandons trois emplacements, et seulement ceux-là :</p>
+  <ul>
+    <li><strong>Pied de page, sur toutes les pages</strong> : un bloc discret « Membre de UNICONGO » avec le logo officiel, à la même taille que les autres mentions institutionnelles, jamais dans l'en-tête.</li>
+    <li><strong>Page « Notre écosystème »</strong> (rubrique Le réseau) : un paragraphe qui explique que REC 242 est un réseau indépendant, avec sa propre gouvernance, et qu'il s'inscrit dans l'écosystème patronal congolais en tant que membre de UNICONGO. Le texte exact est <span class="av">À valider par REC 242</span>.</li>
+    <li><strong>Espace presse</strong> : la mention figure dans la fiche institutionnelle téléchargeable.</li>
+  </ul>
+  <p>Le logo UNICONGO devra être fourni en haute définition par REC 242, avec l'accord d'usage de UNICONGO si ses règles l'exigent.</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 06</div>
+  <h2><span class="n">06</span>Objectifs du projet</h2>
+  <p>Les objectifs sont formulés pour pouvoir être mesurés après le lancement. Les valeurs cibles ne sont pas fixées ici : elles seront définies avec REC 242 une fois la situation de départ connue (nombre de membres, fréquence des événements).</p>
+  <table><thead><tr><th style="width:30mm">Famille</th><th>Objectif</th><th style="width:58mm">Indicateur proposé</th></tr></thead><tbody>
+  <tr><td class="k">Institutionnel</td><td>Être identifié comme un interlocuteur crédible des TPE-PME par les administrations, bailleurs et partenaires</td><td>Consultations de la gouvernance et des positions, téléchargements de documents, demandes de contact institutionnelles</td></tr>
+  <tr><td class="k">Business</td><td>Faire du site le premier canal de recrutement de membres</td><td>Candidatures reçues, taux de validation, délai moyen de traitement</td></tr>
+  <tr><td class="k">Communication</td><td>Donner une source officielle et datée à chaque prise de parole</td><td>Communiqués publiés, reprises presse, partages</td></tr>
+  <tr><td class="k">Communautaire</td><td>Rendre le réseau visible de l'intérieur et donner envie de participer</td><td>Fiches membres complétées, inscriptions aux événements, taux de présence</td></tr>
+  <tr><td class="k">Conversion</td><td>Réduire les frictions entre « je découvre » et « je candidate »</td><td>Taux de clic sur « Adhérer », taux d'achèvement du formulaire</td></tr>
+  <tr><td class="k">Membres</td><td>Offrir un service concret : se faire connaître, trouver un contact, s'inscrire à une rencontre</td><td>Connexions mensuelles, recherches dans l'annuaire, demandes de mise en relation</td></tr>
+  <tr><td class="k">Futurs adhérents</td><td>Comprendre en moins de deux minutes ce qu'apporte l'adhésion et ce qu'elle coûte</td><td>Temps jusqu'au premier clic « Adhérer », consultations de la FAQ</td></tr>
+  <tr><td class="k">Partenaires</td><td>Identifier les interlocuteurs et les formats de partenariat</td><td>Demandes via le formulaire partenaire</td></tr>
+  <tr><td class="k">Pouvoirs publics</td><td>Accéder aux propositions de REC 242 sous une forme claire et citable</td><td>Consultations et téléchargements des positions</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 07</div>
+  <h2><span class="n">07</span>Positionnement digital</h2>
+  <p>Le site n'est ni une plaquette ni un réseau social. C'est le lieu officiel où REC 242 se présente, recrute, rassemble et prend position. Chaque visiteur doit trouver, dès l'accueil et sans chercher, la réponse à quatre questions.</p>
+  <div class="g4">
+    <div class="card"><div class="q">Qui sommes-nous ?</div><p>Un réseau indépendant de dirigeants congolais, sa gouvernance, son ancrage. Page « Le réseau ».</p></div>
+    <div class="card"><div class="q">Pourquoi existons-nous ?</div><p>Rompre l'isolement des entrepreneurs, les faire progresser, porter leur voix. Mission et trois piliers.</p></div>
+    <div class="card"><div class="q">Qu'apportons-nous ?</div><p>Des rencontres, des contacts, de la visibilité, une représentation. Page « Adhérer » et agenda.</p></div>
+    <div class="card"><div class="q">Comment nous rejoindre ?</div><p>Adhérer, participer à un événement, devenir partenaire, nous contacter. Boutons visibles partout.</p></div>
+  </div>
+  <div class="box reco"><div class="bt">Proposition de promesse (à valider)</div>
+  <p>« REC 242, le réseau des dirigeants de TPE-PME du Congo. Se connecter, entreprendre, construire. » La devise existante est conservée : elle est courte, active, et déjà associée au réseau.</p></div>
+  <h3>Ce que le site n'est pas</h3>
+  <ul>
+    <li>Pas une place de marché : les opportunités sont relayées, pas négociées sur le site.</li>
+    <li>Pas un réseau social : pas de fil d'actualité entre membres ni de commentaires au lancement.</li>
+    <li>Pas une extension de UNICONGO ni de Webtinix : l'identité et la parole restent celles de REC 242.</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 08</div>
+  <h2><span class="n">08</span>Cibles et personas</h2>
+  <p>Les personas ci-dessous sont des profils types construits à partir du brief et des sources. Ce ne sont pas des personnes réelles. Ils servent à arbitrer : chaque page doit servir au moins l'un d'eux.</p>
+
+  <div class="persona"><div class="ph"><b>1 · Dirigeant membre</b><span>Priorité haute</span></div><div class="pb">
+    <div><h4>Profil</h4><p>Gère une TPE ou PME à Brazzaville ou Pointe-Noire. Peu de temps, consulte surtout sur mobile, entre deux rendez-vous.</p></div>
+    <div><h4>Cherche</h4><ul><li>Les prochains événements et s'y inscrire en un geste</li><li>Trouver un membre par secteur</li><li>Être visible avec une fiche entreprise soignée</li><li>Les informations du réseau</li></ul></div>
+    <div><h4>Irritants à éviter</h4><ul><li>Mot de passe oublié sans solution simple</li><li>Informations dispersées entre WhatsApp et le site</li><li>Fiche impossible à mettre à jour</li></ul></div>
+  </div></div>
+
+  <div class="persona"><div class="ph"><b>2 · Entrepreneur qui envisage d'adhérer</b><span>Priorité haute</span></div><div class="pb">
+    <div><h4>Profil</h4><p>A entendu parler de REC 242 par un pair ou sur les réseaux sociaux. Veut savoir si cela vaut son temps et son argent.</p></div>
+    <div><h4>Cherche</h4><ul><li>Comprendre ce qu'est REC 242 et qui en fait partie</li><li>Les bénéfices concrets et le coût</li><li>Les conditions pour être accepté</li><li>Candidater sans formulaire interminable</li></ul></div>
+    <div><h4>Irritants à éviter</h4><ul><li>Pas de prix ni de critères affichés</li><li>Aucune nouvelle après l'envoi</li><li>Formulaire refusé sans explication</li></ul></div>
+  </div></div>
+
+  <div class="persona"><div class="ph"><b>3 · Partenaire ou institution</b><span>Priorité moyenne</span></div><div class="pb">
+    <div><h4>Profil</h4><p>Agent d'un ministère, d'une agence publique, d'un bailleur, d'une banque ou d'une grande entreprise.</p></div>
+    <div><h4>Cherche</h4><ul><li>Comprendre la gouvernance et la légitimité</li><li>Identifier le bon interlocuteur</li><li>Lire les positions et propositions</li><li>Proposer un partenariat</li></ul></div>
+    <div><h4>Irritants à éviter</h4><ul><li>Adresse e-mail non professionnelle</li><li>Documents non datés ou non signés</li><li>Aucune trace des actions passées</li></ul></div>
+  </div></div>
+
+  <div class="persona"><div class="ph"><b>4 · Journaliste ou média</b><span>Priorité moyenne</span></div><div class="pb">
+    <div><h4>Profil</h4><p>Journaliste économique, local ou international, qui prépare un sujet sur les PME congolaises.</p></div>
+    <div><h4>Cherche</h4><ul><li>Communiqués datés et citables</li><li>Contact presse joignable</li><li>Logos, photos officielles, biographies</li><li>Calendrier des prises de parole</li></ul></div>
+    <div><h4>Irritants à éviter</h4><ul><li>Logo introuvable en haute définition</li><li>Positions noyées dans les actualités</li></ul></div>
+  </div></div>
+
+  <div class="persona"><div class="ph"><b>5 · Porteur de projet</b><span>Selon arbitrage section 42</span></div><div class="pb">
+    <div><h4>Profil</h4><p>Jeune créateur, souvent moins de 35 ans, pas encore immatriculé ou en première année d'activité. Présent dans le formulaire actuel.</p></div>
+    <div><h4>Cherche</h4><ul><li>Formations et masterclass</li><li>Mentorat et conseils de pairs</li><li>Rejoindre la communauté WhatsApp</li></ul></div>
+    <div><h4>Point d'attention</h4><p>Si ce profil est accepté, il doit l'être sous un statut distinct, pour préserver la représentativité patronale du réseau.</p></div>
+  </div></div>
+</div>
+
+<!-- ================= PART B ================= -->
+<div class="part"><div><div class="pl">Partie B</div><h1>Analyse</h1></div><div class="pn">B</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 09</div>
+  <h2><span class="n">09</span>Audit de l'existant</h2>
+  <p class="lead">Trois sources ont été auditées : le site en ligne, le cahier des charges initial et le logo. Elles ont chacune leurs qualités ; elles se contredisent aussi sur plusieurs points qu'il faut régler avant la conception.</p>
+
+  <h3>9.1 Le site actuel, rec242.vercel.app</h3>
+  <p>Audit réalisé le 24 septembre 2026, en navigateur, sur mobile et ordinateur, avec lecture du code source.</p>
+  <div class="g4">
+    <div class="card soft"><div class="big">1</div><p>page unique, navigation par ancres (Mission, Pourquoi adhérer ?, Nos actions, Organisation, Rejoindre le REC)</p></div>
+    <div class="card soft"><div class="big">0</div><p>image : ni logo officiel, ni photo. Le logo est remplacé par un badge texte « REC »</p></div>
+    <div class="card soft"><div class="big">4</div><p>champs au formulaire : nom, activité, téléphone ou WhatsApp, e-mail facultatif</p></div>
+    <div class="card soft"><div class="big">~11 Ko</div><p>de HTML, un fichier CSS et un script : page très légère, rapide à charger</p></div>
+  </div>
+  <h4>Constat technique</h4>
+  <table class="compact"><thead><tr><th style="width:40mm">Point observé</th><th>Détail</th></tr></thead><tbody>
+  <tr><td class="k">Technologie</td><td>HTML, CSS et JavaScript sans framework, hébergés sur Vercel. Polices Google Fonts : Space Grotesk (titres), Inter (texte), IBM Plex Mono.</td></tr>
+  <tr><td class="k">Formulaire</td><td>Envoi vers un service tiers (Formspree), puis ouverture de WhatsApp avec un message prérempli vers le (+242) 06 725 79 50. Aucune base de données, aucun contrôle de doublon, aucune notification de suivi au candidat.</td></tr>
+  <tr><td class="k">SEO</td><td>Titre et meta description présents, langue déclarée en français. Absents : favicon, balises Open Graph (aperçu lors d'un partage WhatsApp ou Facebook), URL canonique, robots.txt, sitemap.xml (les deux renvoient une erreur 404), nom de domaine propre.</td></tr>
+  <tr><td class="k">Palette</td><td>Fond beige #F3EDE0, vert forêt #1F4D3D, or #C89B3C, terracotta #B5482E. Ces teintes sont proches mais différentes de celles du logo officiel.</td></tr>
+  <tr><td class="k">Accessibilité</td><td>Bonnes bases : menu mobile avec attributs ARIA, respect du réglage « réduire les animations ». Les champs n'ont pas d'étiquette associée par programme, ce qui gêne les lecteurs d'écran.</td></tr>
+  <tr><td class="k">Contenu</td><td>Textes clairs et bien écrits. Aucun chiffre, aucun nom, aucune photo, aucune date : rien ne prouve encore que le réseau est actif. Adresse e-mail « à renseigner » dans le pied de page.</td></tr>
+  </tbody></table>
+
+  <h4>Verdict par élément</h4>
+  <table><thead><tr><th style="width:44mm">Élément</th><th style="width:22mm">Verdict</th><th>Justification et action</th></tr></thead><tbody>
+  <tr><td class="k">Devise « Se connecter. Entreprendre. Construire. »</td><td><span class="v keep">Conserver</span></td><td>Courte, mémorisable, cohérente avec les piliers. Reprise dans l'en-tête et les documents.</td></tr>
+  <tr><td class="k">Trois piliers et leurs textes</td><td><span class="v keep">Conserver</span></td><td>Structurent bien le discours. Deviennent la colonne vertébrale de la page « Le réseau ».</td></tr>
+  <tr><td class="k">Six avantages d'adhésion</td><td><span class="v imp">Améliorer</span></td><td>Bons intitulés, mais promesses générales. Chaque avantage doit être rattaché à un service réel (un événement, l'annuaire, une commission) et à un statut de membre.</td></tr>
+  <tr><td class="k">Quatre actions</td><td><span class="v imp">Améliorer</span></td><td>Deviennent des types d'événements dans l'agenda et une rubrique Plaidoyer à part entière.</td></tr>
+  <tr><td class="k">Quatre niveaux d'organisation</td><td><span class="v imp">Améliorer</span></td><td>À compléter par les noms, fonctions et photos des responsables, et la liste réelle des commissions.</td></tr>
+  <tr><td class="k">Accroche « Les entrepreneurs congolais ont besoin d'un réseau… »</td><td><span class="v re">Repenser</span></td><td>Forte mais longue sur mobile (plus de 4 lignes en 375 px). Proposer une accroche plus courte et centrée sur le lecteur.</td></tr>
+  <tr><td class="k">Badge texte « REC » à la place du logo</td><td><span class="v del">Supprimer</span></td><td>Remplacé par le logo officiel REC 242, en version horizontale adaptée à l'en-tête (à produire).</td></tr>
+  <tr><td class="k">Formulaire Formspree + WhatsApp</td><td><span class="v re">Repenser</span></td><td>Remplacé par un parcours de candidature avec base de données, anti-doublon, suivi et validation. L'ouverture de WhatsApp est conservée comme étape finale, sous conditions (section 20).</td></tr>
+  <tr><td class="k">Palette beige, vert forêt, terracotta</td><td><span class="v re">Repenser</span></td><td>Alignement sur les couleurs du logo officiel (vert, or, rouge). Le fond clair chaud peut être conservé comme couleur de surface.</td></tr>
+  <tr><td class="k">Mention « Email à renseigner »</td><td><span class="v del">Supprimer</span></td><td>Remplacée par une adresse sur nom de domaine propre.</td></tr>
+  <tr><td class="k">Pages Adhésion, Agenda, Annuaire, Actualités, Plaidoyer, Presse, Contact, mentions légales</td><td><span class="v add">Ajouter</span></td><td>Inexistantes aujourd'hui.</td></tr>
+  <tr><td class="k">Légèreté du code</td><td><span class="v keep">Conserver</span></td><td>C'est la vraie qualité technique du site actuel. Le nouveau site doit s'imposer un budget de poids équivalent sur les pages publiques (section 29).</td></tr>
+  </tbody></table>
+
+  <h3>9.2 Le cahier des charges initial</h3>
+  <p>Six pages, rédigées par REC. Le document est précis sur la qualification des candidats et sur la sécurité, et silencieux sur le reste. Nous en retenons l'essentiel, en signalant les zones floues.</p>
+  <table><thead><tr><th style="width:44mm">Exigence du CdC initial</th><th style="width:22mm">Avis</th><th>Commentaire Webtinix</th></tr></thead><tbody>
+  <tr><td class="k">Formulaire strict : identité, 3 secteurs maximum, ancienneté, tranche d'âge, localisation, objectif</td><td><span class="v keep">Retenu</span></td><td>Repris et enrichi des informations entreprise (raison sociale, forme juridique, effectif) indispensables à un réseau patronal.</td></tr>
+  <tr><td class="k">Indicatif +242 obligatoire</td><td><span class="v re">À revoir</span></td><td>Contradictoire avec l'option « Diaspora/Autre » de la localisation. Proposition : +242 par défaut, autres indicatifs possibles.</td></tr>
+  <tr><td class="k">Anti-doublon par e-mail ou téléphone</td><td><span class="v keep">Retenu</span></td><td>Contrôle côté serveur, sur valeurs normalisées. Le message imposé révèle qu'une adresse est déjà inscrite : nous ajoutons une limite de tentatives pour éviter qu'il serve à tester des adresses.</td></tr>
+  <tr><td class="k">Redirection WhatsApp immédiate après candidature</td><td><span class="v re">À arbitrer</span></td><td>Donner le lien du groupe avant validation revient à laisser entrer n'importe qui dans la communauté. Proposition en section 20.</td></tr>
+  <tr><td class="k">Validation humaine, lien de première connexion</td><td><span class="v keep">Retenu</span></td><td>Cœur du parcours. Précisé par des statuts, des délais de validité et un journal des décisions.</td></tr>
+  <tr><td class="k">Alerte à Rec242.Contact@gmail.com</td><td><span class="v imp">Améliorer</span></td><td>Une adresse gratuite nuit à la crédibilité et se perd facilement. Proposition : adresses sur le domaine de REC 242.</td></tr>
+  <tr><td class="k">Membre limité à photo, bio, réseaux sociaux</td><td><span class="v imp">Améliorer</span></td><td>Bon principe, mais un annuaire vivant exige que le membre puisse demander la mise à jour de ses données (changement de téléphone, de siège). Ajout d'une demande de modification validée par l'administration.</td></tr>
+  <tr><td class="k">Page « L'Annuaire REC » : modalités techniques et financières d'inscription, annuaire web et papier</td><td><span class="v re">À clarifier</span></td><td>Le CdC décrit une page d'information sur un annuaire payant et imprimé, alors que le brief attend un annuaire consultable. Le modèle économique doit être précisé.</td></tr>
+  <tr><td class="k">Tags d'expertise reliant experts et demandes des membres</td><td><span class="v keep">Retenu</span></td><td>Traduit par une taxonomie de secteurs commune aux membres, commissions, experts, événements et opportunités.</td></tr>
+  <tr><td class="k">FAQ en accordéon</td><td><span class="v keep">Retenu</span></td><td>Sur la page Adhérer et en page d'accueil, avec balisage de données structurées.</td></tr>
+  <tr><td class="k">Sécurité : bcrypt, XSS, CSRF, déconnexion automatique, consentement, politique de confidentialité</td><td><span class="v keep">Retenu</span></td><td>Repris et complété en section 32.</td></tr>
+  <tr><td class="k">Palette beige, vert forêt, terracotta</td><td><span class="v re">À arbitrer</span></td><td>Le CdC demande de préserver la palette de la maquette ; le logo officiel utilise vert, or et rouge. Voir section 28.</td></tr>
+  <tr><td class="k">Numérotation « Page 4 » pour le formulaire</td><td><span class="v del">Incohérent</span></td><td>Le plan du CdC ne comprend pas de page Adhésion. Nous créons une rubrique Adhérer à part entière.</td></tr>
+  </tbody></table>
+  <h4>Ce que le cahier des charges initial ne traite pas</h4>
+  <ul>
+    <li>Le plaidoyer au-delà d'une ligne, et la distinction entre positions, actions et actualités.</li>
+    <li>Les règles d'adhésion : critères, statuts de membres, montant et périodicité des cotisations, renouvellement.</li>
+    <li>La gestion des événements : inscriptions, capacité, confirmation, présence.</li>
+    <li>Le back-office : rôles, droits, journal des actions.</li>
+    <li>L'espace presse, les partenaires, l'appartenance à UNICONGO.</li>
+    <li>Le nom de domaine, l'hébergement, les sauvegardes, la maintenance, la mesure d'audience.</li>
+  </ul>
+
+  <h3>9.3 Le logo REC 242</h3>
+  <div style="display:grid;grid-template-columns:44mm 1fr;gap:6mm;align-items:start" class="keep">
+    <div style="border:1px solid var(--line);padding:3mm;border-radius:12px"><img src="rec-logo.png" style="width:100%;display:block" alt="Logo REC 242"></div>
+    <div>
+      <table class="compact" style="margin-top:0"><tbody>
+      <tr><td class="k">Couleurs</td><td>Vert <span class="mono">#02673F</span>, or <span class="mono">#E8AE0D</span>, rouge <span class="mono">#D8131C</span>, relevés sur le fichier fourni. Ce sont les couleurs du drapeau congolais, lues avec sobriété.</td></tr>
+      <tr><td class="k">Formes</td><td>Cinq silhouettes stylisées forment un cercle autour d'un graphique en barres et d'une flèche montante : le collectif qui porte la croissance.</td></tr>
+      <tr><td class="k">Typographie</td><td>Capitales géométriques très grasses pour « REC 242 », sous-titre en capitales plus légères. Un filet tricolore souligne « REC ».</td></tr>
+      <tr><td class="k">Personnalité</td><td>Collective, optimiste, patriotique, plus chaleureuse qu'austère. Institutionnelle par la structure, populaire par le symbole.</td></tr>
+      <tr><td class="k">Potentiel de système</td><td>Le filet tricolore, le cercle et la flèche peuvent devenir des éléments graphiques secondaires. Les silhouettes ne doivent pas être détournées.</td></tr>
+      <tr><td class="k">Limites</td><td>Le logo existe en format carré sur fond blanc uniquement. Il manque : version horizontale pour l'en-tête, version monochrome, version sur fond sombre, pictogramme seul pour le favicon, fichiers vectoriels. <span class="av">À fournir par REC 242</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 10</div>
+  <h2><span class="n">10</span>Benchmark</h2>
+  <p>Cinq sites ont été étudiés pour leurs mécanismes, pas pour leur apparence. Aucun ne sera copié. Le site de la FEC (RDC) n'a pas pu être lu depuis notre environnement d'analyse ; seule sa structure publique (présentation, statuts publiés en PDF, FAQ, actualités) a pu être relevée. Il devra être revu en séance avec REC 242.</p>
+  <table><thead><tr><th style="width:28mm">Référence</th><th>Ce qui fonctionne</th><th style="width:48mm">Limite observée</th><th style="width:44mm">Ce que REC 242 peut en tirer</th></tr></thead><tbody>
+  <tr><td class="k">FEC (RDC)</td><td>Statuts publiés, dispositions statutaires en ligne, FAQ. Transparence institutionnelle à moindre coût.</td><td>Analyse incomplète (site non lisible depuis notre environnement).</td><td>Publier statuts et règlement intérieur dès le lancement.</td></tr>
+  <tr><td class="k">CBI (Royaume-Uni)</td><td>Page « Impact » organisée en campagnes, bilan des résultats obtenus. Adhésion par formulaire de qualification qui déclenche un rappel. Centre presse filtrable par année et par thème, contact presse joignable.</td><td>Offre très dense, aucun tarif affiché : décourageant pour une petite entreprise.</td><td>Séparer campagnes, résultats et actualités. Qualifier le candidat avant de le rappeler.</td></tr>
+  <tr><td class="k">NEASA (Afrique du Sud)</td><td>Tarifs publics par formule et par taille d'entreprise. Adhésion par formulaire, rappel ou bulletin PDF. WhatsApp et ligne d'assistance mis en avant. Bannière de campagne sur l'accueil.</td><td>Accueil très long, plaidoyer mélangé aux contenus éditoriaux.</td><td>Afficher un tarif lisible par taille d'entreprise. Plusieurs portes d'entrée, dont WhatsApp.</td></tr>
+  <tr><td class="k">MEDEF International</td><td>Tableau comparatif non-membre / membre qui rend l'avantage tangible. Agenda filtrable, séparation entre actions à venir et actions passées. Gouvernance détaillée.</td><td>Accueil fondé sur un carrousel et un flux de réseaux sociaux, adhésion encore par bulletin à télécharger.</td><td>Tableau « avec / sans adhésion ». Archives d'événements comme preuve d'activité.</td></tr>
+  <tr><td class="k">MEDEF</td><td>Chiffres de représentativité en tête de la présentation. Carte du réseau territorial avec fiches normalisées. Communiqués filtrables, contact presse. Parcours vitrine, adhésion et extranet séparés.</td><td>Libellés de marque peu compréhensibles pour un visiteur extérieur, positions noyées dans les actualités.</td><td>Fiches normalisées pour les antennes. Menus en mots simples.</td></tr>
+  </tbody></table>
+  <h3>Enseignements retenus pour REC 242</h3>
+  <div class="g2">
+    <div>
+      <h4>Adhésion</h4>
+      <ul><li>Un bouton « Adhérer » toujours visible, fixé en bas d'écran sur mobile.</li><li>Tarifs et critères publics dès qu'ils sont arrêtés.</li><li>Un tableau « ce que vous obtenez en adhérant ».</li><li>Trois portes : formulaire, rappel via WhatsApp, bulletin PDF pour les candidatures hors ligne.</li></ul>
+      <h4>Crédibilité</h4>
+      <ul><li>Gouvernance nommée, avec photos et mandats.</li><li>Statuts et règlement téléchargeables.</li><li>Chiffres clés administrables, affichés seulement lorsqu'ils sont renseignés.</li></ul>
+    </div>
+    <div>
+      <h4>Plaidoyer</h4>
+      <ul><li>Deux ou trois dossiers prioritaires au maximum, nommés clairement.</li><li>Positions, actions et résultats dans des formats distincts, tous datés.</li></ul>
+      <h4>Événements et presse</h4>
+      <ul><li>Agenda en deux onglets, « À venir » et « Passés », filtrable par ville et type.</li><li>Compte rendu et galerie pour chaque événement passé.</li><li>Espace presse avec communiqués, kit média et contact.</li></ul>
+      <h4>Performance</h4>
+      <ul><li>Pas de carrousel, pas de flux de réseaux sociaux intégré sur l'accueil.</li></ul>
+    </div>
+  </div>
+  <div class="box note"><div class="bt">Point de différenciation</div><p>Aucun des sites lus ne propose d'annuaire public de ses membres. Pour un réseau de TPE-PME dont la promesse est la mise en relation, un annuaire bien fait est l'avantage le plus concret et le plus visible que REC 242 puisse offrir.</p></div>
+</div>
+
+<!-- ================= PART C ================= -->
+<div class="part"><div><div class="pl">Partie C</div><h1>Conception de l'expérience</h1></div><div class="pn">C</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 11</div>
+  <h2><span class="n">11</span>Principes UX</h2>
+  <p>« Moderne, intuitif et responsive » ne veut rien dire tant qu'on ne dit pas comment on le vérifie. Voici les règles que la conception devra respecter, chacune avec son test.</p>
+  <table><thead><tr><th style="width:52mm">Principe</th><th>Ce que cela veut dire concrètement</th><th style="width:48mm">Comment on le vérifie</th></tr></thead><tbody>
+  <tr><td class="k">Le mobile d'abord</td><td>Chaque écran est conçu d'abord en 360 px de large, puis enrichi pour les écrans plus grands.</td><td>Maquettes mobiles validées avant les maquettes ordinateur</td></tr>
+  <tr><td class="k">Une action principale par écran</td><td>Un seul bouton plein par bloc. « Adhérer » est l'action principale du site public ; « S'inscrire » celle d'une fiche événement.</td><td>Revue des maquettes</td></tr>
+  <tr><td class="k">Adhérer en trois gestes</td><td>Depuis n'importe quelle page, le formulaire de candidature est accessible en un clic et envoyé en moins de cinq minutes.</td><td>Test utilisateur avec 5 dirigeants</td></tr>
+  <tr><td class="k">Prouver plutôt qu'affirmer</td><td>Chaque promesse est accompagnée d'une preuve : photo d'événement, nom d'un responsable, document daté, fiche membre.</td><td>Relecture des contenus</td></tr>
+  <tr><td class="k">Des mots simples</td><td>Menus en français courant, pas de sigles internes. « Agenda » plutôt que « Événementiel ».</td><td>Test de tri de cartes ou test de premier clic</td></tr>
+  <tr><td class="k">Le poids compte</td><td>Images compressées et chargées à l'affichage, aucune vidéo en lecture automatique, polices limitées à deux familles.</td><td>Budget de performance (section 29)</td></tr>
+  <tr><td class="k">WhatsApp comme prolongement</td><td>Un bouton de contact WhatsApp sur les pages clés, des liens de partage WhatsApp sur les événements, positions et actualités.</td><td>Présence vérifiée en recette</td></tr>
+  <tr><td class="k">Toujours dire où l'on en est</td><td>Après chaque envoi : message de confirmation, e-mail récapitulatif, statut consultable.</td><td>Recette des parcours</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 12</div>
+  <h2><span class="n">12</span>Architecture de l'information</h2>
+  <p>La liste de rubriques du brief a été réorganisée à partir des personas. Deux principes guident les regroupements : un visiteur doit pouvoir se repérer avec sept entrées au maximum, et chaque type de contenu n'a qu'une seule maison.</p>
+  <h3>Navigation principale proposée</h3>
+  <table class="compact"><thead><tr><th style="width:30mm">Entrée de menu</th><th>Regroupe</th><th style="width:40mm">Pour qui d'abord</th></tr></thead><tbody>
+  <tr><td class="k">Le réseau</td><td>Qui sommes-nous, mission et valeurs, gouvernance, commissions, antennes, notre écosystème (dont UNICONGO), partenaires</td><td>Personas 2, 3, 4</td></tr>
+  <tr><td class="k">Adhérer</td><td>Pourquoi adhérer, qui peut adhérer, cotisations, déroulé de la candidature, FAQ, formulaire</td><td>Persona 2</td></tr>
+  <tr><td class="k">Membres</td><td>Annuaire, fiches entreprises</td><td>Personas 1, 2, 3</td></tr>
+  <tr><td class="k">Agenda</td><td>Événements à venir, événements passés avec compte rendu et galerie</td><td>Personas 1, 2, 4</td></tr>
+  <tr><td class="k">Plaidoyer</td><td>Dossiers prioritaires, positions officielles, actions menées, documents</td><td>Personas 3, 4</td></tr>
+  <tr><td class="k">Actualités</td><td>Articles, communiqués, interviews ; sous-rubrique Presse (kit média, contact presse)</td><td>Personas 1, 4</td></tr>
+  <tr><td class="k">Contact</td><td>Formulaire général, formulaire partenaire, coordonnées, WhatsApp</td><td>Tous</td></tr>
+  </tbody></table>
+  <p>À droite de l'en-tête : un lien « Espace membre » et un bouton « Adhérer ». La rubrique Opportunités est accessible depuis l'espace membre et, pour les opportunités publiques, depuis l'accueil (section 22). Elle n'entre dans le menu principal qu'en V2, quand le volume de publications le justifie.</p>
+  <div class="box reco"><div class="bt">Rubriques du brief fusionnées ou repoussées</div>
+  <ul><li><strong>« À propos », « Notre mission », « Gouvernance »</strong> sont regroupés sous « Le réseau » pour éviter trois pages courtes.</li>
+  <li><strong>« Partenaires »</strong> devient une page de « Le réseau » plutôt qu'une entrée de menu, tant que la liste est courte.</li>
+  <li><strong>« Ressources »</strong> n'a pas de page propre : les documents sont rangés là où ils ont un sens (statuts dans Le réseau, positions dans Plaidoyer, kit média dans Presse), et retrouvables par la recherche.</li></ul></div>
+  <h3>Taxonomies communes</h3>
+  <p>Une même liste de secteurs d'activité sert partout : formulaire d'adhésion, annuaire, commissions, experts, événements, opportunités, positions. C'est ce qui rend possible le « maillage par tags d'expertise » demandé par le cahier des charges initial.</p>
+  <table class="compact"><thead><tr><th style="width:32mm">Taxonomie</th><th>Valeurs de départ</th><th style="width:40mm">Administrée par</th></tr></thead><tbody>
+  <tr><td class="k">Secteurs</td><td>Liste fournie par REC 242. Le CdC cite agriculture et numérique ; les commissions citent formation, financement, agriculture, immobilier, commerce, numérique, jeunesse. <span class="av">Liste complète à valider</span></td><td>Administrateur</td></tr>
+  <tr><td class="k">Localités</td><td>Brazzaville, Pointe-Noire, Dolisie, Nkayi, Ouesso, Diaspora / Autre (CdC). Extensible.</td><td>Administrateur</td></tr>
+  <tr><td class="k">Types d'événements</td><td>Afterwork, atelier, masterclass, conférence, déjeuner d'affaires, rencontre institutionnelle, assemblée, mission, formation</td><td>Responsable événements</td></tr>
+  <tr><td class="k">Types de contenus</td><td>Actualité, communiqué, interview, position officielle, action menée, document</td><td>Fixe (développement)</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 13</div>
+  <h2><span class="n">13</span>Arborescence</h2>
+  <div class="tree">
+    <div class="root">Accueil <span>rec242.cg ou domaine à définir</span></div>
+    <div class="br"><b>Le réseau</b><div>Qui sommes-nous<code>/le-reseau</code></div><div>Gouvernance<code>/le-reseau/gouvernance</code></div><div>Commissions<code>/le-reseau/commissions</code></div><div>Antennes<code>/le-reseau/antennes</code></div><div>Notre écosystème<code>/le-reseau/ecosysteme</code></div><div>Partenaires<code>/le-reseau/partenaires</code></div></div>
+    <div class="br alt"><b>Adhérer</b><div>Pourquoi et comment<code>/adherer</code></div><div>Candidature<code>/adherer/candidature</code></div><div>Confirmation<code>/adherer/merci</code></div><div>FAQ (ancre)<code>/adherer#faq</code></div></div>
+    <div class="br"><b>Membres</b><div>Annuaire<code>/membres</code></div><div>Fiche entreprise<code>/membres/[nom]</code></div></div>
+    <div class="br"><b>Agenda</b><div>À venir<code>/agenda</code></div><div>Passés<code>/agenda/passes</code></div><div>Fiche événement<code>/agenda/[titre]</code></div></div>
+    <div class="br"><b>Plaidoyer</b><div>Vue d'ensemble<code>/plaidoyer</code></div><div>Dossier<code>/plaidoyer/[dossier]</code></div><div>Position<code>/plaidoyer/positions/[titre]</code></div><div>Action<code>/plaidoyer/actions/[titre]</code></div></div>
+    <div class="br"><b>Actualités</b><div>Liste<code>/actualites</code></div><div>Article<code>/actualites/[titre]</code></div><div>Presse<code>/presse</code></div></div>
+    <div class="br"><b>Contact</b><div>Contact général<code>/contact</code></div><div>Devenir partenaire<code>/contact/partenariat</code></div></div>
+    <div class="br gr"><b>Espace membre</b><div>Connexion<code>/espace-membre</code></div><div>Tableau de bord</div><div>Mon profil, mon entreprise</div><div>Mes événements</div><div>Opportunités<code>/espace-membre/opportunites</code></div><div>Documents du réseau</div></div>
+  </div>
+  <p style="font-size:8.4pt;color:var(--muted)">Pages transverses : mentions légales, politique de confidentialité, conditions d'utilisation de l'espace membre, plan du site, page 404, recherche. Le nom de domaine <span class="av">est à choisir par REC 242</span> ; « rec242.cg » est un exemple, sa disponibilité n'a pas été vérifiée.</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 14</div>
+  <h2><span class="n">14</span>Description détaillée des pages</h2>
+  <h3>14.1 Page d'accueil</h3>
+  <p>L'accueil doit convaincre en moins d'une minute sur mobile. Il reste court : dix blocs au maximum, chacun avec un seul appel à l'action. Les blocs alimentés par des contenus (événements, actualités, membres) se masquent automatiquement s'ils sont vides, pour ne jamais afficher une section creuse.</p>
+  <div class="wf">
+    <div class="blk hero"><span class="idx">1</span><div><b>Hero.</b> Logo, promesse courte (« Le réseau des dirigeants de TPE-PME du Congo »), devise, une phrase d'explication. Boutons : <strong>Rejoindre REC 242</strong> (plein) et <strong>Découvrir le réseau</strong> (contour). Une photo réelle d'un événement du réseau, pas une photo de banque d'images.</div></div>
+    <div class="blk"><span class="idx">2</span><div><b>Chiffres clés.</b> Jusqu'à quatre compteurs administrables (membres, entreprises représentées, secteurs, événements organisés, années d'existence). Un compteur non renseigné n'apparaît pas. Aucune valeur par défaut. <span class="av">Valeurs à fournir par REC 242</span></div></div>
+    <div class="blk"><span class="idx">3</span><div><b>Qui est REC 242.</b> Trois piliers (Connecter, Faire progresser, Représenter), une phrase chacun. Lien « Notre gouvernance ».</div></div>
+    <div class="blk"><span class="idx">4</span><div><b>Pourquoi adhérer.</b> Les six avantages, reformulés et chacun relié à un service réel. Bouton « Voir les conditions d'adhésion ».</div></div>
+    <div class="blk"><span class="idx">5</span><div><b>Prochains événements.</b> Trois cartes (date, type, lieu, bouton S'inscrire). Lien « Tout l'agenda ». Si aucun événement à venir : les trois derniers événements passés.</div></div>
+    <div class="blk"><span class="idx">6</span><div><b>Le réseau en visages.</b> Une sélection de six fiches membres qui ont accepté d'être mises en avant (logo, nom, secteur). Lien « Explorer l'annuaire ».</div></div>
+    <div class="blk"><span class="idx">7</span><div><b>Plaidoyer.</b> Le dossier prioritaire du moment et la dernière position officielle, avec sa date. Lien « Nos positions ».</div></div>
+    <div class="blk"><span class="idx">8</span><div><b>Opportunités.</b> Deux à trois opportunités publiques (appel à partenariat, événement partenaire). Bloc facultatif, masqué s'il n'y a rien à montrer.</div></div>
+    <div class="blk"><span class="idx">9</span><div><b>Actualités.</b> Les trois dernières publications, tous types confondus, avec étiquette de type.</div></div>
+    <div class="blk"><span class="idx">10</span><div><b>Écosystème et appel final.</b> Logos des partenaires validés et mention « Membre de UNICONGO ». Puis bandeau final : « Vous dirigez une entreprise au Congo ? » avec les boutons Adhérer et Nous écrire sur WhatsApp. FAQ courte (4 questions) juste avant.</div></div>
+  </div>
+
+  <h3>14.2 Fiches des autres pages</h3>
+  <table class="compact"><thead><tr><th style="width:26mm">Page</th><th style="width:38mm">Objectif</th><th>Contenus et fonctionnalités</th><th style="width:30mm">CTA</th><th style="width:26mm">Dépend de</th></tr></thead><tbody>
+  <tr><td class="k">Le réseau</td><td>Établir la légitimité</td><td>Histoire, vision, mission, trois piliers, valeurs, schéma des quatre niveaux d'organisation, chiffres clés, statuts en PDF</td><td>Adhérer · Voir la gouvernance</td><td>Textes, statuts, date de création</td></tr>
+  <tr><td class="k">Gouvernance</td><td>Montrer qui dirige</td><td>Présidence, bureau exécutif : photo, nom, fonction, entreprise, mandat, tags d'expertise. Organigramme simple</td><td>Contacter le réseau</td><td>Noms, photos, fonctions</td></tr>
+  <tr><td class="k">Commissions</td><td>Montrer l'expertise</td><td>Une carte par commission : objet, responsable, experts rattachés, événements et positions liés (via les tags)</td><td>Rejoindre une commission (membres)</td><td>Liste des commissions et responsables</td></tr>
+  <tr><td class="k">Antennes</td><td>Montrer l'ancrage territorial</td><td>Fiche par ville : référent, contact, prochains événements locaux</td><td>Contacter l'antenne</td><td>Existence d'antennes</td></tr>
+  <tr><td class="k">Notre écosystème</td><td>Situer REC 242</td><td>Texte sur l'indépendance du réseau et son appartenance à UNICONGO, autres liens institutionnels</td><td>Devenir partenaire</td><td>Texte validé, logo UNICONGO</td></tr>
+  <tr><td class="k">Partenaires</td><td>Valoriser les soutiens</td><td>Logos cliquables, type de partenariat, courte description</td><td>Devenir partenaire</td><td>Accords de partenariat signés</td></tr>
+  <tr><td class="k">Adhérer</td><td>Convertir</td><td>Bénéfices, tableau « avec ou sans adhésion », statuts de membres, critères, cotisations, étapes de la candidature, FAQ, témoignages de membres (réels uniquement)</td><td>Commencer ma candidature</td><td>Critères, tarifs, statuts</td></tr>
+  <tr><td class="k">Candidature</td><td>Qualifier</td><td>Formulaire en 4 étapes (section 20)</td><td>Envoyer ma candidature</td><td>Listes de secteurs et localités</td></tr>
+  <tr><td class="k">Annuaire</td><td>Rendre le réseau visible</td><td>Recherche, filtres, cartes membres, pagination (section 18)</td><td>Voir la fiche</td><td>Consentement des membres</td></tr>
+  <tr><td class="k">Agenda</td><td>Faire venir</td><td>Liste filtrable, onglets À venir et Passés, fiche événement avec inscription (section 19)</td><td>S'inscrire</td><td>Programme des événements</td></tr>
+  <tr><td class="k">Plaidoyer</td><td>Porter la voix</td><td>Dossiers, positions, actions, documents, frise de suivi (section 21)</td><td>Télécharger la position · Contacter</td><td>Positions adoptées</td></tr>
+  <tr><td class="k">Actualités</td><td>Montrer l'activité</td><td>Liste filtrable par type et par secteur, article avec partage (section 23)</td><td>Lire · Partager</td><td>Rythme éditorial</td></tr>
+  <tr><td class="k">Presse</td><td>Servir les médias</td><td>Communiqués, kit média (logos, photos, fiche institutionnelle), contact presse, dernières interventions</td><td>Télécharger le kit</td><td>Contact presse désigné</td></tr>
+  <tr><td class="k">Contact</td><td>Orienter</td><td>Formulaire avec motif (adhésion, partenariat, presse, autre), coordonnées, bouton WhatsApp, horaires, plan</td><td>Envoyer</td><td>Adresse physique</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 15</div>
+  <h2><span class="n">15</span>Fonctionnalités</h2>
+  <p>Vue d'ensemble du périmètre, triée par priorité. Le détail de chaque module figure dans la partie D.</p>
+  <table class="compact"><thead><tr><th style="width:38mm">Fonctionnalité</th><th>Description</th><th style="width:22mm">Utilisateur</th><th style="width:15mm" class="c">Priorité</th><th style="width:12mm" class="c">Version</th><th style="width:26mm">Administration</th></tr></thead><tbody>
+  <tr><td class="k">Pages institutionnelles</td><td>Le réseau, gouvernance, commissions, écosystème, partenaires</td><td>Tous</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Candidature d'adhésion</td><td>Formulaire en étapes, anti-doublon, consentement, confirmation</td><td>Prospect</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. membres</td></tr>
+  <tr><td class="k">Traitement des candidatures</td><td>File d'attente, statuts, notes internes, validation, refus motivé</td><td>Admin</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. membres</td></tr>
+  <tr><td class="k">Activation du compte</td><td>E-mail avec lien unique pour définir son mot de passe</td><td>Membre</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Automatique</td></tr>
+  <tr><td class="k">Profil membre et entreprise</td><td>Photo ou logo, bio, réseaux sociaux ; demande de modification des autres champs</td><td>Membre</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. membres</td></tr>
+  <tr><td class="k">Annuaire</td><td>Recherche, filtres secteur et ville, fiches, visibilité par champ</td><td>Tous / membres</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. membres</td></tr>
+  <tr><td class="k">Agenda et inscriptions</td><td>Événements, capacité, inscription, confirmation, export des participants</td><td>Tous / membres</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. événements</td></tr>
+  <tr><td class="k">Actualités et communiqués</td><td>Publication, types, secteurs, image, SEO, partage</td><td>Tous</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Plaidoyer</td><td>Dossiers, positions officielles, actions menées, documents</td><td>Tous</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur + validation</td></tr>
+  <tr><td class="k">Formulaires de contact</td><td>Contact général et partenariat, avec routage par motif</td><td>Tous</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Administrateur</td></tr>
+  <tr><td class="k">FAQ administrable</td><td>Questions-réponses en accordéon</td><td>Prospect</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Espace presse</td><td>Kit média, contact presse</td><td>Journaliste</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Opportunités publiées par l'admin</td><td>Liste simple, publique ou réservée aux membres</td><td>Membre</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Documents réservés</td><td>Comptes rendus, règlement intérieur, supports d'ateliers</td><td>Membre</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Administrateur</td></tr>
+  <tr><td class="k">Recherche globale</td><td>Pages, actualités, positions, événements, membres publics</td><td>Tous</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Automatique</td></tr>
+  <tr><td class="k">Galerie post-événement</td><td>Photos et compte rendu sur la fiche d'un événement passé</td><td>Tous</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td><td>Resp. événements</td></tr>
+  <tr><td class="k">Lettre d'information</td><td>Inscription et envoi via un outil d'e-mailing</td><td>Tous</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Opportunités déposées par les membres</td><td>Soumission, modération, expiration</td><td>Membre</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Cotisations et renouvellement</td><td>Suivi des échéances, relances, reçus</td><td>Membre, admin</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip v2">V2</span></td><td>Trésorerie</td></tr>
+  <tr><td class="k">Paiement mobile</td><td>Paiement des cotisations et événements payants par mobile money</td><td>Membre</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Trésorerie</td></tr>
+  <tr><td class="k">Billet avec QR code et pointage</td><td>Contrôle d'accès et présence le jour J</td><td>Resp. événements</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Resp. événements</td></tr>
+  <tr><td class="k">Demande de mise en relation</td><td>Formulaire de contact entre membres, sans exposer les coordonnées</td><td>Membre</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Modération</td></tr>
+  <tr><td class="k">Annuaire imprimable</td><td>Génération d'un PDF mis en page à partir des fiches</td><td>Admin</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td><td>Resp. membres</td></tr>
+  <tr><td class="k">Version anglaise</td><td>Pages institutionnelles et plaidoyer en anglais</td><td>Partenaires</td><td class="c"><span class="chip future">Future</span></td><td class="c"><span class="chip v3">V3</span></td><td>Éditeur</td></tr>
+  <tr><td class="k">Messagerie entre membres</td><td>Échanges privés dans la plateforme</td><td>Membre</td><td class="c"><span class="chip future">Future</span></td><td class="c"><span class="chip v3">V3</span></td><td>Modération</td></tr>
+  <tr><td class="k">Application installable</td><td>Site installable sur l'écran d'accueil, notifications</td><td>Membre</td><td class="c"><span class="chip future">Future</span></td><td class="c"><span class="chip v3">V3</span></td><td>Automatique</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 16</div>
+  <h2><span class="n">16</span>Parcours utilisateurs</h2>
+  <h3>Parcours A · Devenir membre</h3>
+  <div class="flow">
+    <div class="st"><span class="i">01</span><b>Découvrir</b>Accueil, réseaux sociaux, recommandation d'un membre</div>
+    <div class="st"><span class="i">02</span><b>Comprendre la valeur</b>Page Adhérer, tableau des avantages, témoignages</div>
+    <div class="st"><span class="i">03</span><b>Vérifier son éligibilité</b>Critères et cotisations affichés, FAQ</div>
+    <div class="st"><span class="i">04</span><b>Candidater</b>Formulaire en 4 étapes, anti-doublon, consentement</div>
+    <div class="st"><span class="i">05</span><b>Être contacté</b>E-mail de confirmation, échange avec le bureau</div>
+    <div class="st end"><span class="i" style="color:#fff">06</span><b>Devenir membre</b>Validation, activation du compte, bienvenue</div>
+  </div>
+  <table class="compact"><thead><tr><th style="width:22mm">Étape</th><th>Ce que voit l'utilisateur</th><th>Ce que fait le système</th><th style="width:36mm">Point de friction à surveiller</th></tr></thead><tbody>
+  <tr><td class="k">Candidater</td><td>Barre de progression, sauvegarde automatique du brouillon dans le navigateur</td><td>Contrôle des champs, normalisation du téléphone, recherche de doublon</td><td>Abandon à l'étape entreprise</td></tr>
+  <tr><td class="k">Confirmation</td><td>Page de remerciement, numéro de dossier, prochaines étapes, bouton WhatsApp</td><td>Statut « Reçue », e-mail au candidat, alerte à l'équipe</td><td>Candidat sans e-mail</td></tr>
+  <tr><td class="k">Examen</td><td>E-mail si des informations complémentaires sont demandées</td><td>Statut « En examen » puis décision, journalisée</td><td>Délai de réponse trop long</td></tr>
+  <tr><td class="k">Activation</td><td>E-mail de bienvenue, lien de création du mot de passe</td><td>Lien unique, valable 72 h, renvoyable par l'admin</td><td>Lien expiré, e-mail en indésirables</td></tr>
+  <tr><td class="k">Premier accès</td><td>Tableau de bord qui invite à compléter la fiche</td><td>Indicateur de complétude du profil</td><td>Fiche laissée vide</td></tr>
+  </tbody></table>
+
+  <h3>Parcours B · S'inscrire à un événement</h3>
+  <div class="flow">
+    <div class="st"><span class="i">01</span><b>Voir</b>Carte sur l'accueil, lien partagé sur WhatsApp</div>
+    <div class="st"><span class="i">02</span><b>Consulter</b>Fiche : date, lieu, programme, intervenants, places restantes</div>
+    <div class="st"><span class="i">03</span><b>S'inscrire</b>Membre connecté : un clic. Visiteur : nom, e-mail, téléphone, entreprise</div>
+    <div class="st"><span class="i">04</span><b>Recevoir</b>E-mail de confirmation avec fichier calendrier ; rappel la veille</div>
+    <div class="st end"><span class="i" style="color:#fff">05</span><b>Participer</b>Pointage, puis compte rendu et photos en ligne</div>
+  </div>
+
+  <h3>Parcours C · Une institution consulte une position</h3>
+  <div class="flow">
+    <div class="st"><span class="i">01</span><b>Arriver</b>Lien reçu par e-mail ou recherche Google</div>
+    <div class="st"><span class="i">02</span><b>Lire</b>Page position : résumé, date d'adoption, statut, propositions</div>
+    <div class="st"><span class="i">03</span><b>Télécharger</b>PDF officiel signé</div>
+    <div class="st"><span class="i">04</span><b>Situer</b>Liens vers le dossier, les actions menées, la gouvernance</div>
+    <div class="st end"><span class="i" style="color:#fff">05</span><b>Contacter</b>Formulaire institutionnel ou contact du bureau</div>
+  </div>
+
+  <h3>Parcours D · Un journaliste prépare un sujet</h3>
+  <p>Il arrive sur « Presse », filtre les communiqués par date, télécharge le logo et la photo du président, lit la fiche institutionnelle, puis appelle ou écrit au contact presse désigné. Toutes ces ressources doivent être accessibles sans compte et en deux clics depuis l'accueil (lien dans le pied de page et dans le menu Actualités).</p>
+</div>
+
+<!-- ================= PART D ================= -->
+<div class="part"><div><div class="pl">Partie D</div><h1>Modules fonctionnels</h1></div><div class="pn">D</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 17</div>
+  <h2><span class="n">17</span>Espace membre</h2>
+  <p>La question n'est pas de savoir si un espace membre est souhaitable, mais s'il sera utilisé. Un espace vide, que personne n'alimente, dessert le réseau. Notre recommandation : un espace membre dès le lancement, parce que le cahier des charges initial en fait le prolongement naturel de la validation et que l'annuaire en dépend, mais limité à ce qui apporte un bénéfice immédiat.</p>
+  <div class="g3">
+    <div class="card fill"><h4>MVP</h4><ul style="margin:0"><li style="color:#fff">Connexion, mot de passe oublié</li><li style="color:#fff">Tableau de bord</li><li style="color:#fff">Mon profil dirigeant</li><li style="color:#fff">Ma fiche entreprise et sa visibilité</li><li style="color:#fff">Demande de modification</li><li style="color:#fff">Mes inscriptions aux événements</li><li style="color:#fff">Annuaire complet</li><li style="color:#fff">Opportunités et documents réservés</li></ul></div>
+    <div class="card"><h4>V2</h4><ul style="margin:0"><li>Statut de cotisation, échéance, reçus</li><li>Renouvellement et paiement mobile</li><li>Dépôt d'opportunités</li><li>Demande de mise en relation</li><li>Préférences de notification</li><li>Adhésion à une commission</li></ul></div>
+    <div class="card"><h4>V3</h4><ul style="margin:0"><li>Messagerie entre membres</li><li>Notifications sur téléphone</li><li>Recommandations de contacts par secteur</li><li>Espace commission avec documents de travail</li></ul></div>
+  </div>
+  <h3>Règles de l'espace</h3>
+  <table class="compact"><thead><tr><th style="width:40mm">Règle</th><th>Spécification</th></tr></thead><tbody>
+  <tr><td class="k">Accès</td><td>Réservé aux comptes au statut « Actif ». Un membre suspendu ou non renouvelé voit un message l'invitant à contacter le bureau.</td></tr>
+  <tr><td class="k">Identifiant</td><td>Adresse e-mail. Mot de passe de 10 caractères minimum. Connexion par lien envoyé par e-mail proposée en alternative <span class="chip should">Should</span>.</td></tr>
+  <tr><td class="k">Session</td><td>Déconnexion après 30 minutes d'inactivité (demande du CdC initial), prolongée à 30 jours si « Rester connecté » est coché sur un appareil personnel.</td></tr>
+  <tr><td class="k">Champs modifiables librement</td><td>Photo, logo, biographie, présentation des services, liens LinkedIn, Facebook, site internet, réglages de visibilité.</td></tr>
+  <tr><td class="k">Champs verrouillés</td><td>Nom, raison sociale, secteurs, localisation, téléphone, e-mail. Modifiables via une demande traitée par le responsable membres, avec historique.</td></tr>
+  <tr><td class="k">Tableau de bord</td><td>Complétude du profil en pourcentage, prochains événements, dernières opportunités, dernières actualités réservées.</td></tr>
+  </tbody></table>
+  <div class="box valid"><div class="bt">À valider par REC 242</div><p>Un compte par entreprise ou un compte par personne ? Nous recommandons un compte par dirigeant rattaché à une fiche entreprise, avec possibilité en V2 d'ajouter un second contact par entreprise.</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 18</div>
+  <h2><span class="n">18</span>Annuaire des membres</h2>
+  <p>L'annuaire est la preuve visible que le réseau existe. Il doit être utile à un membre qui cherche un fournisseur, et rassurant pour un prospect qui veut savoir avec qui il s'associe. La confidentialité se règle champ par champ, avec l'accord du membre.</p>
+  <h3>Contenu d'une fiche</h3>
+  <table class="compact"><thead><tr><th style="width:36mm">Champ</th><th style="width:22mm">Obligatoire</th><th>Visibilité par défaut</th><th style="width:34mm">Modifiable par</th></tr></thead><tbody>
+  <tr><td class="k">Logo</td><td>Non</td><td>Public</td><td>Membre</td></tr>
+  <tr><td class="k">Raison sociale</td><td>Oui</td><td>Public</td><td>Admin (sur demande)</td></tr>
+  <tr><td class="k">Secteurs (3 max)</td><td>Oui</td><td>Public</td><td>Admin (sur demande)</td></tr>
+  <tr><td class="k">Description, services</td><td>Non</td><td>Public</td><td>Membre</td></tr>
+  <tr><td class="k">Dirigeant (nom, photo, fonction)</td><td>Oui</td><td>Réservé aux membres</td><td>Membre (photo), admin</td></tr>
+  <tr><td class="k">Localisation (ville, quartier)</td><td>Oui (ville)</td><td>Public (ville), membres (quartier)</td><td>Admin (sur demande)</td></tr>
+  <tr><td class="k">Site internet, réseaux sociaux</td><td>Non</td><td>Public</td><td>Membre</td></tr>
+  <tr><td class="k">Téléphone, WhatsApp, e-mail</td><td>Oui</td><td>Masqué, sauf choix du membre</td><td>Membre (visibilité)</td></tr>
+  <tr><td class="k">Taille (tranche d'effectif)</td><td>Oui</td><td>Réservé aux membres</td><td>Admin</td></tr>
+  <tr><td class="k">Membre depuis</td><td>Automatique</td><td>Public</td><td>Système</td></tr>
+  <tr><td class="k">Commission(s)</td><td>Non</td><td>Public</td><td>Admin</td></tr>
+  </tbody></table>
+  <h3>Fonctionnalités</h3>
+  <table class="compact"><thead><tr><th style="width:40mm">Fonctionnalité</th><th>Description</th><th style="width:15mm" class="c">Priorité</th><th style="width:12mm" class="c">Version</th></tr></thead><tbody>
+  <tr><td class="k">Recherche texte</td><td>Sur raison sociale, description et services, tolérante aux accents</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Filtres</td><td>Secteur, ville, commission, taille ; combinables ; conservés dans l'URL pour être partagés</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Deux niveaux d'affichage</td><td>Visiteur : champs publics uniquement. Membre connecté : champs réservés en plus</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Consentement à la publication</td><td>Case cochée par le membre à l'activation, révocable à tout moment ; sans consentement, la fiche n'est visible que des admins</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Mise en avant</td><td>Sélection manuelle de fiches pour l'accueil</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Protection anti-aspiration</td><td>Coordonnées jamais présentes dans le code des pages publiques, limite de requêtes</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Carte des membres</td><td>Répartition par ville sur une carte légère</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td></tr>
+  <tr><td class="k">Export PDF imprimable</td><td>Annuaire papier généré depuis les fiches (demande du CdC initial)</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td></tr>
+  </tbody></table>
+  <div class="box valid"><div class="bt">À valider par REC 242</div><p>Le cahier des charges initial évoque des « modalités techniques et financières pour être répertorié ». L'inscription à l'annuaire est-elle incluse dans l'adhésion, ou s'agit-il d'une option payante, voire d'un annuaire ouvert à des non-membres ? La réponse change le modèle de données et le parcours.</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 19</div>
+  <h2><span class="n">19</span>Événements</h2>
+  <p>Les rencontres sont la première raison d'adhérer et la meilleure preuve d'activité. Le module doit permettre à une personne seule de publier un événement, gérer les inscriptions et exporter la liste en quelques minutes.</p>
+  <h3>Données d'un événement</h3>
+  <table class="compact"><thead><tr><th style="width:36mm">Champ</th><th>Détail</th></tr></thead><tbody>
+  <tr><td class="k">Titre, type, secteurs</td><td>Type issu de la taxonomie (afterwork, masterclass, conférence…)</td></tr>
+  <tr><td class="k">Date, heure de début et de fin</td><td>Fuseau de Brazzaville ; événements sur plusieurs jours possibles</td></tr>
+  <tr><td class="k">Lieu</td><td>Nom, adresse, lien de carte ; ou lien de visioconférence ; ou « lieu communiqué aux inscrits »</td></tr>
+  <tr><td class="k">Description, programme</td><td>Texte riche, déroulé horaire</td></tr>
+  <tr><td class="k">Intervenants</td><td>Nom, fonction, photo, lien vers la fiche membre si applicable</td></tr>
+  <tr><td class="k">Visuel</td><td>Image principale, recadrage automatique pour les cartes et le partage</td></tr>
+  <tr><td class="k">Accès</td><td>Ouvert à tous · réservé aux membres · sur invitation</td></tr>
+  <tr><td class="k">Capacité</td><td>Nombre de places, liste d'attente automatique au-delà</td></tr>
+  <tr><td class="k">Tarif</td><td>Gratuit ou payant (information seulement au MVP, paiement en ligne en V2) <span class="av">Politique tarifaire à valider</span></td></tr>
+  <tr><td class="k">Statut</td><td>Brouillon · publié · complet · annulé · reporté · terminé</td></tr>
+  <tr><td class="k">Documents</td><td>Supports, programme PDF, accessibles aux inscrits ou à tous</td></tr>
+  <tr><td class="k">Après l'événement</td><td>Compte rendu, galerie photo, nombre de participants (affiché seulement si renseigné)</td></tr>
+  </tbody></table>
+  <h3>Inscriptions</h3>
+  <table class="compact"><thead><tr><th style="width:40mm">Fonctionnalité</th><th>Description</th><th style="width:15mm" class="c">Priorité</th><th style="width:12mm" class="c">Version</th></tr></thead><tbody>
+  <tr><td class="k">Formulaire d'inscription</td><td>Pré-rempli pour un membre connecté ; nom, e-mail, téléphone, entreprise pour un visiteur</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Confirmation</td><td>Page et e-mail avec récapitulatif, fichier calendrier (.ics), lien d'annulation</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Gestion de la capacité</td><td>Fermeture automatique à capacité atteinte, liste d'attente, promotion automatique en cas de désistement</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Liste et export des participants</td><td>Tableau filtrable, export CSV et Excel</td><td class="c"><span class="chip must">Must</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Rappel</td><td>E-mail automatique la veille</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Pointage de présence</td><td>Case à cocher sur la liste, sur mobile, le jour J</td><td class="c"><span class="chip should">Should</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Billet QR code</td><td>QR code dans l'e-mail, scan à l'entrée</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td></tr>
+  <tr><td class="k">Paiement en ligne</td><td>Événements payants réglés par mobile money</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td></tr>
+  <tr><td class="k">Questionnaire de satisfaction</td><td>Envoyé automatiquement le lendemain</td><td class="c"><span class="chip could">Could</span></td><td class="c"><span class="chip v2">V2</span></td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 20</div>
+  <h2><span class="n">20</span>Adhésion</h2>
+  <p>Le parcours d'adhésion est le cœur commercial du site. Il reprend le formulaire strict du cahier des charges initial et le complète par les informations entreprise sans lesquelles un réseau patronal ne peut pas qualifier ses membres ni mesurer sa représentativité.</p>
+  <h3>Formulaire en quatre étapes</h3>
+  <table class="compact"><thead><tr><th style="width:26mm">Étape</th><th>Champs</th><th style="width:44mm">Règles</th></tr></thead><tbody>
+  <tr><td class="k">1 · Vous</td><td>Civilité, nom, prénom, fonction dans l'entreprise, téléphone ou WhatsApp, e-mail, tranche d'âge (18-25, 26-35, 36-45, 46 et plus)</td><td>Téléphone au format international, +242 par défaut ; e-mail valide ; anti-doublon à la validation de l'étape</td></tr>
+  <tr><td class="k">2 · Votre entreprise</td><td>Raison sociale ou nom du projet, forme juridique, numéro RCCM <span class="av">obligatoire ou non, à valider</span>, année de création, tranche d'effectif, secteurs (3 maximum), localisation</td><td>Blocage au-delà de 3 secteurs (CdC) ; liste de localités du CdC</td></tr>
+  <tr><td class="k">3 · Votre projet avec REC 242</td><td>Ancienneté dans l'activité (porteur de projet, moins d'un an, 1 à 3 ans, 3 à 5 ans, plus de 5 ans), objectifs (projet, formations, activités et afterworks, plaidoyer, visibilité), comment avez-vous connu REC 242, parrain éventuel</td><td>Au moins un objectif coché</td></tr>
+  <tr><td class="k">4 · Validation</td><td>Récapitulatif modifiable, pièces justificatives facultatives (extrait RCCM, logo), consentement au traitement des données, acceptation des statuts et du règlement</td><td>Consentement obligatoire (CdC) ; fichiers PDF, JPG ou PNG, 5 Mo maximum</td></tr>
+  </tbody></table>
+  <h3>Anti-doublon</h3>
+  <p>Avant d'enregistrer, le serveur compare l'e-mail (en minuscules, espaces retirés) et le téléphone (converti au format international) à toutes les candidatures et fiches existantes, validées ou en attente. En cas de correspondance, l'envoi est bloqué et le message du cahier des charges initial s'affiche : « Une demande d'adhésion est déjà enregistrée avec ces coordonnées. Veuillez contacter l'administration si vous pensez qu'il s'agit d'une erreur. » Le contrôle est limité à dix tentatives par heure et par appareil pour empêcher de tester des listes d'adresses.</p>
+  <h3>Statuts de candidature</h3>
+  <div class="flow">
+    <div class="st"><span class="i">statut</span><b>Reçue</b>Alerte à l'équipe, pastille dans le back-office</div>
+    <div class="st"><span class="i">statut</span><b>En examen</b>Attribuée à un responsable</div>
+    <div class="st"><span class="i">statut</span><b>Complément demandé</b>E-mail au candidat avec la question</div>
+    <div class="st"><span class="i">statut</span><b>Acceptée</b>En attente de cotisation si applicable</div>
+    <div class="st end"><span class="i" style="color:#fff">statut</span><b>Active</b>Lien d'activation, fiche créée</div>
+  </div>
+  <p>Deux statuts de sortie : <strong>Refusée</strong> (motif obligatoire, e-mail courtois au candidat) et <strong>Archivée</strong> (sans suite après relance). Chaque changement de statut est horodaté et attribué à un administrateur.</p>
+  <h3>La question du groupe WhatsApp</h3>
+  <p>Le cahier des charges initial demande qu'après l'envoi, la page de remerciement propose d'intégrer immédiatement le groupe WhatsApp officiel, sans attendre la validation. L'intention est bonne : ne pas laisser refroidir un candidat motivé. Mais le lien d'un groupe circule vite et ne se contrôle pas : toute personne qui remplit le formulaire, même refusée ensuite, entrerait dans la communauté.</p>
+  <div class="box reco"><div class="bt">Proposition Webtinix</div>
+  <ul><li><strong>Après la candidature</strong> : bouton vers la <strong>chaîne WhatsApp</strong> de REC 242 (diffusion à sens unique, ouverte à tous) et bouton « Écrire au bureau sur WhatsApp » avec message prérempli, comme sur le site actuel.</li>
+  <li><strong>Après la validation</strong> : le lien du <strong>groupe des membres</strong> figure dans l'e-mail de bienvenue et dans l'espace membre. Le lien peut être changé depuis le back-office s'il fuite.</li></ul>
+  <p>Si REC 242 maintient l'accès immédiat au groupe, le lien sera paramétrable et la décision consignée en section 42.</p></div>
+  <h3>Page Adhérer : contenus attendus</h3>
+  <ul>
+    <li>Les statuts de membres et ce que chacun ouvre, sous forme de tableau comparatif.</li>
+    <li>Les critères d'éligibilité, écrits simplement. <span class="av">À valider par REC 242</span></li>
+    <li>Le montant et la périodicité des cotisations, par statut ou par taille d'entreprise. <span class="av">À valider par REC 242</span></li>
+    <li>Le délai habituel de réponse, pour que le candidat sache quand relancer. <span class="av">À valider par REC 242</span></li>
+    <li>Un bulletin d'adhésion PDF pour les candidatures déposées à la main lors des événements, saisi ensuite dans le back-office.</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 21</div>
+  <h2><span class="n">21</span>Plaidoyer et actions</h2>
+  <p>C'est la rubrique qui fait de REC 242 un réseau patronal et pas seulement un club d'affaires. Elle doit rester factuelle : ce qui a été adopté, ce qui a été fait, avec qui, quand. Le principe central est de ne jamais mélanger quatre natures de contenus.</p>
+  <div class="g4">
+    <div class="card" style="border-top:3px solid var(--rec-green)"><h4 style="color:var(--rec-green)">Position officielle</h4><p>Texte adopté par les instances de REC 242. Daté, signé, versionné. Engage le réseau.</p></div>
+    <div class="card" style="border-top:3px solid var(--blue)"><h4>Action menée</h4><p>Rencontre, courrier, participation à une consultation. Date, interlocuteur, objet, suite donnée.</p></div>
+    <div class="card" style="border-top:3px solid var(--amber)"><h4 style="color:#b56a00">Actualité</h4><p>Récit ou annonce. N'engage pas le réseau au-delà de ce qu'elle rapporte.</p></div>
+    <div class="card" style="border-top:3px solid var(--muted)"><h4 style="color:var(--ink2)">Document</h4><p>Étude, note, contribution, compte rendu. Fichier téléchargeable, source citée.</p></div>
+  </div>
+  <p>Chaque nature a sa couleur d'étiquette, son gabarit de page et son modèle de données. Une position peut être reliée aux actions qui l'ont portée et aux actualités qui l'ont relayée.</p>
+  <h3>Modèle de données</h3>
+  <table class="compact"><thead><tr><th style="width:30mm">Objet</th><th>Champs</th></tr></thead><tbody>
+  <tr><td class="k">Dossier</td><td>Titre, enjeu en trois lignes, secteurs, statut (actif, clos), positions, actions et actualités liées. Deux ou trois dossiers actifs au maximum sont recommandés.</td></tr>
+  <tr><td class="k">Position officielle</td><td>Titre, résumé, propositions numérotées, date d'adoption, instance qui l'a adoptée, destinataires, PDF signé, version, statut de suivi</td></tr>
+  <tr><td class="k">Action menée</td><td>Date, type (audience, courrier, consultation, atelier), interlocuteur institutionnel, objet, participants REC 242, suite donnée, documents</td></tr>
+  <tr><td class="k">Statut de suivi</td><td>Transmise · en discussion · partiellement prise en compte · obtenue · sans suite. Mis à jour uniquement sur la base d'un fait documenté.</td></tr>
+  </tbody></table>
+  <div class="box warn"><div class="bt">Règle de publication</div><p>Une position officielle ne peut être publiée que par un administrateur, après validation par la présidence ou le bureau (circuit de validation dans le back-office). Un éditeur peut la préparer en brouillon, pas la mettre en ligne. Le statut « obtenue » ne doit jamais être affiché sans source.</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 22</div>
+  <h2><span class="n">22</span>Opportunités</h2>
+  <p>Une rubrique d'opportunités peut devenir l'un des services les plus appréciés des membres, ou une page vide qui décrédibilise le site. Tout dépend du rythme de publication que REC 242 pourra tenir. Nous proposons de commencer petit.</p>
+  <table class="compact"><thead><tr><th style="width:40mm">Type</th><th style="width:30mm">Visibilité</th><th>Commentaire</th><th style="width:14mm" class="c">Version</th></tr></thead><tbody>
+  <tr><td class="k">Appels à partenariat</td><td>Public</td><td>Publiés par l'admin, pour attirer des partenaires</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Événements partenaires</td><td>Public</td><td>Salons, forums, concours auxquels les membres peuvent participer</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Appels d'offres relayés</td><td>Membres</td><td>Avec lien vers la source officielle, date limite obligatoire</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Financements</td><td>Membres</td><td>Programmes de financement, subventions, concours</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Rencontres B2B, missions</td><td>Membres</td><td>Missions de prospection, rencontres acheteurs</td><td class="c"><span class="chip v2">V2</span></td></tr>
+  <tr><td class="k">Offres entre membres</td><td>Membres</td><td>Déposées par les membres, modérées, expirées automatiquement</td><td class="c"><span class="chip v2">V2</span></td></tr>
+  </tbody></table>
+  <p>Chaque opportunité porte une date limite ; elle passe automatiquement en « Expirée » et disparaît des listes le lendemain. Elle est reliée aux secteurs, ce qui permettra en V2 d'avertir les membres concernés.</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 23</div>
+  <h2><span class="n">23</span>Actualités et médias</h2>
+  <table class="compact"><thead><tr><th style="width:36mm">Élément</th><th>Spécification</th></tr></thead><tbody>
+  <tr><td class="k">Types</td><td>Article, communiqué de presse, interview, intervention (prise de parole dans un média), annonce, retour sur événement, dossier</td></tr>
+  <tr><td class="k">Champs</td><td>Titre, chapeau, corps en texte riche, image principale avec texte alternatif obligatoire, type, secteurs, tags, auteur, date de publication (programmable), date de mise à jour</td></tr>
+  <tr><td class="k">Liaisons</td><td>Événement, position, dossier, membres cités</td></tr>
+  <tr><td class="k">SEO</td><td>Titre SEO, description, image de partage, URL modifiable, balisage « article » ou « communiqué »</td></tr>
+  <tr><td class="k">Partage</td><td>WhatsApp, Facebook, LinkedIn, X, copie du lien. Boutons légers, sans script tiers chargé d'avance.</td></tr>
+  <tr><td class="k">Liste</td><td>Filtre par type et par secteur, pagination, 12 éléments par page</td></tr>
+  <tr><td class="k">Réservé aux membres</td><td>Option par article : le visiteur voit le chapeau et une invitation à se connecter</td></tr>
+  <tr><td class="k">Presse</td><td>Communiqués filtrables par année, kit média (logos, photos officielles, fiche institutionnelle, biographies), contact presse nommé</td></tr>
+  </tbody></table>
+</div>
+
+<!-- ================= PART E ================= -->
+<div class="part"><div><div class="pl">Partie E</div><h1>Administration</h1></div><div class="pn">E</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 24</div>
+  <h2><span class="n">24</span>Back-office</h2>
+  <p>Le back-office sera utilisé par une petite équipe, peut-être depuis un téléphone entre deux rendez-vous. Il doit être en français, utilisable sur mobile pour les tâches courantes (valider une candidature, pointer une présence) et organisé autour des tâches plutôt que des tables de données.</p>
+  <h3>Tableau de bord</h3>
+  <ul>
+    <li>Candidatures en attente, avec pastille rouge et ancienneté de la plus vieille (demande du CdC initial).</li>
+    <li>Demandes de modification de fiche en attente.</li>
+    <li>Prochains événements avec taux de remplissage.</li>
+    <li>Messages de contact non traités, par motif.</li>
+    <li>Opportunités qui expirent dans la semaine.</li>
+  </ul>
+  <h3>Modules de gestion</h3>
+  <table class="compact"><thead><tr><th style="width:30mm">Module</th><th>Actions disponibles</th><th style="width:15mm" class="c">Version</th></tr></thead><tbody>
+  <tr><td class="k">Pages</td><td>Créer, modifier, publier, dépublier, prévisualiser ; blocs de contenu prédéfinis (texte, image, chiffres clés, cartes, FAQ, appel à l'action)</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Menus</td><td>Ordre et libellés du menu principal et du pied de page</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Actualités</td><td>Rédiger, programmer, publier, archiver ; brouillon et relecture</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Événements</td><td>Créer, dupliquer, gérer capacité et statut, liste des inscrits, export, pointage, galerie</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Candidatures</td><td>File, filtres par statut, fiche détaillée, notes internes, changement de statut, e-mails modèles, conversion en membre</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Membres et entreprises</td><td>Fiches, statut (actif, suspendu, ancien), visibilité, demandes de modification, renvoi du lien d'activation, import CSV initial, export</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Plaidoyer</td><td>Dossiers, positions (avec circuit de validation), actions, statuts de suivi</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Opportunités</td><td>Publier, fixer visibilité et date limite ; en V2, modérer les dépôts des membres</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Documents et médias</td><td>Bibliothèque, dossiers, visibilité publique ou membres, recadrage et compression automatiques des images</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Partenaires</td><td>Logo, lien, type, ordre d'affichage</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Formulaires</td><td>Consultation des messages, routage par motif vers une adresse, export</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Taxonomies</td><td>Secteurs, localités, types d'événements, tags</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">SEO</td><td>Champs par page, redirections, aperçu du partage</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Paramètres</td><td>Coordonnées, numéro WhatsApp, liens de chaîne et de groupe, chiffres clés, réseaux sociaux, textes des e-mails automatiques</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Utilisateurs</td><td>Comptes administrateurs, rôles, double authentification, désactivation</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Journal</td><td>Historique des actions sensibles (qui a validé, publié, supprimé, exporté, et quand)</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Cotisations</td><td>Échéances, paiements, relances, reçus</td><td class="c"><span class="chip v2">V2</span></td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 25</div>
+  <h2><span class="n">25</span>Gestion des rôles</h2>
+  <p>Six rôles d'administration, plus le rôle Membre côté public. Une personne peut cumuler plusieurs rôles. Les noms des titulaires sont <span class="av">à désigner par REC 242</span>.</p>
+  <table class="compact"><thead><tr><th style="width:34mm">Rôle</th><th>Mission</th><th style="width:48mm">Titulaire pressenti</th></tr></thead><tbody>
+  <tr><td class="k">Super administrateur</td><td>Paramètres techniques, utilisateurs, rôles, sauvegardes. Un ou deux comptes au maximum.</td><td>Webtinix (maintenance) et un responsable REC 242</td></tr>
+  <tr><td class="k">Administrateur</td><td>Tous les contenus et modules, validation des positions et des candidatures</td><td>Secrétariat général ou bureau</td></tr>
+  <tr><td class="k">Éditeur</td><td>Actualités, pages, opportunités, brouillons de positions</td><td>Chargé de communication</td></tr>
+  <tr><td class="k">Responsable événements</td><td>Agenda, inscriptions, pointage, galeries</td><td>Chargé des événements</td></tr>
+  <tr><td class="k">Responsable membres</td><td>Candidatures, fiches, demandes de modification, annuaire</td><td>Chargé des adhésions</td></tr>
+  <tr><td class="k">Trésorier <span class="chip v2">V2</span></td><td>Cotisations, paiements, reçus, exports comptables</td><td>Trésorier du bureau</td></tr>
+  </tbody></table>
+  <h3>Matrice des permissions</h3>
+  <table class="compact"><thead><tr><th>Domaine</th><th class="c">Super admin</th><th class="c">Admin</th><th class="c">Éditeur</th><th class="c">Resp. évén.</th><th class="c">Resp. membres</th><th class="c">Membre</th></tr></thead><tbody>
+  <tr><td class="k">Pages et menus</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">·</td><td class="c">·</td><td class="c">·</td></tr>
+  <tr><td class="k">Actualités</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">·</td><td class="c">·</td></tr>
+  <tr><td class="k">Positions officielles</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">·</td><td class="c">·</td><td class="c">·</td></tr>
+  <tr><td class="k">Événements et inscrits</td><td class="c">●</td><td class="c">●</td><td class="c">·</td><td class="c">●</td><td class="c">○</td><td class="c">◐</td></tr>
+  <tr><td class="k">Candidatures</td><td class="c">●</td><td class="c">●</td><td class="c">·</td><td class="c">·</td><td class="c">●</td><td class="c">·</td></tr>
+  <tr><td class="k">Fiches membres</td><td class="c">●</td><td class="c">●</td><td class="c">·</td><td class="c">○</td><td class="c">●</td><td class="c">◐</td></tr>
+  <tr><td class="k">Exports de données personnelles</td><td class="c">●</td><td class="c">●</td><td class="c">·</td><td class="c">◐</td><td class="c">●</td><td class="c">·</td></tr>
+  <tr><td class="k">Opportunités</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">·</td><td class="c">·</td><td class="c">○</td></tr>
+  <tr><td class="k">Utilisateurs et rôles</td><td class="c">●</td><td class="c">○</td><td class="c">·</td><td class="c">·</td><td class="c">·</td><td class="c">·</td></tr>
+  <tr><td class="k">Paramètres et SEO</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">·</td><td class="c">·</td><td class="c">·</td></tr>
+  <tr><td class="k">Journal des actions</td><td class="c">●</td><td class="c">○</td><td class="c">·</td><td class="c">·</td><td class="c">·</td><td class="c">·</td></tr>
+  </tbody></table>
+  <p style="font-size:8pt;color:var(--muted)">● tous droits · ◐ droits partiels (brouillon sans publication, ou ses propres éléments seulement) · ○ lecture seule · · aucun accès</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 26</div>
+  <h2><span class="n">26</span>CMS</h2>
+  <p>Le CMS est l'outil qui permettra à REC 242 de faire vivre le site sans développeur. Les exigences ci-dessous valent quel que soit l'outil retenu (section 34).</p>
+  <ul class="check">
+    <li>Interface entièrement en français.</li>
+    <li>Édition par blocs prédéfinis, dans la charte : impossible de casser la mise en page ou de choisir une couleur hors palette.</li>
+    <li>Prévisualisation avant publication, sur mobile et ordinateur.</li>
+    <li>Brouillons, programmation de la publication, historique des versions avec restauration.</li>
+    <li>Circuit de validation pour les positions officielles (brouillon, soumis, validé, publié).</li>
+    <li>Images redimensionnées, compressées et converties automatiquement dans des formats légers à l'import ; texte alternatif obligatoire.</li>
+    <li>Champs SEO sur chaque contenu, avec valeurs par défaut calculées.</li>
+    <li>Modèles d'e-mails automatiques modifiables (confirmation de candidature, bienvenue, refus, inscription, rappel).</li>
+    <li>Guide d'utilisation court, illustré, et formation de l'équipe (section 40).</li>
+  </ul>
+</div>
+
+<!-- ================= PART F ================= -->
+<div class="part"><div><div class="pl">Partie F</div><h1>Design</h1></div><div class="pn">F</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 27</div>
+  <h2><span class="n">27</span>Design system</h2>
+  <p>Le site sera construit sur un design system : un ensemble de variables (couleurs, typographie, espacements) et de composants réutilisables, documentés une fois et utilisés partout. Webtinix applique la même méthode à ses propres produits. Pour REC 242, la méthode est reprise, mais les valeurs sont celles de REC 242 : le site porte l'identité du réseau, pas celle de son prestataire.</p>
+  <h3>Fondations</h3>
+  <table class="compact"><thead><tr><th style="width:30mm">Fondation</th><th>Règle proposée</th></tr></thead><tbody>
+  <tr><td class="k">Grille</td><td>4 colonnes sur mobile (marges 16 px), 8 colonnes sur tablette (24 px), 12 colonnes sur ordinateur (conteneur de 1200 px, gouttières de 24 px)</td></tr>
+  <tr><td class="k">Espacements</td><td>Échelle en multiples de 4 px : 4, 8, 12, 16, 24, 32, 48, 64, 96. Espacement vertical entre sections : 64 px sur mobile, 96 px sur ordinateur</td></tr>
+  <tr><td class="k">Typographie</td><td>Deux familles au maximum. Échelle de titres : 40 / 32 / 24 / 20 / 18 px sur ordinateur, réduite d'un cran sur mobile. Texte courant 16 px minimum, interligne 1,6</td></tr>
+  <tr><td class="k">Hiérarchie</td><td>Un seul titre principal par page. Titres de section en phrase, pas en capitales, pour la lisibilité. Petites étiquettes en capitales espacées pour les types de contenus</td></tr>
+  <tr><td class="k">Rayons</td><td>Boutons et champs 8 px, cartes 12 px, étiquettes à angles droits</td></tr>
+  <tr><td class="k">Profondeur</td><td>Ombres très discrètes, réservées aux éléments qui flottent (menu, fenêtres). La hiérarchie repose sur la couleur et l'espace</td></tr>
+  <tr><td class="k">Mouvement</td><td>Transitions de 150 à 250 ms, désactivées si l'utilisateur a demandé à réduire les animations</td></tr>
+  </tbody></table>
+  <h3>Inventaire des composants</h3>
+  <table class="compact"><thead><tr><th style="width:34mm">Composant</th><th>Variantes et états à concevoir</th></tr></thead><tbody>
+  <tr><td class="k">Boutons</td><td>Principal, secondaire, texte, WhatsApp ; tailles M et L ; états repos, survol, focus, pressé, désactivé, chargement</td></tr>
+  <tr><td class="k">Navigation</td><td>En-tête fixe réduit au défilement, menu mobile plein écran, fil d'Ariane, barre d'action mobile fixe (Adhérer, WhatsApp)</td></tr>
+  <tr><td class="k">Pied de page</td><td>Coordonnées, liens, réseaux sociaux, bloc « Membre de UNICONGO », mentions</td></tr>
+  <tr><td class="k">Cartes</td><td>Événement, actualité, membre, position, action, opportunité, partenaire, personne (gouvernance)</td></tr>
+  <tr><td class="k">Étiquettes</td><td>Type de contenu (4 couleurs du plaidoyer), statut d'événement, secteur, « Réservé aux membres »</td></tr>
+  <tr><td class="k">Formulaires</td><td>Champ texte, téléphone international, liste, choix multiple limité, boutons radio, cases, téléversement, étapes ; états erreur, succès, aide</td></tr>
+  <tr><td class="k">Tableaux</td><td>Tableau responsive (lignes empilées sur mobile), tableau comparatif d'adhésion</td></tr>
+  <tr><td class="k">Retours</td><td>Messages d'alerte, confirmation, état vide, chargement squelette, page 404</td></tr>
+  <tr><td class="k">Blocs de page</td><td>Hero, chiffres clés, piliers, FAQ en accordéon, appel à l'action, galerie, logos, frise de suivi</td></tr>
+  </tbody></table>
+  <p>Livrable : bibliothèque de composants dans Figma, reliée aux composants codés, et page de documentation interne listant chaque composant avec ses états.</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 28</div>
+  <h2><span class="n">28</span>Direction artistique</h2>
+  <p>Le brief demande un site institutionnel, premium, africain sans clichés, humain et sobre. Le logo donne la clé : trois couleurs nationales, un cercle de personnes, une flèche qui monte. La direction proposée s'appuie sur ces trois éléments et sur la photographie réelle du réseau.</p>
+  <h3>Palette proposée</h3>
+  <div class="sw">
+    <div><i style="background:#02673F"></i><span><b>Vert REC</b>#02673F · couleur principale, titres, boutons</span></div>
+    <div><i style="background:#014A2D"></i><span><b>Vert profond</b>#014A2D · fonds sombres, survols</span></div>
+    <div><i style="background:#E8AE0D"></i><span><b>Or REC</b>#E8AE0D · accents, filets, chiffres. Jamais pour du texte sur blanc</span></div>
+    <div><i style="background:#D8131C"></i><span><b>Rouge REC</b>#D8131C · usage rare : filet tricolore, alertes</span></div>
+    <div><i style="background:#FAF7F0"></i><span><b>Sable clair</b>#FAF7F0 · fond de sections, héritage du site actuel</span></div>
+  </div>
+  <p>Le vert REC sur blanc offre un contraste d'environ 7 pour 1, conforme au niveau AA pour tous les textes. L'or n'atteint pas le contraste requis pour du texte sur fond clair : il est réservé aux éléments décoratifs ou utilisé sur fond vert profond. Le texte courant est un gris anthracite, jamais du noir pur.</p>
+  <div class="box valid"><div class="bt">À arbitrer par REC 242</div><p>Le cahier des charges initial demande de préserver la palette du site actuel (beige, vert forêt, terracotta). Nous recommandons de l'aligner sur le logo officiel, pour que le site, les documents et les supports d'événement parlent d'une seule voix. Le fond sable conserve l'atmosphère chaleureuse de la maquette actuelle.</p></div>
+  <h3>Typographie</h3>
+  <p>Le logo utilise des capitales géométriques très grasses. Nous proposons <strong>Montserrat</strong> pour les titres, dont les formes sont proches de celles du logo, et de conserver <strong>Inter</strong> pour le texte, déjà utilisée sur le site actuel et très lisible sur petit écran. Les deux sont libres de droits et seront hébergées avec le site, allégées aux seuls caractères utiles. Choix <span class="av">à valider par REC 242</span>.</p>
+  <h3>Éléments graphiques</h3>
+  <ul>
+    <li><strong>Le filet tricolore</strong> sous le mot « REC » devient la signature : sous les titres de section, en haut des cartes de position, en séparateur de pied de page.</li>
+    <li><strong>Le cercle</strong> sert de forme de recadrage pour les portraits de la gouvernance et des intervenants.</li>
+    <li><strong>La flèche montante</strong> reste dans le logo ; elle n'est pas déclinée en pictogramme pour ne pas l'user.</li>
+  </ul>
+  <h3>Photographie</h3>
+  <p>C'est ce qui fera la différence entre « africain sans clichés » et une imagerie de banque d'images. Règles proposées : uniquement des photos réelles de membres, d'événements et de lieux congolais ; des dirigeants au travail plutôt que des poignées de main posées ; lumière naturelle ; même traitement colorimétrique sur tout le site. Une séance photo lors d'un prochain événement est recommandée avant le lancement <span class="av">à planifier avec REC 242</span>.</p>
+  <h3>Ce que nous éviterons</h3>
+  <ul>
+    <li>Les motifs wax, cartes d'Afrique et silhouettes de baobab utilisés comme décor.</li>
+    <li>Les dégradés et effets de verre dépoli qui vieillissent vite et alourdissent les pages.</li>
+    <li>La reproduction de l'apparence d'un site de référence.</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 29</div>
+  <h2><span class="n">29</span>Responsive</h2>
+  <table class="compact"><thead><tr><th style="width:28mm">Palier</th><th style="width:30mm">Largeur</th><th>Adaptations principales</th></tr></thead><tbody>
+  <tr><td class="k">Smartphone</td><td>360 à 767 px</td><td>Référence de conception. Menu plein écran, barre d'action fixe en bas (Adhérer, WhatsApp), cartes en une colonne, filtres dans un panneau dépliable, tableaux empilés</td></tr>
+  <tr><td class="k">Tablette</td><td>768 à 1023 px</td><td>Cartes sur deux colonnes, filtres visibles, barre d'action fixe retirée au profit de l'en-tête</td></tr>
+  <tr><td class="k">Ordinateur</td><td>1024 à 1439 px</td><td>Menu horizontal, grilles de 3 cartes, filtres en colonne latérale dans l'annuaire</td></tr>
+  <tr><td class="k">Grand écran</td><td>1440 px et plus</td><td>Contenu limité à 1200 px de large et centré ; les images d'en-tête s'étendent</td></tr>
+  </tbody></table>
+  <h3>Budget de performance (pages publiques)</h3>
+  <table class="compact"><thead><tr><th>Indicateur</th><th style="width:60mm">Cible</th><th style="width:48mm">Mesure</th></tr></thead><tbody>
+  <tr><td class="k">Affichage du contenu principal (LCP)</td><td>Moins de 2,5 s en 4G simulée</td><td>Lighthouse mobile, PageSpeed</td></tr>
+  <tr><td class="k">Stabilité visuelle (CLS)</td><td>Moins de 0,1</td><td>Lighthouse mobile</td></tr>
+  <tr><td class="k">Réactivité (INP)</td><td>Moins de 200 ms</td><td>Données terrain après lancement</td></tr>
+  <tr><td class="k">Poids de l'accueil au premier chargement</td><td>Moins de 800 Ko, images comprises</td><td>Outils du navigateur</td></tr>
+  <tr><td class="k">JavaScript envoyé sur une page publique</td><td>Moins de 150 Ko compressés</td><td>Rapport de build</td></tr>
+  <tr><td class="k">Score Lighthouse mobile</td><td>90 ou plus en performance, accessibilité, bonnes pratiques et SEO</td><td>Recette</td></tr>
+  </tbody></table>
+  <p>Zones tactiles d'au moins 44 × 44 px, champs de formulaire en 16 px pour éviter le zoom automatique, claviers adaptés (numérique pour le téléphone, e-mail pour l'e-mail).</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 30</div>
+  <h2><span class="n">30</span>Accessibilité</h2>
+  <p>Objectif : conformité au niveau AA des règles internationales d'accessibilité du web (WCAG 2.2) sur les parcours principaux (accueil, adhésion, agenda, annuaire, espace membre).</p>
+  <table class="compact"><thead><tr><th style="width:36mm">Exigence</th><th>Mise en œuvre</th></tr></thead><tbody>
+  <tr><td class="k">Contrastes</td><td>4,5 pour 1 pour le texte, 3 pour 1 pour les grands titres et les éléments d'interface. Chaque couleur de la palette est vérifiée ; l'or est exclu du texte sur fond clair</td></tr>
+  <tr><td class="k">Clavier</td><td>Tout est utilisable au clavier, ordre de tabulation logique, contour de focus visible, lien « Aller au contenu »</td></tr>
+  <tr><td class="k">Formulaires</td><td>Étiquette visible reliée à chaque champ (absente sur le site actuel), erreurs décrites en texte et annoncées aux lecteurs d'écran, pas d'information portée par la seule couleur</td></tr>
+  <tr><td class="k">Images</td><td>Texte alternatif obligatoire dans le CMS, vide pour les images décoratives</td></tr>
+  <tr><td class="k">Structure</td><td>Balises sémantiques (en-tête, navigation, contenu, pied), un titre de niveau 1 par page, titres hiérarchisés, langue déclarée</td></tr>
+  <tr><td class="k">Composants</td><td>Accordéons, menus, onglets et fenêtres conformes aux modèles d'accessibilité reconnus, avec états annoncés</td></tr>
+  <tr><td class="k">Documents</td><td>Positions officielles publiées aussi en texte sur la page, pas uniquement en PDF</td></tr>
+  <tr><td class="k">Contrôle</td><td>Audit automatique à chaque livraison, test manuel au clavier et au lecteur d'écran sur les parcours principaux</td></tr>
+  </tbody></table>
+</div>
+
+<!-- ================= PART G ================= -->
+<div class="part"><div><div class="pl">Partie G</div><h1>Technique</h1></div><div class="pn">G</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 31</div>
+  <h2><span class="n">31</span>SEO</h2>
+  <p>Le site actuel n'a pas de nom de domaine propre et une seule URL. Il n'y a donc pas d'héritage de référencement à protéger, mais tout à construire. L'objectif prioritaire est simple : qu'une recherche « REC 242 », « réseau entrepreneurs Congo » ou « association PME Brazzaville » mène au site officiel.</p>
+  <table class="compact"><thead><tr><th style="width:36mm">Chantier</th><th>Spécification</th><th style="width:14mm" class="c">Version</th></tr></thead><tbody>
+  <tr><td class="k">Nom de domaine</td><td>Un domaine propre, court, identique à celui des adresses e-mail. <span class="av">Choix à faire par REC 242</span></td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">URLs</td><td>En français, sans accents, lisibles, stables (voir arborescence). Slug modifiable, avec redirection automatique de l'ancien</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Métadonnées</td><td>Titre (60 caractères) et description (155 caractères) uniques par page, calculés par défaut, modifiables</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Partage social</td><td>Balises Open Graph et Twitter sur chaque page, image de partage générée pour les événements et actualités. Essentiel pour les liens partagés sur WhatsApp</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Indexation</td><td>sitemap.xml automatique, robots.txt, URL canonique, pages de l'espace membre et de confirmation exclues de l'indexation</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Données structurées</td><td>Organization (avec lien UNICONGO en memberOf), Event, NewsArticle, FAQPage, BreadcrumbList, Person pour la gouvernance</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Redirections</td><td>rec242.vercel.app redirigé de façon permanente (301) vers le nouveau domaine. Module de redirections dans le back-office</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">SEO local</td><td>Création d'une fiche d'établissement Google à Brazzaville, cohérence nom-adresse-téléphone sur le site, la fiche et les réseaux sociaux</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Suivi</td><td>Google Search Console et Bing Webmaster Tools configurés, sitemap soumis</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  <tr><td class="k">Contenu</td><td>Une page par commission et par dossier de plaidoyer, textes originaux, maillage interne par secteurs</td><td class="c"><span class="chip should">Should</span></td></tr>
+  <tr><td class="k">Performance</td><td>Voir budget section 29 : les Core Web Vitals influencent le classement</td><td class="c"><span class="chip mvp">MVP</span></td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 32</div>
+  <h2><span class="n">32</span>Sécurité</h2>
+  <p>Le site stockera des données personnelles de dirigeants : coordonnées, entreprise, parfois pièces justificatives. La sécurité n'est pas une option. Les exigences du cahier des charges initial sont reprises et complétées.</p>
+  <table class="compact"><thead><tr><th style="width:38mm">Domaine</th><th>Exigence</th></tr></thead><tbody>
+  <tr><td class="k">Transport</td><td>HTTPS obligatoire avec redirection, en-tête HSTS, certificat renouvelé automatiquement</td></tr>
+  <tr><td class="k">Mots de passe</td><td>Hachage bcrypt ou Argon2 (CdC initial), jamais stockés ni envoyés en clair, vérification contre les mots de passe les plus courants</td></tr>
+  <tr><td class="k">Liens d'activation et de réinitialisation</td><td>Uniques, à usage unique, valables 72 h pour l'activation et 1 h pour la réinitialisation</td></tr>
+  <tr><td class="k">Sessions</td><td>Cookies sécurisés (HttpOnly, Secure, SameSite), expiration après 30 minutes d'inactivité (CdC initial), déconnexion de toutes les sessions possible</td></tr>
+  <tr><td class="k">Back-office</td><td>Double authentification obligatoire pour tous les rôles d'administration, blocage temporaire après 5 échecs, adresse d'administration non devinable</td></tr>
+  <tr><td class="k">Formulaires</td><td>Protection CSRF et XSS (CdC initial), validation côté serveur, champ piège et contrôle anti-robot discret sans CAPTCHA visuel, limite de soumissions par appareil</td></tr>
+  <tr><td class="k">Fichiers téléversés</td><td>Types et tailles contrôlés, renommage, stockage hors du dossier public, accès aux pièces justificatives réservé aux administrateurs</td></tr>
+  <tr><td class="k">Droits</td><td>Contrôle des rôles côté serveur sur chaque requête, pas seulement dans l'interface</td></tr>
+  <tr><td class="k">Journalisation</td><td>Connexions, échecs, exports, validations et suppressions tracés et conservés 12 mois</td></tr>
+  <tr><td class="k">En-têtes</td><td>Content-Security-Policy, X-Frame-Options, Referrer-Policy, Permissions-Policy</td></tr>
+  <tr><td class="k">Mises à jour</td><td>Dépendances surveillées automatiquement, correctifs de sécurité appliqués dans les 7 jours (critiques sous 48 h)</td></tr>
+  <tr><td class="k">Données personnelles</td><td>Politique de confidentialité, consentement explicite, droit d'accès, de rectification et de suppression via une adresse dédiée (CdC initial), durées de conservation définies (candidatures refusées supprimées après 12 mois par exemple, <span class="av">durées à valider</span>). Conformité à la loi congolaise sur la protection des données personnelles (loi n° 29-2019), <span class="av">à confirmer par le conseil juridique de REC 242</span></td></tr>
+  <tr><td class="k">Cookies</td><td>Uniquement des cookies techniques et une mesure d'audience sans cookie : pas de bandeau de consentement nécessaire. Si des traceurs publicitaires sont ajoutés plus tard, un bandeau devra l'être aussi</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 33</div>
+  <h2><span class="n">33</span>Analytics</h2>
+  <p>Nous recommandons un outil de mesure d'audience respectueux de la vie privée, sans cookie, hébergé avec le site : <strong>Umami</strong> ou <strong>Matomo</strong>. Les données restent à REC 242, aucun bandeau de consentement n'est requis pour la mesure, et le script pèse quelques kilo-octets. Google Analytics reste possible mais impose un bandeau et transfère les données à un tiers.</p>
+  <table class="compact"><thead><tr><th style="width:52mm">Événement mesuré</th><th>Déclencheur</th><th style="width:36mm">Sert à piloter</th></tr></thead><tbody>
+  <tr><td class="k">Clic « Adhérer »</td><td>Tout bouton menant à la candidature, avec la page d'origine</td><td>Conversion</td></tr>
+  <tr><td class="k">Candidature commencée / envoyée</td><td>Étape 1 validée / confirmation affichée</td><td>Taux d'abandon</td></tr>
+  <tr><td class="k">Abandon par étape</td><td>Dernière étape atteinte avant sortie</td><td>Formulaire</td></tr>
+  <tr><td class="k">Clic WhatsApp</td><td>Bouton flottant, bouton de contact, chaîne, partage</td><td>Canal de contact</td></tr>
+  <tr><td class="k">Inscription à un événement</td><td>Confirmation affichée</td><td>Agenda</td></tr>
+  <tr><td class="k">Téléchargement</td><td>Position, statuts, kit média</td><td>Plaidoyer, presse</td></tr>
+  <tr><td class="k">Recherche dans l'annuaire</td><td>Terme et filtres utilisés</td><td>Annuaire</td></tr>
+  <tr><td class="k">Formulaire de contact</td><td>Envoi, par motif</td><td>Partenariats</td></tr>
+  </tbody></table>
+  <p>Un tableau de bord mensuel simple (visites, sources, conversions, candidatures, inscriptions) sera partagé avec le bureau. Les chiffres métier (candidatures, membres actifs, inscriptions) sont calculés dans le back-office, pas dans l'outil d'audience.</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 34</div>
+  <h2><span class="n">34</span>Architecture technique</h2>
+  <h3>34.1 Point de départ</h3>
+  <p>Le site actuel est une page statique (HTML, CSS, JavaScript sans framework) sur Vercel, avec un formulaire relayé par un service tiers. Ce choix était juste pour une vitrine : rapide et gratuit. Il ne peut pas porter des comptes, une base de membres, des rôles et un back-office. Le code actuel ne sera donc pas étendu ; ses textes et son exigence de légèreté seront repris.</p>
+  <h3>34.2 Stack recommandée</h3>
+  <div class="arch">
+    <div class="col"><div class="lbl">Visiteurs et membres</div>
+      <div class="bx main"><b>Site public</b>Next.js, pages générées à l'avance et mises à jour à la publication</div>
+      <div class="bx"><b>Espace membre</b>Même application, pages protégées</div>
+      <div class="bx"><b>WhatsApp</b>Liens de conversation, chaîne, partage</div>
+    </div>
+    <div class="col"><div class="lbl">Application</div>
+      <div class="bx main"><b>Payload CMS</b>Back-office, API, authentification, rôles, versions, circuits de validation</div>
+      <div class="bx"><b>PostgreSQL</b>Membres, candidatures, événements, contenus</div>
+      <div class="bx"><b>Stockage de fichiers</b>Compatible S3, images et documents</div>
+    </div>
+    <div class="col"><div class="lbl">Services</div>
+      <div class="bx"><b>E-mails transactionnels</b>Service dédié (Brevo, Postmark ou équivalent), domaine authentifié</div>
+      <div class="bx"><b>CDN</b>Mise en cache et protection (Cloudflare ou équivalent)</div>
+      <div class="bx"><b>Mesure d'audience</b>Umami ou Matomo</div>
+      <div class="bx"><b>Paiement mobile</b><span class="chip v2">V2</span> via un agrégateur mobile money</div>
+    </div>
+  </div>
+  <table class="compact"><thead><tr><th style="width:38mm">Critère</th><th>Pourquoi cette stack y répond</th></tr></thead><tbody>
+  <tr><td class="k">Performance et SEO</td><td>Next.js sert des pages déjà construites, très légères, et ne charge du JavaScript que là où c'est nécessaire. Métadonnées et sitemap gérés nativement.</td></tr>
+  <tr><td class="k">Administration simple</td><td>Payload génère un back-office en français à partir du modèle de données, avec blocs de contenu, prévisualisation, versions et brouillons.</td></tr>
+  <tr><td class="k">Espace membre et rôles</td><td>Authentification et contrôle d'accès par rôle et par champ intégrés à Payload, sans empiler des extensions.</td></tr>
+  <tr><td class="k">Sécurité et maintenabilité</td><td>Un seul langage (TypeScript) de la base à l'interface, un seul dépôt de code, peu de dépendances tierces. Code source propriété de REC 242.</td></tr>
+  <tr><td class="k">Évolutivité</td><td>API disponible pour une future application mobile ou des intégrations (paiement, e-mailing, WhatsApp Business).</td></tr>
+  <tr><td class="k">Coûts</td><td>Logiciels libres, sans licence. Coût limité à l'hébergement, au domaine et aux services d'e-mail.</td></tr>
+  <tr><td class="k">Continuité</td><td>Même hébergeur possible qu'aujourd'hui (Vercel) ou serveur dédié : aucune rupture imposée.</td></tr>
+  </tbody></table>
+  <h3>34.3 Alternatives étudiées</h3>
+  <table class="compact"><thead><tr><th style="width:36mm">Option</th><th>Atouts</th><th>Limites pour REC 242</th></tr></thead><tbody>
+  <tr><td class="k">WordPress + extensions</td><td>Très répandu, nombreux prestataires, coût de départ bas</td><td>Adhésion, validation, annuaire et événements reposent sur plusieurs extensions à maintenir et sécuriser ; site plus lourd ; surface d'attaque plus large</td></tr>
+  <tr><td class="k">Laravel + Filament</td><td>Robuste, back-office rapide à construire, PHP maîtrisé par de nombreux développeurs locaux</td><td>Site public et back-office à assembler davantage à la main ; très bonne alternative si l'équipe de maintenance est PHP</td></tr>
+  <tr><td class="k">Strapi ou Directus + Next.js</td><td>CMS découplé, souple</td><td>Deux applications à héberger et maintenir au lieu d'une</td></tr>
+  <tr><td class="k">Extension du site statique</td><td>Aucun changement</td><td>Impossible de gérer comptes, validation, rôles et données sans refaire l'essentiel</td></tr>
+  </tbody></table>
+  <h3>34.4 Intégration continue et déploiement</h3>
+  <ul>
+    <li>Code sur un dépôt Git privé, propriété de REC 242, avec accès Webtinix pour la maintenance.</li>
+    <li>Trois environnements : développement, préproduction (recette par REC 242), production.</li>
+    <li>À chaque modification : vérification du code, tests automatisés des parcours critiques (candidature, connexion, inscription), audit de performance et d'accessibilité, puis déploiement automatique en préproduction.</li>
+    <li>Mise en production sur validation, avec retour arrière possible en un clic.</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 35</div>
+  <h2><span class="n">35</span>Hébergement</h2>
+  <p>Deux scénarios sont possibles. Le choix dépend surtout de qui assurera l'exploitation et de la sensibilité de REC 242 à la localisation des données.</p>
+  <div class="g2">
+    <div class="card"><h4>Scénario A · Serveur dédié géré</h4><p>Application, base de données et stockage dans des conteneurs Docker sur un serveur privé virtuel, derrière un CDN. Exploitation par Webtinix.</p><ul><li>Coût mensuel fixe et prévisible</li><li>Données maîtrisées, localisation choisie</li><li>Demande une maintenance serveur (incluse au contrat)</li></ul></div>
+    <div class="card"><h4>Scénario B · Plateformes managées</h4><p>Application sur Vercel (continuité avec l'existant), base PostgreSQL et stockage chez des fournisseurs managés.</p><ul><li>Aucune administration de serveur</li><li>Mise à l'échelle automatique</li><li>Coûts variables selon l'usage, plusieurs fournisseurs</li></ul></div>
+  </div>
+  <div class="box reco"><div class="bt">Recommandation Webtinix</div><p>Scénario A, pour la maîtrise des données personnelles des membres et la prévisibilité des coûts. La localisation du centre de données est <span class="av">à arbitrer</span> au regard de la réglementation congolaise et du temps de réponse depuis Brazzaville.</p></div>
+  <h3>Sauvegardes et reprise</h3>
+  <table class="compact"><thead><tr><th style="width:40mm">Élément</th><th>Politique</th></tr></thead><tbody>
+  <tr><td class="k">Base de données</td><td>Sauvegarde automatique quotidienne, conservée 30 jours, copie chiffrée hors du serveur principal</td></tr>
+  <tr><td class="k">Fichiers</td><td>Sauvegarde quotidienne incrémentale, même rétention</td></tr>
+  <tr><td class="k">Code</td><td>Dépôt Git, historique complet</td></tr>
+  <tr><td class="k">Test de restauration</td><td>Une fois par trimestre, avec rapport</td></tr>
+  <tr><td class="k">Objectifs</td><td>Perte de données maximale 24 h, remise en service en moins de 8 h ouvrées <span class="av">à confirmer au contrat</span></td></tr>
+  </tbody></table>
+  <h3>Supervision</h3>
+  <ul>
+    <li>Surveillance de disponibilité toutes les minutes, alerte par e-mail et message à l'équipe de maintenance.</li>
+    <li>Remontée automatique des erreurs applicatives.</li>
+    <li>Suivi de l'espace disque, de la mémoire, de l'expiration du certificat et du domaine.</li>
+    <li>Contrôle de la délivrabilité des e-mails automatiques (taux de rebond, mise en indésirables).</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 36</div>
+  <h2><span class="n">36</span>Maintenance</h2>
+  <table class="compact"><thead><tr><th style="width:36mm">Type</th><th>Contenu</th><th style="width:44mm">Fréquence</th></tr></thead><tbody>
+  <tr><td class="k">Garantie</td><td>Correction des anomalies constatées après la mise en ligne, sur le périmètre recetté</td><td>3 mois après mise en production <span class="av">durée à contractualiser</span></td></tr>
+  <tr><td class="k">Maintenance de sécurité</td><td>Mises à jour des dépendances, du système, des certificats</td><td>Mensuelle, et immédiate pour les failles critiques</td></tr>
+  <tr><td class="k">Maintenance corrective</td><td>Correction des anomalies, avec niveaux de gravité et délais de prise en charge</td><td>Selon contrat</td></tr>
+  <tr><td class="k">Maintenance évolutive</td><td>Nouvelles fonctionnalités (V2, V3), sur devis ou forfait</td><td>Par lots</td></tr>
+  <tr><td class="k">Accompagnement éditorial</td><td>Aide à la publication, conseils SEO, rapport d'audience</td><td>Optionnel, mensuel</td></tr>
+  </tbody></table>
+  <p>Les niveaux de service (délais d'intervention par gravité) seront précisés dans le contrat de maintenance, séparé du présent cahier des charges.</p>
+</div>
+
+<!-- ================= PART H ================= -->
+<div class="part"><div><div class="pl">Partie H</div><h1>Pilotage du projet</h1></div><div class="pn">H</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 37</div>
+  <h2><span class="n">37</span>Évolutions V2 et V3</h2>
+  <p>Le MVP est volontairement resserré. Les évolutions sont déjà prises en compte dans le modèle de données pour ne pas avoir à refaire la base. Elles seront engagées lorsque l'usage le justifiera, sur la base des mesures d'audience et des retours des membres.</p>
+  <div class="g2">
+    <div class="card"><h4><span class="chip v2">V2</span> Consolider</h4><p style="font-size:8.2pt;color:var(--muted)">Déclencheur suggéré : réseau actif et contenus publiés régulièrement pendant quelques mois</p><ul><li>Cotisations : échéances, relances, reçus, renouvellement</li><li>Paiement par mobile money (cotisations, événements payants)</li><li>Billets avec QR code et pointage par scan</li><li>Opportunités déposées par les membres, avec modération</li><li>Demande de mise en relation entre membres</li><li>Lettre d'information et alertes par secteur</li><li>Annuaire imprimable généré automatiquement</li><li>Carte des membres, questionnaire de satisfaction</li><li>Second contact par entreprise</li></ul></div>
+    <div class="card"><h4><span class="chip v3">V3</span> Élargir</h4><p style="font-size:8.2pt;color:var(--muted)">Déclencheur suggéré : besoins exprimés par les membres et partenaires</p><ul><li>Version anglaise des pages institutionnelles et du plaidoyer</li><li>Application installable sur téléphone et notifications</li><li>Messagerie entre membres</li><li>Espaces de travail des commissions</li><li>Recommandations de contacts par secteur</li><li>Intégration WhatsApp Business pour les confirmations et rappels</li><li>API ouverte aux partenaires institutionnels</li><li>Statistiques de représentativité (secteurs, emplois) si les données sont collectées</li></ul></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 38</div>
+  <h2><span class="n">38</span>Planning indicatif</h2>
+  <p>Durée indicative d'environ seize semaines à compter du démarrage, sous réserve que les contenus et arbitrages attendus de REC 242 soient remis aux dates prévues. Le cahier des charges initial laisse le prestataire libre du calendrier ; celui-ci est une proposition.</p>
+  <div class="gantt">
+    <div class="hdr"><span></span><div class="wk"><span>S1</span><span>S2</span><span>S3</span><span>S4</span><span>S5</span><span>S6</span><span>S7</span><span>S8</span><span>S9</span><span>S10</span><span>S11</span><span>S12</span><span>S13</span><span>S14</span><span>S15</span><span>S16</span></div></div>
+    <div class="row"><span class="lab">Cadrage et arbitrages</span><div class="track"><span class="bar n" style="left:0;width:12.5%"></span></div></div>
+    <div class="row"><span class="lab">Contenus fournis par REC 242</span><div class="track"><span class="bar o" style="left:0;width:62.5%"></span></div></div>
+    <div class="row"><span class="lab">UX : arborescence, zonings</span><div class="track"><span class="bar" style="left:6.25%;width:18.75%"></span></div></div>
+    <div class="row"><span class="lab">UI : maquettes, design system</span><div class="track"><span class="bar" style="left:18.75%;width:25%"></span></div></div>
+    <div class="row"><span class="lab">Développement du socle</span><div class="track"><span class="bar" style="left:25%;width:31.25%"></span></div></div>
+    <div class="row"><span class="lab">Modules métier</span><div class="track"><span class="bar" style="left:37.5%;width:43.75%"></span></div></div>
+    <div class="row"><span class="lab">Intégration des contenus</span><div class="track"><span class="bar o" style="left:62.5%;width:18.75%"></span></div></div>
+    <div class="row"><span class="lab">Recette</span><div class="track"><span class="bar n" style="left:75%;width:18.75%"></span></div></div>
+    <div class="row"><span class="lab">Formation et mise en ligne</span><div class="track"><span class="bar g" style="left:87.5%;width:12.5%"></span></div></div>
+  </div>
+  <h3>Lots et complexité relative</h3>
+  <p>Le budget sera établi sur le périmètre validé. Pour éclairer les arbitrages, chaque lot reçoit une complexité relative, de S (faible) à XL (forte).</p>
+  <table class="compact"><thead><tr><th style="width:8mm">Lot</th><th style="width:40mm">Intitulé</th><th>Contenu</th><th style="width:16mm" class="c">Complexité</th><th style="width:30mm">Dépend de</th></tr></thead><tbody>
+  <tr><td class="k">0</td><td class="k">Cadrage</td><td>Ateliers, arbitrages de la section 42, planning détaillé, plan de contenus</td><td class="c cx">S</td><td>Disponibilité du bureau</td></tr>
+  <tr><td class="k">1</td><td class="k">Design</td><td>Zonings, maquettes mobile et ordinateur, design system, déclinaisons du logo pour le web</td><td class="c cx">L</td><td>Lot 0, fichiers du logo</td></tr>
+  <tr><td class="k">2</td><td class="k">Socle et site institutionnel</td><td>Environnements, CMS, modèle de données, pages Le réseau, contact, mentions, SEO technique</td><td class="c cx">M</td><td>Lot 1</td></tr>
+  <tr><td class="k">3</td><td class="k">Adhésion et membres</td><td>Candidature, anti-doublon, back-office de validation, e-mails, activation, espace membre, demandes de modification</td><td class="c cx">XL</td><td>Lot 2, règles d'adhésion</td></tr>
+  <tr><td class="k">4</td><td class="k">Annuaire</td><td>Fiches, recherche, filtres, visibilité par champ, import des membres existants</td><td class="c cx">M</td><td>Lot 3, consentements</td></tr>
+  <tr><td class="k">5</td><td class="k">Agenda</td><td>Événements, inscriptions, capacité, liste d'attente, exports, rappels, galerie</td><td class="c cx">L</td><td>Lot 2</td></tr>
+  <tr><td class="k">6</td><td class="k">Éditorial et plaidoyer</td><td>Actualités, presse, dossiers, positions avec validation, actions, opportunités, documents</td><td class="c cx">M</td><td>Lot 2</td></tr>
+  <tr><td class="k">7</td><td class="k">Recette et mise en ligne</td><td>Tests, corrections, reprise des contenus, domaine, redirections, formation, documentation</td><td class="c cx">M</td><td>Lots 2 à 6</td></tr>
+  </tbody></table>
+  <div class="box warn"><div class="bt">Principal risque de délai</div><p>Les contenus. L'expérience montre que les textes, photos, noms et règles d'adhésion arrivent plus tard que prévu et retardent la mise en ligne plus que le développement. Nous proposons de désigner un responsable des contenus côté REC 242 dès le cadrage.</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 39</div>
+  <h2><span class="n">39</span>Critères de recette</h2>
+  <p>Chaque critère est vérifié en préproduction, sur un smartphone Android d'entrée de gamme et sur un ordinateur, dans les navigateurs Chrome, Safari, Firefox et Edge à jour. La recette est prononcée lorsque tous les critères bloquants sont satisfaits.</p>
+  <table class="compact"><thead><tr><th style="width:11mm">N°</th><th style="width:30mm">Domaine</th><th>Critère vérifiable</th><th style="width:15mm" class="c">Bloquant</th></tr></thead><tbody>
+  <tr><td class="k">R01</td><td>Responsive</td><td>Toutes les pages s'affichent sans défilement horizontal de 360 à 1920 px de large</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R02</td><td>Responsive</td><td>La barre d'action (Adhérer, WhatsApp) est visible en permanence sur mobile</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R03</td><td>Adhésion</td><td>Un candidat complète et envoie le formulaire en moins de 5 minutes sur mobile</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R04</td><td>Adhésion</td><td>La sélection d'un quatrième secteur est impossible</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R05</td><td>Adhésion</td><td>Un e-mail ou un téléphone déjà enregistré, même saisi avec une casse ou un format différent, bloque l'envoi avec le message prévu</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R06</td><td>Adhésion</td><td>L'envoi sans consentement coché est impossible</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R07</td><td>Notifications</td><td>Après envoi : e-mail reçu par le candidat en moins de 2 minutes, alerte reçue par l'équipe, pastille visible dans le back-office</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R08</td><td>Validation</td><td>La validation d'une candidature envoie le lien d'activation ; le lien fonctionne une fois et expire après 72 h</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R09</td><td>Espace membre</td><td>Un membre modifie photo, bio et réseaux ; il ne peut pas modifier nom, secteurs ou téléphone, mais peut en demander la modification</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R10</td><td>Espace membre</td><td>La session expire après 30 minutes d'inactivité sans « Rester connecté »</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R11</td><td>Annuaire</td><td>Un visiteur non connecté ne voit jamais les coordonnées masquées, ni à l'écran ni dans le code de la page</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R12</td><td>Annuaire</td><td>La recherche « numerique » trouve les fiches du secteur « Numérique » ; les filtres combinés donnent un résultat cohérent</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R13</td><td>Annuaire</td><td>Une fiche sans consentement n'apparaît pas dans l'annuaire</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R14</td><td>Événements</td><td>Un responsable crée et publie un événement en moins de 10 minutes</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R15</td><td>Événements</td><td>Inscription possible jusqu'à la capacité, puis inscription en liste d'attente ; un désistement promeut automatiquement le premier en attente</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R16</td><td>Événements</td><td>L'e-mail de confirmation contient un fichier calendrier valide ; l'export CSV des participants s'ouvre correctement dans Excel</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R17</td><td>Éditorial</td><td>Un éditeur publie un article avec image ; l'aperçu du lien partagé sur WhatsApp affiche titre, description et image</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R18</td><td>Plaidoyer</td><td>Un éditeur ne peut pas publier une position officielle ; un administrateur le peut après validation</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R19</td><td>Droits</td><td>Chaque rôle n'accède qu'aux modules prévus dans la matrice, y compris par appel direct à l'adresse d'une page ou de l'API</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R20</td><td>Sécurité</td><td>Double authentification exigée pour tout compte d'administration ; blocage après 5 échecs</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R21</td><td>Sécurité</td><td>Aucune faille de gravité haute ou critique au scan de sécurité automatisé</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R22</td><td>Sécurité</td><td>Mots de passe hachés en base, vérifiés par lecture directe de la base de test</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R23</td><td>Performance</td><td>Score Lighthouse mobile d'au moins 90 en performance sur l'accueil, l'agenda et une fiche membre</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R24</td><td>Accessibilité</td><td>Aucune erreur à l'audit automatique ; parcours d'adhésion réalisable entièrement au clavier</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R25</td><td>SEO</td><td>sitemap.xml et robots.txt accessibles ; chaque page publique a un titre et une description uniques ; données structurées valides</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R26</td><td>SEO</td><td>rec242.vercel.app redirige en 301 vers le nouveau domaine</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R27</td><td>Contenus</td><td>Un bloc de chiffres clés non renseigné ne s'affiche pas</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R28</td><td>Sauvegardes</td><td>Une restauration complète de la base de préproduction est réalisée avec succès</td><td class="c">Oui</td></tr>
+  <tr><td class="k">R29</td><td>Analytics</td><td>Les événements de la section 33 remontent dans l'outil de mesure</td><td class="c">Non</td></tr>
+  <tr><td class="k">R30</td><td>Back-office</td><td>Les tâches courantes (valider une candidature, pointer une présence) sont réalisables sur smartphone</td><td class="c">Non</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 40</div>
+  <h2><span class="n">40</span>Livrables</h2>
+  <table class="compact"><thead><tr><th style="width:40mm">Phase</th><th>Livrable</th></tr></thead><tbody>
+  <tr><td class="k">Cadrage</td><td>Cahier des charges validé (version 1.1 de ce document), planning détaillé, plan de contenus</td></tr>
+  <tr><td class="k">Design</td><td>Arborescence finale, zonings, maquettes haute fidélité mobile et ordinateur, prototype cliquable, bibliothèque de composants Figma, déclinaisons web du logo</td></tr>
+  <tr><td class="k">Développement</td><td>Site en préproduction, code source sur dépôt Git au nom de REC 242, documentation technique d'installation et d'exploitation</td></tr>
+  <tr><td class="k">Recette</td><td>Cahier de recette rempli, procès-verbal de recette signé</td></tr>
+  <tr><td class="k">Mise en ligne</td><td>Site en production sur le domaine de REC 242, redirections actives, Search Console configurée, sauvegardes vérifiées</td></tr>
+  <tr><td class="k">Transfert</td><td>Guide d'utilisation du back-office en français, deux sessions de formation (administrateurs, éditeurs), accès et identifiants remis à REC 242</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 41</div>
+  <h2><span class="n">41</span>Informations à fournir par REC 242</h2>
+  <p>Toutes les mentions <span class="av">À valider par REC 242</span> du document sont regroupées ici. La colonne « Nécessaire avant » indique le moment où l'absence de l'information bloque le projet.</p>
+  <table class="compact"><thead><tr><th style="width:8mm">N°</th><th>Information</th><th style="width:30mm">Nécessaire avant</th></tr></thead><tbody>
+  <tr><td class="k">1</td><td>Nom officiel unique (REC 242, Réseau des Entrepreneurs Congolais ou du Congo) et forme courte</td><td>Maquettes</td></tr>
+  <tr><td class="k">2</td><td>Cible et statuts de membres (entreprise, associé, porteur de projet…) avec ce que chacun ouvre</td><td>Maquettes</td></tr>
+  <tr><td class="k">3</td><td>Critères d'éligibilité et pièces demandées (RCCM obligatoire ou non)</td><td>Maquettes</td></tr>
+  <tr><td class="k">4</td><td>Montant et périodicité des cotisations, droit d'entrée éventuel, modes de paiement</td><td>Développement</td></tr>
+  <tr><td class="k">5</td><td>Délai habituel de traitement d'une candidature et personne qui valide</td><td>Développement</td></tr>
+  <tr><td class="k">6</td><td>Liste complète des secteurs d'activité</td><td>Développement</td></tr>
+  <tr><td class="k">7</td><td>Liste des commissions, de leurs responsables et des experts</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">8</td><td>Gouvernance : noms, fonctions, entreprises, photos, durée des mandats</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">9</td><td>Statut juridique, date de création, statuts et règlement intérieur en PDF</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">10</td><td>Chiffres clés vérifiables (membres, entreprises, secteurs, événements, années)</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">11</td><td>Adresse physique, horaires, contact presse désigné</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">12</td><td>Nom de domaine et adresses e-mail officielles souhaitées</td><td>Développement</td></tr>
+  <tr><td class="k">13</td><td>Fichiers du logo REC 242 en vectoriel, et accord pour produire les déclinaisons web</td><td>Maquettes</td></tr>
+  <tr><td class="k">14</td><td>Logo UNICONGO en haute définition, texte de présentation du lien avec UNICONGO, accord d'usage si requis</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">15</td><td>Liste des partenaires dont l'affichage est autorisé, avec logos</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">16</td><td>Photos réelles d'événements, de membres et du bureau, avec droits d'usage</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">17</td><td>Liens de la chaîne et du groupe WhatsApp, numéro(s) officiel(s)</td><td>Développement</td></tr>
+  <tr><td class="k">18</td><td>Liste des membres existants à importer (format tableur) et leurs consentements</td><td>Recette</td></tr>
+  <tr><td class="k">19</td><td>Positions déjà adoptées et actions déjà menées, avec dates et documents</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">20</td><td>Événements prévus dans les trois mois suivant le lancement</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">21</td><td>Titulaires des rôles d'administration</td><td>Recette</td></tr>
+  <tr><td class="k">22</td><td>Durées de conservation des données et validation juridique de la politique de confidentialité</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">23</td><td>Accès au projet Vercel actuel et au compte Formspree (redirection, récupération des demandes déjà reçues)</td><td>Mise en ligne</td></tr>
+  <tr><td class="k">24</td><td>Enveloppe budgétaire envisagée, pour ajuster le périmètre du MVP</td><td>Cadrage</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 42</div>
+  <h2><span class="n">42</span>Points à arbitrer</h2>
+  <p>Ces décisions reviennent à REC 242. Pour chacune, nous indiquons les options et notre recommandation.</p>
+  <table class="compact"><thead><tr><th style="width:8mm">N°</th><th style="width:36mm">Question</th><th>Options</th><th style="width:50mm">Recommandation Webtinix</th></tr></thead><tbody>
+  <tr><td class="k">A1</td><td class="k">Nom officiel</td><td>« Réseau des Entrepreneurs Congolais » (logo) ou « du Congo » (site, CdC)</td><td>Suivre le logo, qui est le support le plus durable, et corriger les autres supports</td></tr>
+  <tr><td class="k">A2</td><td class="k">Cible</td><td>Dirigeants de TPE-PME seulement · tous entrepreneurs y compris porteurs de projet</td><td>Deux statuts distincts : membre entreprise (qui fonde la représentativité) et membre associé</td></tr>
+  <tr><td class="k">A3</td><td class="k">Accès au groupe WhatsApp</td><td>Dès la candidature (CdC) · après validation</td><td>Chaîne ouverte après candidature, groupe après validation</td></tr>
+  <tr><td class="k">A4</td><td class="k">Palette</td><td>Couleurs du site actuel (CdC) · couleurs du logo</td><td>Couleurs du logo, fond sable conservé</td></tr>
+  <tr><td class="k">A5</td><td class="k">Annuaire</td><td>Inclus dans l'adhésion · option payante · ouvert à des non-membres ; version papier ou non</td><td>Inclus dans l'adhésion ; version imprimable en V2</td></tr>
+  <tr><td class="k">A6</td><td class="k">Visibilité par défaut de l'annuaire</td><td>Public · réservé aux membres</td><td>Public pour l'entreprise, réservé aux membres pour les personnes, coordonnées masquées par défaut</td></tr>
+  <tr><td class="k">A7</td><td class="k">Tarifs affichés</td><td>Publics · sur demande</td><td>Publics, pour rassurer les petites entreprises</td></tr>
+  <tr><td class="k">A8</td><td class="k">Paiement en ligne</td><td>Dès le MVP · en V2</td><td>V2, après stabilisation des règles de cotisation</td></tr>
+  <tr><td class="k">A9</td><td class="k">Indicatif téléphonique</td><td>+242 obligatoire (CdC) · international avec +242 par défaut</td><td>International, pour ne pas exclure la diaspora prévue dans la liste des localités</td></tr>
+  <tr><td class="k">A10</td><td class="k">Tranche d'âge</td><td>Obligatoire (CdC) · facultative</td><td>Facultative, sauf si elle sert un programme précis (jeunesse)</td></tr>
+  <tr><td class="k">A11</td><td class="k">Hébergement</td><td>Serveur dédié géré · plateformes managées</td><td>Serveur dédié géré (section 35)</td></tr>
+  <tr><td class="k">A12</td><td class="k">Langues</td><td>Français seul · français et anglais</td><td>Français au lancement, anglais en V3 pour les pages institutionnelles</td></tr>
+  <tr><td class="k">A13</td><td class="k">Compte</td><td>Par entreprise · par personne</td><td>Par dirigeant, rattaché à une fiche entreprise</td></tr>
+  </tbody></table>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 43</div>
+  <h2><span class="n">43</span>Conclusion</h2>
+  <p class="lead">REC 242 a déjà l'essentiel : un nom, un logo fort, un discours clair et une communauté qui se forme. Ce qui manque, c'est l'outil qui rend ce réseau visible, crédible et utile au quotidien.</p>
+  <p>Ce cahier des charges propose de construire cet outil par étapes. Un MVP qui couvre ce qu'un réseau patronal doit montrer dès le premier jour : qui il est, qui le dirige, qui en fait partie, ce qu'il organise et ce qu'il défend. Puis des évolutions engagées au rythme de l'usage réel, pas avant.</p>
+  <p>La prochaine étape est une séance de travail avec le bureau de REC 242 pour trancher les points de la section 42 et lancer la collecte des informations de la section 41. Nous pourrons alors établir un chiffrage précis sur un périmètre validé.</p>
+  <div class="g3" style="margin-top:6mm">
+    <div class="card soft"><div class="big">01</div><p><strong>Relecture</strong> de ce document par REC 242</p></div>
+    <div class="card soft"><div class="big">02</div><p><strong>Atelier d'arbitrage</strong> sur les 13 points de la section 42</p></div>
+    <div class="card soft"><div class="big">03</div><p><strong>Version 1.1</strong> et proposition financière sur le périmètre validé</p></div>
+  </div>
+</div>
+
+<!-- ================= WEBTINIX ================= -->
+<div class="part"><div><div class="pl">Annexe</div><h1>À propos de Webtinix</h1></div><img src="wx-logo.png" style="height:18mm" alt="Webtinix"></div>
+<div class="sec">
+  <div class="eyebrow">SECTION WX</div>
+  <p class="lead">Webtinix est une entreprise de services numériques née à Brazzaville. Notre mission : « Accompagner les entreprises et organisations africaines dans leur développement numérique en leur offrant des solutions innovantes, adaptées à leurs besoins spécifiques et à leur budget. »</p>
+  <div class="g2">
+    <div class="card"><h4>Ce que nous faisons</h4><ul><li>Sites internet et plateformes sur mesure</li><li>Applications mobiles</li><li>Applications métier, ERP, tableaux de bord</li><li>Design d'interfaces et design systems</li><li>Hébergement, maintenance et sécurité</li></ul></div>
+    <div class="card"><h4>Nos produits</h4><ul><li><strong>WAPI</strong>, l'adressage numérique des villes congolaises</li><li><strong>EDUVERSE</strong>, la gestion des établissements scolaires</li><li><strong>BOMBA-DOC</strong>, la gestion électronique de documents</li><li>Un ERP personnalisable, dont une déclinaison santé</li><li>Des solutions de commerce en ligne</li></ul></div>
+  </div>
+  <h3>Pourquoi ce projet nous tient à cœur</h3>
+  <p>Webtinix est elle-même une entreprise congolaise, confrontée aux réalités que REC 242 veut porter : trouver des partenaires, se faire connaître, dialoguer avec l'administration. Nous travaillons avec des institutions et des entreprises de toutes tailles au Congo-Brazzaville, et nous connaissons les contraintes de terrain : connexions mobiles, usages WhatsApp, équipes réduites.</p>
+  <div class="box note" style="display:flex;gap:5mm;align-items:center">
+    <span class="uni"><i>UNICONGO</i> Membre</span>
+    <p style="margin:0">Webtinix est membre de UNICONGO, au sein de sa fédération des technologies de l'information et de la communication. Cette appartenance est indépendante du présent projet : REC 242 reste un réseau autonome, et ce cahier des charges ne crée aucun lien entre REC 242, UNICONGO et Webtinix autre que la relation de prestation proposée.</p>
+  </div>
+  <div class="idt" style="margin-top:5mm">
+    <div>Raison sociale</div><div>Webtinix</div>
+    <div>Adresse</div><div>68 rue Mpangala, Brazzaville, République du Congo</div>
+    <div>RCCM</div><div>CG-BZV-01-2022-B12-00212</div>
+    <div>Contact projet</div><div>tech@webtinix.com</div>
+  </div>
+</div>
+
+<!-- ================= BACK COVER ================= -->
+<section class="back">
+  <img class="net" src="network-navy.svg" alt="">
+  <div class="in">
+    <img class="l" src="wx-logo-white.png" alt="Webtinix">
+    <div class="big2">Construisons ensemble la plateforme du réseau REC 242</div>
+    <p>Webtinix · 68 rue Mpangala, Brazzaville, République du Congo</p>
+    <p>tech@webtinix.com</p>
+    <div class="uc">Webtinix, membre de UNICONGO</div>
+  </div>
+</section>
+
+</body>
+</html>
