@@ -44,9 +44,10 @@ export async function media(
   relPath: string,
   alt: string,
   illustration = true,
+  focal?: [number, number],
 ): Promise<number | undefined> {
   if (!relPath) return undefined
-  if (mediaCache.has(relPath)) return mediaCache.get(relPath)
+  if (mediaCache.has(relPath) && !focal) return mediaCache.get(relPath)
   const abs = path.join(ROOT, relPath)
   if (!fs.existsSync(abs)) {
     payload.logger.warn(`Image absente : ${relPath}`)
@@ -71,6 +72,9 @@ export async function media(
       })
     ).id as number)
   mediaCache.set(relPath, id)
+  if (focal) {
+    await payload.db.updateOne({ collection: 'media', id, data: { focalX: focal[0], focalY: focal[1] } })
+  }
   return id
 }
 

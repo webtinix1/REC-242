@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { Block, Field } from 'payload'
 
 /**
  * Blocs des pages et des actualités. Les pages institutionnelles de la maquette ont des mises en page
@@ -8,10 +8,52 @@ import type { Block } from 'payload'
 const titre = { name: 'titre', label: 'Titre', type: 'text' } as const
 const surtitre = { name: 'surtitre', label: 'Surtitre', type: 'text' } as const
 
+/** Identifiant de section : le gabarit du site place le bloc grâce à lui. */
+const ancre: Field = {
+  name: 'ancre',
+  label: 'Section',
+  type: 'text',
+  admin: { description: 'Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.' },
+}
+
+const boutons: Field = {
+  name: 'boutons',
+  label: 'Boutons',
+  type: 'array',
+  maxRows: 2,
+  fields: [
+    {
+      type: 'row',
+      fields: [
+        { name: 'libelle', label: 'Libellé', type: 'text', required: true },
+        { name: 'lien', label: 'Lien', type: 'text', required: true },
+      ],
+    },
+  ],
+}
+
+/** Section générique : surtitre, titre, texte, image, boutons et note. */
+export const Section: Block = {
+  slug: 'section',
+  labels: { singular: 'Section', plural: 'Sections' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
+  fields: [
+    ancre,
+    surtitre,
+    titre,
+    { name: 'texte', label: 'Texte', type: 'textarea' },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+    boutons,
+    { name: 'note', label: 'Note', type: 'text', admin: { description: 'Petite ligne sous la section (référence, légende, mention « à valider »…).' } },
+  ],
+}
+
 export const Entete: Block = {
   slug: 'entete',
   labels: { singular: 'En-tête', plural: 'En-têtes' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     surtitre,
     { ...titre, required: true },
     { name: 'texte', label: 'Texte', type: 'textarea' },
@@ -32,13 +74,17 @@ export const Entete: Block = {
 export const Texte: Block = {
   slug: 'texte',
   labels: { singular: 'Texte', plural: 'Textes' },
-  fields: [surtitre, titre, { name: 'contenu', label: 'Texte', type: 'richText', required: true }],
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
+  fields: [
+    ancre,surtitre, titre, { name: 'contenu', label: 'Texte', type: 'richText', required: true }],
 }
 
 export const Image: Block = {
   slug: 'image',
   labels: { singular: 'Image', plural: 'Images' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', required: true },
     { name: 'legende', label: 'Légende', type: 'text' },
   ],
@@ -47,7 +93,9 @@ export const Image: Block = {
 export const ChiffresCles: Block = {
   slug: 'chiffresCles',
   labels: { singular: 'Chiffres clés', plural: 'Chiffres clés' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     surtitre,
     titre,
     {
@@ -62,7 +110,9 @@ export const ChiffresCles: Block = {
 export const Cartes: Block = {
   slug: 'cartes',
   labels: { singular: 'Cartes', plural: 'Cartes' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     surtitre,
     titre,
     { name: 'intro', label: 'Introduction', type: 'textarea' },
@@ -76,6 +126,7 @@ export const Cartes: Block = {
         { value: 'numerotees', label: 'Étapes numérotées' },
         { value: 'liste', label: 'Liste lettrée (a, b, c…)' },
         { value: 'pastilles', label: 'Pastilles' },
+        { value: 'legal', label: 'Rubriques (texte légal)' },
       ],
     },
     {
@@ -102,7 +153,9 @@ export const Cartes: Block = {
 export const Faq: Block = {
   slug: 'faq',
   labels: { singular: 'FAQ', plural: 'FAQ' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     surtitre,
     titre,
     {
@@ -120,7 +173,9 @@ export const Faq: Block = {
 export const AppelAction: Block = {
   slug: 'appelAction',
   labels: { singular: 'Appel à l’action', plural: 'Appels à l’action' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     { ...titre, required: true },
     { name: 'texte', label: 'Texte', type: 'textarea' },
     {
@@ -139,7 +194,9 @@ export const AppelAction: Block = {
 export const Temoignages: Block = {
   slug: 'temoignages',
   labels: { singular: 'Témoignages', plural: 'Témoignages' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     titre,
     {
       name: 'temoignages',
@@ -154,13 +211,17 @@ export const Temoignages: Block = {
 export const Logos: Block = {
   slug: 'logos',
   labels: { singular: 'Logos', plural: 'Logos' },
-  fields: [surtitre, titre, { name: 'note', label: 'Note', type: 'text' }],
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
+  fields: [
+    ancre,surtitre, titre, { name: 'note', label: 'Note', type: 'text' }],
 }
 
 export const Antennes: Block = {
   slug: 'antennes',
   labels: { singular: 'Antennes', plural: 'Antennes' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
+    ancre,
     {
       name: 'antennes',
       label: 'Antennes',

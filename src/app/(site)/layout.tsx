@@ -1,26 +1,60 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
+import { Footer } from '@/components/site/Footer'
+import { Header } from '@/components/site/Header'
+import { MobileNav } from '@/components/site/MobileNav'
+import { Motion } from '@/components/site/Motion'
+import { getNavigation, getSettings, linkHref, waLink } from '@/lib/site/settings'
+
 import '@/styles/fonts.css'
 import '@/styles/tokens.css'
 import '@/styles/composants.css'
 import '@/styles/site.css'
 import '@/styles/animations.css'
+import '@/styles/site-next.css'
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'),
-  title: {
-    default: 'REC 242 · Réseau des Entrepreneurs Congolais',
-    template: '%s · REC 242',
-  },
-  description:
-    "REC 242 réunit entreprenants de l'informel, commerçants et entreprises pour s'entraider, se rencontrer et faire des affaires ensemble.",
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSettings()
+  const titre = s.seo?.titre || 'REC 242 · Réseau des Entrepreneurs Congolais'
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'),
+    title: { default: titre, template: '%s · REC 242' },
+    description: s.seo?.description,
+    openGraph: { siteName: 'REC 242', locale: 'fr_FR', type: 'website' },
+    icons: { icon: '/images/logo-rec242.jpg' },
+  }
 }
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const [nav, s] = await Promise.all([getNavigation(), getSettings()])
+  const items = (nav.principal ?? []).map((n) => ({ libelle: n.libelle, href: linkHref(n) }))
+  const orgLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'REC 242, Réseau des Entrepreneurs Congolais',
+    url: process.env.NEXT_PUBLIC_SERVER_URL,
+    logo: `${process.env.NEXT_PUBLIC_SERVER_URL}/images/logo-rec242.jpg`,
+    email: s.email,
+    telephone: s.whatsapp?.numero,
+    address: s.adresse ? { '@type': 'PostalAddress', streetAddress: s.adresse, addressCountry: 'CG' } : undefined,
+    sameAs: (s.reseauxSociaux ?? []).map((r) => r.url),
+  }
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        <div className="sb">
+          <a className="skip" href="#contenu">
+            Aller au contenu
+          </a>
+          <Header />
+          <main id="contenu">{children}</main>
+          <Footer />
+          <MobileNav items={items} whatsapp={waLink(s.whatsapp?.numero)} />
+        </div>
+        <Motion />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }} />
+      </body>
     </html>
   )
 }

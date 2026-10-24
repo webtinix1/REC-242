@@ -1,0 +1,14 @@
+/* Ajustements pour l'application : la maquette utilise des <button>, le site des liens <a>.
+   Ces règles donnent aux liens l'apparence exacte des boutons correspondants de site.css. */
+.sb a.pill,.sb a.chip,.sb a.linkbtn,.sb a.tab,.sb a.card,.sb a.rec-btn,.sb a.sl,.sb a.iconbtn,.sb .foot a{text-decoration:none}
+.sb a.pill,.sb a.chip{display:inline-flex;align-items:center}
+.sb a.linkbtn{display:inline-flex;align-items:center}
+.sb a.linkbtn:hover{text-decoration:underline}
+.sb a.card{color:inherit}
+.sb .foot a{display:block;padding:5px 0;color:#ffffff;font-size:15px}
+.sb .foot-links a{display:inline;padding:0;font-size:13px;color:#cfe5d8}
+.sb .foot a:hover{text-decoration:underline}
+.sb a.tab{color:inherit}
+.sb .logo{display:inline-flex}
+.sb .skip{position:absolute;left:-9999px;top:8px;z-index:20;background:var(--bg-surface);padding:10px 16px;border-radius:var(--radius-full)}
+.sb .skip:focus{left:16px}

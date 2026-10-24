@@ -289,6 +289,10 @@ export interface Page {
   layout?:
     | (
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre: string;
             texte?: string | null;
@@ -305,6 +309,10 @@ export interface Page {
             blockType: 'entete';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             contenu: {
@@ -327,6 +335,10 @@ export interface Page {
             blockType: 'texte';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             image: number | Media;
             legende?: string | null;
             id?: string | null;
@@ -334,6 +346,10 @@ export interface Page {
             blockType: 'image';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             /**
@@ -345,10 +361,14 @@ export interface Page {
             blockType: 'chiffresCles';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             intro?: string | null;
-            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles') | null;
+            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles' | 'legal') | null;
             /**
              * Par exemple « Article 8 des statuts ».
              */
@@ -368,6 +388,10 @@ export interface Page {
             blockType: 'cartes';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             emplacement?: ('accueil' | 'adherer') | null;
@@ -376,6 +400,10 @@ export interface Page {
             blockType: 'faq';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             titre?: string | null;
             temoignages?: (number | Testimonial)[] | null;
             id?: string | null;
@@ -383,6 +411,10 @@ export interface Page {
             blockType: 'temoignages';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             note?: string | null;
@@ -391,6 +423,10 @@ export interface Page {
             blockType: 'logos';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             titre: string;
             texte?: string | null;
             boutons?:
@@ -405,6 +441,10 @@ export interface Page {
             blockType: 'appelAction';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             antennes?:
               | {
                   ville: string;
@@ -492,6 +532,10 @@ export interface News {
   blocs?:
     | (
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             contenu: {
@@ -514,6 +558,10 @@ export interface News {
             blockType: 'texte';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             image: number | Media;
             legende?: string | null;
             id?: string | null;
@@ -521,6 +569,10 @@ export interface News {
             blockType: 'image';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             /**
@@ -532,10 +584,14 @@ export interface News {
             blockType: 'chiffresCles';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             intro?: string | null;
-            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles') | null;
+            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles' | 'legal') | null;
             /**
              * Par exemple « Article 8 des statuts ».
              */
@@ -555,6 +611,10 @@ export interface News {
             blockType: 'cartes';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             surtitre?: string | null;
             titre?: string | null;
             emplacement?: ('accueil' | 'adherer') | null;
@@ -563,6 +623,10 @@ export interface News {
             blockType: 'faq';
           }
         | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
             titre: string;
             texte?: string | null;
             boutons?:
@@ -1088,6 +1152,7 @@ export interface PagesSelect<T extends boolean = true> {
         entete?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               texte?: T;
@@ -1105,6 +1170,7 @@ export interface PagesSelect<T extends boolean = true> {
         texte?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               contenu?: T;
@@ -1114,6 +1180,7 @@ export interface PagesSelect<T extends boolean = true> {
         image?:
           | T
           | {
+              ancre?: T;
               image?: T;
               legende?: T;
               id?: T;
@@ -1122,6 +1189,7 @@ export interface PagesSelect<T extends boolean = true> {
         chiffresCles?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               note?: T;
@@ -1131,6 +1199,7 @@ export interface PagesSelect<T extends boolean = true> {
         cartes?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               intro?: T;
@@ -1152,6 +1221,7 @@ export interface PagesSelect<T extends boolean = true> {
         faq?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               emplacement?: T;
@@ -1161,6 +1231,7 @@ export interface PagesSelect<T extends boolean = true> {
         temoignages?:
           | T
           | {
+              ancre?: T;
               titre?: T;
               temoignages?: T;
               id?: T;
@@ -1169,6 +1240,7 @@ export interface PagesSelect<T extends boolean = true> {
         logos?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               note?: T;
@@ -1178,6 +1250,7 @@ export interface PagesSelect<T extends boolean = true> {
         appelAction?:
           | T
           | {
+              ancre?: T;
               titre?: T;
               texte?: T;
               boutons?:
@@ -1193,6 +1266,7 @@ export interface PagesSelect<T extends boolean = true> {
         antennes?:
           | T
           | {
+              ancre?: T;
               antennes?:
                 | T
                 | {
@@ -1234,6 +1308,7 @@ export interface NewsSelect<T extends boolean = true> {
         texte?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               contenu?: T;
@@ -1243,6 +1318,7 @@ export interface NewsSelect<T extends boolean = true> {
         image?:
           | T
           | {
+              ancre?: T;
               image?: T;
               legende?: T;
               id?: T;
@@ -1251,6 +1327,7 @@ export interface NewsSelect<T extends boolean = true> {
         chiffresCles?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               note?: T;
@@ -1260,6 +1337,7 @@ export interface NewsSelect<T extends boolean = true> {
         cartes?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               intro?: T;
@@ -1281,6 +1359,7 @@ export interface NewsSelect<T extends boolean = true> {
         faq?:
           | T
           | {
+              ancre?: T;
               surtitre?: T;
               titre?: T;
               emplacement?: T;
@@ -1290,6 +1369,7 @@ export interface NewsSelect<T extends boolean = true> {
         appelAction?:
           | T
           | {
+              ancre?: T;
               titre?: T;
               texte?: T;
               boutons?:

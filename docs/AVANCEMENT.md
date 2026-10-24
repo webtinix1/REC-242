@@ -7,7 +7,7 @@ Tenu à jour à la fin de chaque lot.
 | 0 Socle | Fait | 25/10/2026 | Payload 3.92, Next 16.3, PostgreSQL 16, admin en français, styles et polices de la maquette, planche `/composants`, Vitest et Playwright, migration initiale, script de seed. |
 | 1 Comptes, rôles, journal | Fait | 25/10/2026 | Rôles et matrice (`src/access/roles.ts`), règles de mot de passe, blocage, session de 30 min, alerte nouvel appareil, invitation (lien 72 h), journal non modifiable avec filtres et export CSV, menu groupé avec pastilles, connexion habillée, gabarit e-mail et 30 modèles modifiables. |
 | 2 Référentiels et contenus | Fait | 25/10/2026 | Taxonomies, médiathèque WebP (3 tailles), gouvernance et experts, commissions, partenaires, FAQ, témoignages, documents protégés (route de téléchargement, compteur, versions), paramètres en onglets (dont tarifs et annuaire imprimé), menus, pages par blocs avec brouillons et versions, actualités (relecture, programmation, archivage, réservé aux membres), plugin SEO, tâche de publication programmée, données de démonstration. |
-| 3 Site institutionnel | À faire | | |
+| 3 Site institutionnel | En cours | 25/10/2026 | Fait : mise en page du site (en-tête et menu depuis le global `navigation`, pied de page, barre d’onglets et menu mobile, lien d’évitement, moteur d’animation `rec-motion.js` relancé à chaque navigation, données structurées `Organization`), styles d’adaptation des liens (`src/styles/site-next.css`), couche de données (`src/lib/site/`), bloc générique « Section » et champ « ancre » sur tous les blocs. Reste : voir « Reprise du lot 3 » ci-dessous. |
 | 4 Formulaires et messages | À faire | | |
 | 5 Adhésion | À faire | | |
 | 6 Membres et espace membre | À faire | | |
@@ -38,3 +38,14 @@ Tenu à jour à la fin de chaque lot.
 - Secteurs : dix secteurs (liste de `03-modele-de-donnees.md`, avec Santé), alors que `seed/contenus.json` en listait neuf ; l'annuaire de la maquette filtre bien sur Santé.
 
 - `09-emails-et-notifications.md` : le code ajoute des variantes « bis » (liste d'attente, relance d'un expert, réponse à une mise en relation, décision disciplinaire) pour que chaque envoi ait son propre modèle modifiable. Les numéros du document restent valables.
+
+## Reprise du lot 3
+
+Principe : chaque page institutionnelle a un gabarit (`src/app/(site)/…/page.tsx`) qui reproduit le balisage de `maquette/sources/B-Site.dc.html` (classes de `site.css`, attributs `data-m*`). Les textes viennent des blocs de la page (`getPage(chemin)` puis `block(page, 'ancre')`), les listes des collections (gouvernance, commissions, partenaires, FAQ, actualités, documents, chiffres clés). Une section sans contenu ne s'affiche pas.
+
+À faire, dans l'ordre :
+1. `src/seed/pages.ts` : blocs de chaque page avec les textes de la maquette (ancres proposées : accueil `hero`, `piliers`, `avantages`, `agenda`, `visages`, `formalisation`, `opportunites`, `actualites`, `partenaires`, `faq`, `final` ; le-reseau `hero`, `histoire`, `but`, `mission`, `objectifs`, `organisation`, `comite`, `valeurs`, `moyens`, `chiffres`, `statuts` ; etc.). Mettre à jour les pages existantes dont le contenu est vide. `media()` accepte un point focal pour reproduire les `object-position` de la maquette (correspondance des images : `design/images/correspondance-blob.json`).
+2. Gabarits : accueil (01), le réseau (02), gouvernance (03, filtre des experts par étiquette en composant client), commissions (04), antennes (05), écosystème (06), partenaires (07), formalisation (18), actualités (19, filtres type et secteur dans l'URL, pagination), article (20, `NewsArticle`), presse (21), recherche (23, plugin search à installer), plan du site (24), pages légales (25 à 27, style `legal`), 404 (28, `not-found.tsx`).
+3. Route `/apercu` (aperçu en direct des pages et actualités, déjà configuré dans les collections).
+4. `sitemap.ts`, `robots.ts`, métadonnées par page (plugin SEO), fil d'Ariane `BreadcrumbList`.
+5. Comparaison aux captures (1440 et 390 px), Lighthouse mobile ≥ 90 sur l'accueil, tests E2E du lot.
