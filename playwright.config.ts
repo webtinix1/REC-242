@@ -40,5 +40,7 @@ export default defineConfig({
     command: 'pnpm dev',
     reuseExistingServer: true,
     url: 'http://localhost:3000',
+    // Premier démarrage du serveur de développement : compilation et synchronisation du schéma.
+    timeout: 300000,
   },
 })

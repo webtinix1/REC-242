@@ -88,13 +88,13 @@ export const ConnectionRequests: CollectionConfig = {
             await logAction(req.payload, { categorie: 'validation', action: 'Mises en relation suspendues : plus de 10 demandes en une semaine', author: { type: 'membre', nom: String(moi!.id) } })
             throw new APIError(MESSAGE_PLAFOND, 429, null, true)
           }
-          return { ...data, demandeur: moi!.id, destinataire: e.titulaire, entreprise: e.id, message, statut: 'attente', fil: [] }
+          return { ...data, demandeur: moi!.id, destinataire: e.titulaire, entreprise: e.id, message, statut: 'attente', fil: [], nonLuPar: [e.titulaire] }
         }
 
         // Mise à jour : seules les transitions prévues, par la bonne personne.
         const avant = originalDoc?.statut
         const apres = data.statut ?? avant
-        if (estMembre(moi)) {
+        if (estMembre(moi) && !req.context?.systeme) {
           const dest = idDe(originalDoc?.destinataire) === moi!.id
           const dem = idDe(originalDoc?.demandeur) === moi!.id
           const permis =
@@ -115,7 +115,11 @@ export const ConnectionRequests: CollectionConfig = {
             statut: apres,
           }
           if (apres === 'signalee') garde.signalement = { motif: String(data.signalement?.motif ?? '').trim(), par: moi!.id, date: new Date().toISOString() }
-          if (apres !== avant && ['acceptee', 'refusee'].includes(apres)) garde.dateReponse = new Date().toISOString()
+          if (apres !== avant && ['acceptee', 'refusee'].includes(apres)) {
+            garde.dateReponse = new Date().toISOString()
+            // La réponse apparaît comme non lue pour le demandeur (Mes échanges).
+            garde.nonLuPar = [idDe(originalDoc?.demandeur)]
+          }
           return garde
         }
         if (apres !== avant && ['acceptee', 'refusee'].includes(apres)) data.dateReponse = new Date().toISOString()
@@ -184,6 +188,7 @@ export const ConnectionRequests: CollectionConfig = {
         { name: 'date', type: 'date' },
       ],
     },
+    { name: 'nonLuPar', label: 'Non lu par', type: 'relationship', relationTo: 'members', hasMany: true, admin: { readOnly: true } },
     {
       name: 'signalement',
       label: 'Signalement',

@@ -8,6 +8,7 @@ import * as migration_20261025_040608_lot6_membres from './20261025_040608_lot6_
 import * as migration_20261025_045221_lot7_annuaire from './20261025_045221_lot7_annuaire';
 import * as migration_20261025_062052_lot8_evenements from './20261025_062052_lot8_evenements';
 import * as migration_20261025_070348_lot9_opportunites from './20261025_070348_lot9_opportunites';
+import * as migration_20261025_075814_lot10_echanges from './20261025_075814_lot10_echanges';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261025_070348_lot9_opportunites.up,
     down: migration_20261025_070348_lot9_opportunites.down,
-    name: '20261025_070348_lot9_opportunites'
+    name: '20261025_070348_lot9_opportunites',
+  },
+  {
+    up: migration_20261025_075814_lot10_echanges.up,
+    down: migration_20261025_075814_lot10_echanges.down,
+    name: '20261025_075814_lot10_echanges'
   },
 ];

@@ -29,7 +29,7 @@ const countIf =
 export const BADGES: Record<string, Counter> = {
   candidatures: countIf('applications', { statut: { in: ['recue', 'en-examen', 'complement'] } }),
   membres: countIf('modificationRequests', { statut: { equals: 'attente' } }),
-  commissions: countIf('commissionRequests', { statut: { equals: 'en-attente' } }),
+  commissions: countIf('commissionRequests', { statut: { equals: 'attente' } }),
   opportunites: countIf('opportunities', { statut: { equals: 'a-moderer' } }),
   demandes: countIf('expertRequests', { statut: { equals: 'sans-reponse' } }),
   messages: countIf('contactMessages', { statut: { equals: 'a-traiter' } }),

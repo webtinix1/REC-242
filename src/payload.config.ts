@@ -13,11 +13,13 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 
 import { Applications } from './collections/Applications'
 import { AuditLog } from './collections/AuditLog'
+import { CommissionRequests } from './collections/CommissionRequests'
 import { Commissions } from './collections/Commissions'
 import { Companies } from './collections/Companies'
 import { ConnectionRequests } from './collections/ConnectionRequests'
 import { DirectoryAds } from './collections/DirectoryAds'
 import { Events } from './collections/Events'
+import { ExpertRequests } from './collections/ExpertRequests'
 import { Fichiers } from './collections/Fichiers'
 import { Opportunities } from './collections/Opportunities'
 import { OpportunityReplies } from './collections/OpportunityReplies'
@@ -44,6 +46,7 @@ import { EmailTemplates } from './globals/EmailTemplates'
 import { Navigation } from './globals/Navigation'
 import { Settings } from './globals/Settings'
 import { publierProgrammes } from './jobs/publierProgrammes'
+import { demandesSansReponse } from './jobs/demandesSansReponse'
 import { expirerOpportunites } from './jobs/expirerOpportunites'
 import { rappelVeille } from './jobs/rappelVeille'
 import { verifierPaiements } from './jobs/verifierPaiements'
@@ -93,6 +96,8 @@ export default buildConfig({
     Opportunities,
     OpportunityReplies,
     Fichiers,
+    ExpertRequests,
+    CommissionRequests,
     Pages,
     News,
     Documents,
@@ -115,7 +120,7 @@ export default buildConfig({
   ].map((c) => withSiteRevalidation(c, 'collection')),
   globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
-    tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites],
+    tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites, demandesSansReponse],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
     access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },

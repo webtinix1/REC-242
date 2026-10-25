@@ -20,6 +20,7 @@ import {
   urlMedia,
 } from '@/lib/membres/espace'
 import { statutMembreLabel } from '@/lib/membres/options'
+import { nonLus, type Onglet } from '@/lib/echanges/service'
 import { joursRestants, typeLabel } from '@/lib/opportunites/regles'
 import { getPayloadClient } from '@/lib/site/payload'
 
@@ -58,6 +59,8 @@ export default async function TableauPage() {
     .filter((i) => ['inscrit', 'attente'].includes(i.statut) && new Date(i.evenement.debut).getTime() >= maintenantMs())
     .sort((a, b) => a.evenement.debut.localeCompare(b.evenement.debut))
     .slice(0, 2)
+  const echanges = await nonLus(payload, m.id)
+  const { titre: echangesTitre, detail: echangesDetail } = resumeEchanges(echanges)
   const c = completude(m)
   const cot = situationCotisation(m, paiements)
   const annee = m.dateAdhesion ? new Date(m.dateAdhesion).getFullYear() : undefined
@@ -231,8 +234,43 @@ export default async function TableauPage() {
               </a>
             </div>
           )}
+          <div className="card mhint">
+            <div className="row between">
+              <p className="lbl">Mes échanges</p>
+              {echanges.total > 0 && (
+                <span className="nbadge" aria-label={`${echanges.total} non lu${echanges.total > 1 ? 's' : ''}`}>
+                  {echanges.total}
+                </span>
+              )}
+            </div>
+            <p className="h3">{echangesTitre}</p>
+            {echangesDetail && <p className="small muted">{echangesDetail}</p>}
+            <Link className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} href="/espace-membre/echanges">
+              Ouvrir mes échanges
+            </Link>
+          </div>
         </div>
       </div>
     </>
   )
+}
+
+const MOTS = ['zéro', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf']
+const nombre = (n: number) => MOTS[n] ?? String(n)
+const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+/** Titre et phrase de détail de la carte « Mes échanges » (compteurs de non-lus par onglet). */
+function resumeEchanges(c: Record<Onglet, number> & { total: number }) {
+  if (c.total === 0) return { titre: 'Aucun message en attente', detail: '' }
+  const morceaux = [
+    c.relations && (c.relations === 1 ? 'une demande de mise en relation reçue' : `${nombre(c.relations)} demandes de mise en relation reçues`),
+    c.annonces && (c.annonces === 1 ? 'une réponse à votre annonce' : `${nombre(c.annonces)} réponses à vos annonces`),
+    c.experts && (c.experts === 1 ? 'la réponse d’un expert' : `${nombre(c.experts)} réponses d’experts`),
+    c.reseau && (c.reseau === 1 ? 'un message du réseau' : `${nombre(c.reseau)} messages du réseau`),
+  ].filter(Boolean) as string[]
+  const liste = morceaux.length > 1 ? `${morceaux.slice(0, -1).join(', ')} et ${morceaux[morceaux.length - 1]}` : morceaux[0]
+  return {
+    titre: c.total === 1 ? 'Une réponse vous attend' : `${majuscule(nombre(c.total))} réponses vous attendent`,
+    detail: `${majuscule(liste)}.`,
+  }
 }

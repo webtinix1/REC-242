@@ -6,6 +6,7 @@ import React, { useActionState, useEffect, useRef, useState, useTransition } fro
 
 import type { Retour } from '@/app/(espace-membre)/espace-membre/(app)/actions'
 import { Toast } from '@/components/site/Toast'
+import type { EtatEchange } from '@/lib/echanges/actions'
 import { Icone } from './Icones'
 import { robustesse } from './Connexion'
 
@@ -26,6 +27,8 @@ export type DonneesProfil = {
   demandes: { id: number; texte: string; date: string; statut: string; cls: string }[]
   visibilite: { name: string; label: string; on: boolean }[]
   commissions: { id: number; nom: string; detail: string }[]
+  commissionsEnAttente: { id: number; nom: string }[]
+  commissionsOuvertes: { id: number; nom: string }[]
   notifications: { name: string; label: string; canal: string; on: boolean }[]
   derniereConnexion: string
 }
@@ -39,6 +42,7 @@ type Actions = {
   changerNotification: Bascule
   deconnecterAppareils: Simple
   demanderSuppression: Simple
+  demanderCommission: (r: EtatEchange, f: FormData) => Promise<EtatEchange>
 }
 
 function Erreur({ id, texte }: { id: string; texte?: string }) {
@@ -140,10 +144,26 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
   const [donnees, setDonnees] = useState<'' | 'del' | 'ok'>('')
   const [msgDonnees, setMsgDonnees] = useState('')
   const [, demarrer] = useTransition()
+  const [comOuvert, setComOuvert] = useState(false)
+  const [comChoisie, setComChoisie] = useState(d.commissionsOuvertes[0]?.id ?? 0)
+  const [com, setCom] = useState<EtatEchange>({})
+  const [comEnCours, demarrerCom] = useTransition()
+  const [comEnvoyee, setComEnvoyee] = useState('')
+  const envoyerCom = (f: FormData) =>
+    demarrerCom(async () => {
+      const r = await a.demanderCommission({}, f)
+      setCom(r)
+      if (r.ok) {
+        setComEnvoyee(d.commissionsOuvertes.find((c) => c.id === comChoisie)?.nom ?? '')
+        setComOuvert(false)
+        router.refresh()
+      }
+    })
 
   useEffect(() => {
     if (demande.ok) router.refresh()
   }, [demande, router])
+
 
   const actuel = d.verifies.find((v) => v.champ === champ)
   // Le formulaire se ferme dès que la demande ouverte a été acceptée par le serveur.
@@ -355,8 +375,56 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
                   <span className="rec-badge rec-badge--active">Membre</span>
                 </div>
               ))
-            ) : (
+            ) : d.commissionsEnAttente.length ? null : (
               <p className="small muted">Vous ne faites partie d&apos;aucune commission pour le moment.</p>
+            )}
+            {d.commissionsEnAttente.map((c) => (
+              <div className="item" key={`att-${c.id}`}>
+                <div className="grow">
+                  <p style={{ fontWeight: 600 }}>Commission {c.nom}</p>
+                  <p className="xs muted">Demande envoyée, réponse après la prochaine réunion</p>
+                </div>
+                <span className="rec-badge rec-badge--pending">En attente</span>
+              </div>
+            ))}
+            {d.commissionsOuvertes.length > 0 && (
+              <button type="button" className="linkbtn" aria-expanded={comOuvert} onClick={() => setComOuvert((v) => !v)}>
+                + Rejoindre une autre commission
+              </button>
+            )}
+            {comOuvert && (
+              <form className="blk" action={envoyerCom} noValidate>
+                <div className="rec-field">
+                  <label htmlFor="mb-cj">Commission</label>
+                  <select id="mb-cj" name="commission" className="rec-input" value={comChoisie} onChange={(e) => setComChoisie(Number(e.target.value))}>
+                    {d.commissionsOuvertes.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nom}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={`rec-field${com.erreurs?.apport ? ' rec-field--error' : ''}`}>
+                  <label htmlFor="mb-cm">Ce que vous pouvez apporter</label>
+                  <textarea id="mb-cm" name="apport" className="rec-input" required />
+                  <Erreur id="mb-cm-err" texte={com.erreurs?.apport} />
+                </div>
+                {com.erreur && <p className="erreur">{com.erreur}</p>}
+                <div className="row">
+                  <button type="submit" className="rec-btn rec-btn--primary" disabled={comEnCours}>
+                    Envoyer ma demande
+                  </button>
+                  <button type="button" className="linkbtn" onClick={() => setComOuvert(false)}>
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            )}
+            {comEnvoyee && (
+              <div className="okbox" role="status">
+                <span className="rec-badge rec-badge--pending">Demande envoyée</span>
+                <p className="small">Le responsable de la commission {comEnvoyee} vous répond après sa prochaine réunion.</p>
+              </div>
             )}
             <p className="xs muted">
               La commission Éthique et Vérification n&apos;est pas ouverte aux candidatures : ses membres sont désignés par le comité de direction.

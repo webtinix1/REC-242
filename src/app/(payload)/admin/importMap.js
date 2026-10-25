@@ -30,6 +30,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { EvenementView as EvenementView_6fd93fe3290981b0c7da679ea79136ba } from '@/components/admin/evenements/EvenementView'
 import { EvenementsView as EvenementsView_79b62736a8f6acb47807deddf6dd49fc } from '@/components/admin/evenements/EvenementsView'
 import { OpportunitesView as OpportunitesView_7b4afd3f3c1f4bd9fe4f713c6c8f674a } from '@/components/admin/opportunites/OpportunitesView'
+import { DemandesView as DemandesView_6590ff7753294c27b43b1cfad1d752da } from '@/components/admin/demandes/DemandesView'
 import { BlockLabel as BlockLabel_65d5559e4024d0730eedfbb5dfb037d8 } from '@/components/admin/BlockLabel'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -42,6 +43,7 @@ import { VisibilityCell as VisibilityCell_32e3f448b1c825cd3d9815c30408f49a } fro
 import { VersionCell as VersionCell_99a3820a3d8575fc4ece0a349d579ef2 } from '@/components/admin/VersionCell'
 import { DocumentsPersonal as DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420 } from '@/components/admin/DocumentsPersonal'
 import { DocumentsFilters as DocumentsFilters_4f09b5447789f46f3aa96142dc260d76 } from '@/components/admin/DocumentsFilters'
+import { CommissionsView as CommissionsView_eeeb05430a4c8faa257a3d8b32a591cc } from '@/components/admin/commissions/CommissionsView'
 import { MessagesView as MessagesView_7d7adb5b98fbfee90009e74d8e958678 } from '@/components/admin/messages/MessagesView'
 import { CandidatureView as CandidatureView_23bd1c25cd8ac95bfc6b240ec719c366 } from '@/components/admin/candidatures/CandidatureView'
 import { CandidaturesView as CandidaturesView_afa297d49a63f97e54b8a3ff4599c1fd } from '@/components/admin/candidatures/CandidaturesView'
@@ -92,6 +94,7 @@ export const importMap = {
   "@/components/admin/evenements/EvenementView#EvenementView": EvenementView_6fd93fe3290981b0c7da679ea79136ba,
   "@/components/admin/evenements/EvenementsView#EvenementsView": EvenementsView_79b62736a8f6acb47807deddf6dd49fc,
   "@/components/admin/opportunites/OpportunitesView#OpportunitesView": OpportunitesView_7b4afd3f3c1f4bd9fe4f713c6c8f674a,
+  "@/components/admin/demandes/DemandesView#DemandesView": DemandesView_6590ff7753294c27b43b1cfad1d752da,
   "@/components/admin/BlockLabel#BlockLabel": BlockLabel_65d5559e4024d0730eedfbb5dfb037d8,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
@@ -104,6 +107,7 @@ export const importMap = {
   "@/components/admin/VersionCell#VersionCell": VersionCell_99a3820a3d8575fc4ece0a349d579ef2,
   "@/components/admin/DocumentsPersonal#DocumentsPersonal": DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420,
   "@/components/admin/DocumentsFilters#DocumentsFilters": DocumentsFilters_4f09b5447789f46f3aa96142dc260d76,
+  "@/components/admin/commissions/CommissionsView#CommissionsView": CommissionsView_eeeb05430a4c8faa257a3d8b32a591cc,
   "@/components/admin/messages/MessagesView#MessagesView": MessagesView_7d7adb5b98fbfee90009e74d8e958678,
   "@/components/admin/candidatures/CandidatureView#CandidatureView": CandidatureView_23bd1c25cd8ac95bfc6b240ec719c366,
   "@/components/admin/candidatures/CandidaturesView#CandidaturesView": CandidaturesView_afa297d49a63f97e54b8a3ff4599c1fd,

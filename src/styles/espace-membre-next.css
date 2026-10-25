@@ -25,3 +25,16 @@
 .mb input[type=file].rec-input{padding:10px 14px;height:auto}
 .mb label.opt{position:relative}
 .mb label.opt:focus-within{outline:3px solid var(--focus-ring);outline-offset:2px}
+
+/* Mes échanges (écran 10) : onglets avec compteur, liens de la liste, retour à la liste sur mobile */
+.mb .seg a .nbadge{margin-left:6px}
+.mb a.ib-item{text-decoration:none}
+.mb .ib-item:focus-visible{outline:3px solid var(--focus-ring);outline-offset:-3px}
+.mb .conv-back{display:none;width:max-content;min-height:44px;align-items:center}
+.mb .nav-i .nbadge{margin-left:auto}
+@container app (max-width: 760px){
+  .mb .inbox[data-ouvert="true"] .inbox-list{display:none}
+  .mb .inbox[data-ouvert="false"] .conv{display:none}
+  .mb .conv-back{display:inline-flex}
+  .mb .seg{border-radius:var(--radius-lg)}
+}

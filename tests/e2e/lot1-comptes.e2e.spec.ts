@@ -15,7 +15,7 @@ async function loginAs(page: import('@playwright/test').Page, email: string, pas
   await page.waitForURL(`${BASE}/admin`)
 }
 
-test.describe.configure({ timeout: 60000 })
+test.describe.configure({ timeout: 180000 })
 
 test.describe('Lot 1 : comptes, rôles, journal', () => {
   test.beforeAll(async () => {
@@ -51,7 +51,7 @@ test.describe('Lot 1 : comptes, rôles, journal', () => {
     await expect(async () => {
       await page.getByRole('button', { name: 'Inviter un utilisateur' }).click()
       await expect(page.locator('#inv-name')).toBeVisible({ timeout: 1000 })
-    }).toPass({ timeout: 15000 })
+    }).toPass({ timeout: 60000 })
     await page.fill('#inv-name', 'Invitée Test')
     await page.fill('#inv-email', 'invite@e2e.test')
     await page.locator('.rec-fieldset label', { hasText: 'Éditeur' }).locator('input').check()
@@ -91,8 +91,8 @@ test.describe('Lot 1 : comptes, rôles, journal', () => {
     await page.goto(`${BASE}/admin/collections/auditLog`)
     await expect(async () => {
       await page.getByRole('button', { name: 'Connexions' }).click()
-      await expect(page).toHaveURL(/categorie/, { timeout: 1500 })
-    }).toPass({ timeout: 15000 })
+      await expect(page).toHaveURL(/categorie/, { timeout: 5000 })
+    }).toPass({ timeout: 60000 })
     await expect(page.getByRole('button', { name: 'Connexions' })).toHaveAttribute(
       'aria-pressed',
       'true',

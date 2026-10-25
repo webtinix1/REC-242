@@ -24,3 +24,8 @@
 .bb.bo-view .tbl .rec-badge{white-space:nowrap}
 .bb.bo-view .tbl td[data-label="Date limite"]{white-space:nowrap}
 .bb.bo-view .mod .panel-h .rec-badge{white-space:nowrap;flex-shrink:0}
+
+/* Commissions (écran 19) et demandes des membres (écran 21) */
+.bb.bo-view .cards3 .comc .panel-h .pill{white-space:nowrap;flex-shrink:0}
+.bb.bo-view .conv .blk{margin-top:4px}
+.bb.bo-view .ib-item .av-photo{position:relative}

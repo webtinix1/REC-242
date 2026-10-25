@@ -12,6 +12,7 @@ export const Commissions: CollectionConfig = {
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'responsable', 'ouverture', 'prochaineReunion'],
     description: 'Organes consultatifs créés par le comité de direction (article 17 des statuts).',
+    components: { views: { list: { Component: '@/components/admin/commissions/CommissionsView#CommissionsView' } } },
   },
   defaultSort: 'ordre',
   access: {

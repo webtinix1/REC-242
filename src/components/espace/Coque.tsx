@@ -27,7 +27,7 @@ const NAV = [
   { href: '/espace-membre/opportunites', label: 'Opportunités', icon: 'briefcase', pret: true },
   { href: '/espace-membre/annuaire', label: 'Annuaire', icon: 'users', pret: true },
   { href: '/espace-membre/experts', label: 'Experts', icon: 'spark', pret: false },
-  { href: '/espace-membre/echanges', label: 'Mes échanges', icon: 'chat', pret: false },
+  { href: '/espace-membre/echanges', label: 'Mes échanges', icon: 'chat', pret: true },
   { href: '/espace-membre/cotisation', label: 'Cotisation', icon: 'wallet', pret: false },
   { href: '/espace-membre/documents', label: 'Documents', icon: 'file', pret: false },
   { href: '/espace-membre/carte', label: 'Ma carte', icon: 'card', pret: true },
@@ -61,7 +61,7 @@ function Avatar({ moi, className = '' }: { moi: Moi; className?: string }) {
   )
 }
 
-export function Coque({ moi, deconnexion, children }: { moi: Moi; deconnexion: () => Promise<void>; children: React.ReactNode }) {
+export function Coque({ moi, deconnexion, nonLus = 0, children }: { moi: Moi; deconnexion: () => Promise<void>; nonLus?: number; children: React.ReactNode }) {
   const chemin = usePathname()
   const [menu, setMenu] = useState(false)
   return (
@@ -110,6 +110,11 @@ export function Coque({ moi, deconnexion, children }: { moi: Moi; deconnexion: (
                   <Link key={n.href} href={n.href} className={`nav-i ico-${n.icon} ${on ? 'is-on' : ''}`} aria-current={on ? 'page' : undefined}>
                     <Icone nom={n.icon} className={`i-${n.icon}`} />
                     <span>{n.label}</span>
+                    {n.href === '/espace-membre/echanges' && nonLus > 0 && (
+                      <span className="nbadge" aria-label={`${nonLus} non lu${nonLus > 1 ? 's' : ''}`}>
+                        {nonLus}
+                      </span>
+                    )}
                   </Link>
                 )
               })}

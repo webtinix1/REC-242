@@ -80,6 +80,8 @@ export interface Config {
     opportunities: Opportunity;
     opportunityReplies: OpportunityReply;
     fichiers: Fichier;
+    expertRequests: ExpertRequest;
+    commissionRequests: CommissionRequest;
     pages: Page;
     news: News;
     documents: Document;
@@ -127,6 +129,8 @@ export interface Config {
     opportunities: OpportunitiesSelect<false> | OpportunitiesSelect<true>;
     opportunityReplies: OpportunityRepliesSelect<false> | OpportunityRepliesSelect<true>;
     fichiers: FichiersSelect<false> | FichiersSelect<true>;
+    expertRequests: ExpertRequestsSelect<false> | ExpertRequestsSelect<true>;
+    commissionRequests: CommissionRequestsSelect<false> | CommissionRequestsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -180,6 +184,7 @@ export interface Config {
       verifierPaiements: TaskVerifierPaiements;
       rappelVeille: TaskRappelVeille;
       expirerOpportunites: TaskExpirerOpportunites;
+      demandesSansReponse: TaskDemandesSansReponse;
       inline: {
         input: unknown;
         output: unknown;
@@ -750,6 +755,7 @@ export interface ConnectionRequest {
         id?: string | null;
       }[]
     | null;
+  nonLuPar?: (number | Member)[] | null;
   signalement?: {
     motif?: string | null;
     par?: (number | null) | Member;
@@ -1537,6 +1543,58 @@ export interface OpportunityReply {
   message: string;
   pieceJointe?: (number | null) | Fichier;
   lue?: boolean | null;
+  nonLuPar?: (number | Member)[] | null;
+  fil?:
+    | {
+        auteur?: (number | null) | Member;
+        texte?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expertRequests".
+ */
+export interface ExpertRequest {
+  id: number;
+  membre?: (number | null) | Member;
+  etiquette: number | ExpertiseTag;
+  personne: number | Person;
+  question: string;
+  preference?: ('whatsapp' | 'email' | 'siege') | null;
+  statut?: ('envoyee' | 'en-cours' | 'repondue' | 'sans-reponse' | 'reattribuee' | 'cloturee') | null;
+  echeance?: string | null;
+  opportunite?: (number | null) | Opportunity;
+  fil?:
+    | {
+        auteurType?: ('membre' | 'expert' | 'rec242' | 'systeme') | null;
+        auteurNom?: string | null;
+        texte?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  relances?: number | null;
+  nonLuMembre?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commissionRequests".
+ */
+export interface CommissionRequest {
+  id: number;
+  membre?: (number | null) | Member;
+  commission: number | Commission;
+  statut?: ('attente' | 'acceptee' | 'refusee') | null;
+  apport?: string | null;
+  traitePar?: string | null;
+  dateTraitement?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1757,7 +1815,13 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille' | 'expirerOpportunites';
+        taskSlug:
+          | 'inline'
+          | 'publierProgrammes'
+          | 'verifierPaiements'
+          | 'rappelVeille'
+          | 'expirerOpportunites'
+          | 'demandesSansReponse';
         taskID: string;
         input?:
           | {
@@ -1790,7 +1854,16 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille' | 'expirerOpportunites') | null;
+  taskSlug?:
+    | (
+        | 'inline'
+        | 'publierProgrammes'
+        | 'verifierPaiements'
+        | 'rappelVeille'
+        | 'expirerOpportunites'
+        | 'demandesSansReponse'
+      )
+    | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1860,6 +1933,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'fichiers';
         value: number | Fichier;
+      } | null)
+    | ({
+        relationTo: 'expertRequests';
+        value: number | ExpertRequest;
+      } | null)
+    | ({
+        relationTo: 'commissionRequests';
+        value: number | CommissionRequest;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2194,6 +2275,7 @@ export interface ConnectionRequestsSelect<T extends boolean = true> {
         date?: T;
         id?: T;
       };
+  nonLuPar?: T;
   signalement?:
     | T
     | {
@@ -2351,6 +2433,15 @@ export interface OpportunityRepliesSelect<T extends boolean = true> {
   message?: T;
   pieceJointe?: T;
   lue?: T;
+  nonLuPar?: T;
+  fil?:
+    | T
+    | {
+        auteur?: T;
+        texte?: T;
+        date?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2373,6 +2464,47 @@ export interface FichiersSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expertRequests_select".
+ */
+export interface ExpertRequestsSelect<T extends boolean = true> {
+  membre?: T;
+  etiquette?: T;
+  personne?: T;
+  question?: T;
+  preference?: T;
+  statut?: T;
+  echeance?: T;
+  opportunite?: T;
+  fil?:
+    | T
+    | {
+        auteurType?: T;
+        auteurNom?: T;
+        texte?: T;
+        date?: T;
+        id?: T;
+      };
+  relances?: T;
+  nonLuMembre?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commissionRequests_select".
+ */
+export interface CommissionRequestsSelect<T extends boolean = true> {
+  membre?: T;
+  commission?: T;
+  statut?: T;
+  apport?: T;
+  traitePar?: T;
+  dateTraitement?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3654,6 +3786,16 @@ export interface TaskExpirerOpportunites {
   input?: unknown;
   output: {
     expirees?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskDemandesSansReponse".
+ */
+export interface TaskDemandesSansReponse {
+  input?: unknown;
+  output: {
+    signalees?: number | null;
   };
 }
 /**

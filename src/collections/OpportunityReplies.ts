@@ -43,9 +43,9 @@ export const OpportunityReplies: CollectionConfig = {
           if (m.statut !== 'actif') throw new APIError('Réservé aux membres actifs.', 403)
           const message = String(data.message ?? '').trim()
           if (message.length < 10) throw new APIError('Écrivez votre réponse (10 caractères au moins).', 400, null, true)
-          return { ...data, membre: moi!.id, message: message.slice(0, 3000), lue: false }
+          return { ...data, membre: moi!.id, message: message.slice(0, 3000), lue: false, nonLuPar: [o.membre], fil: [] }
         }
-        if (estMembre(moi)) return { ...originalDoc, lue: Boolean(data.lue) }
+        if (estMembre(moi) && !req.context?.systeme) return { ...originalDoc, lue: Boolean(data.lue) }
         return data
       },
     ],
@@ -75,6 +75,18 @@ export const OpportunityReplies: CollectionConfig = {
     { name: 'membre', label: 'Membre qui répond', type: 'relationship', relationTo: 'members', index: true },
     { name: 'message', label: 'Message', type: 'textarea', required: true },
     { name: 'pieceJointe', label: 'Pièce jointe', type: 'upload', relationTo: 'fichiers' },
-    { name: 'lue', label: 'Lue', type: 'checkbox', defaultValue: false },
+    { name: 'lue', label: 'Traitée par l’auteur', type: 'checkbox', defaultValue: false },
+    { name: 'nonLuPar', label: 'Non lu par', type: 'relationship', relationTo: 'members', hasMany: true, admin: { readOnly: true } },
+    {
+      name: 'fil',
+      label: 'Fil des messages',
+      type: 'array',
+      admin: { readOnly: true },
+      fields: [
+        { name: 'auteur', type: 'relationship', relationTo: 'members' },
+        { name: 'texte', type: 'textarea' },
+        { name: 'date', type: 'date' },
+      ],
+    },
   ],
 }

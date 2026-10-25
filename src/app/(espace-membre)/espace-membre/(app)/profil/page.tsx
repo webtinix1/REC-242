@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import React from 'react'
+import { demanderCommission } from '@/lib/echanges/actions'
 
 import { Profil } from '@/components/espace/Profil'
 import { telephoneAffiche } from '@/lib/adhesion/categories'
@@ -47,6 +49,18 @@ export default async function ProfilPage() {
     overrideAccess: true,
   })
   const e = m.entreprise
+  const { user } = await payload.auth({ headers: await headers() })
+  const [ouvertes, attente] = await Promise.all([
+    payload.find({ collection: 'commissions', where: { ouverture: { equals: 'ouverte' } }, sort: 'ordre', limit: 50, depth: 0, user, overrideAccess: false }),
+    payload.find({
+      collection: 'commissionRequests',
+      where: { and: [{ membre: { equals: m.id } }, { statut: { equals: 'attente' } }] },
+      limit: 20,
+      depth: 1,
+      user,
+      overrideAccess: false,
+    }),
+  ])
   const valeur: Record<string, string> = {
     nom: `${m.prenom} ${m.nom}`,
     raisonSociale: e?.nom ?? '',
@@ -56,6 +70,12 @@ export default async function ProfilPage() {
     email: m.email,
   }
   const commissions = (m.commissions ?? []) as { id: number; nom?: string; prochaineReunion?: string }[]
+  const dejaMembre = new Set(commissions.map((c) => c.id))
+  const enAttente = (attente.docs as unknown as { id: number; commission: number | { id: number; nom?: string } }[]).map((r) => ({
+    id: typeof r.commission === 'object' ? r.commission.id : r.commission,
+    nom: typeof r.commission === 'object' ? (r.commission.nom ?? '') : '',
+  }))
+  const idsAttente = new Set(enAttente.map((c) => c.id))
   return (
     <>
       <div className="top">
@@ -97,6 +117,10 @@ export default async function ProfilPage() {
             nom: c.nom ?? '',
             detail: c.prochaineReunion ? `Prochaine réunion le ${dateCourte(c.prochaineReunion)}` : '',
           })),
+          commissionsEnAttente: enAttente,
+          commissionsOuvertes: (ouvertes.docs as unknown as { id: number; nom: string }[])
+            .filter((c) => !dejaMembre.has(c.id) && !idsAttente.has(c.id))
+            .map((c) => ({ id: c.id, nom: c.nom })),
           notifications: NOTIFICATIONS.map((n) => ({ name: n.name, label: n.label, canal: n.canal, on: Boolean(m.notifications?.[n.name]) })),
           derniereConnexion: m.derniereConnexion ? heure(m.derniereConnexion) : '',
         }}
@@ -109,6 +133,7 @@ export default async function ProfilPage() {
           changerNotification,
           deconnecterAppareils,
           demanderSuppression,
+          demanderCommission,
         }}
       />
     </>
