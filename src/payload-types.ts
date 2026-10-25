@@ -78,6 +78,10 @@ export interface Config {
     faq: Faq;
     testimonials: Testimonial;
     contactMessages: ContactMessage;
+    applications: Application;
+    payments: Payment;
+    pieces: Piece;
+    counters: Counter;
     sectors: Sector;
     localities: Locality;
     eventTypes: EventType;
@@ -90,7 +94,11 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    applications: {
+      paiements: 'payments';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -103,6 +111,10 @@ export interface Config {
     faq: FaqSelect<false> | FaqSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     contactMessages: ContactMessagesSelect<false> | ContactMessagesSelect<true>;
+    applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
+    payments: PaymentsSelect<false> | PaymentsSelect<true>;
+    pieces: PiecesSelect<false> | PiecesSelect<true>;
+    counters: CountersSelect<false> | CountersSelect<true>;
     sectors: SectorsSelect<false> | SectorsSelect<true>;
     localities: LocalitiesSelect<false> | LocalitiesSelect<true>;
     eventTypes: EventTypesSelect<false> | EventTypesSelect<true>;
@@ -139,6 +151,7 @@ export interface Config {
   jobs: {
     tasks: {
       publierProgrammes: TaskPublierProgrammes;
+      verifierPaiements: TaskVerifierPaiements;
       inline: {
         input: unknown;
         output: unknown;
@@ -316,6 +329,43 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'section';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            titre?: string | null;
+            lignes?:
+              | {
+                  libelle: string;
+                  visiteur?: boolean | null;
+                  membre?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'comparatif';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            titre?: string | null;
+            lignes?:
+              | {
+                  nom: string;
+                  categorie: 'A' | 'B' | 'C' | 'expert' | 'partenaire' | 'honneur';
+                  pour?: string | null;
+                  droits?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'statutsMembres';
           }
         | {
             /**
@@ -527,6 +577,7 @@ export interface Testimonial {
   personne: string;
   entreprise?: string | null;
   photo?: (number | null) | Media;
+  logo?: (number | null) | Media;
   /**
    * Obligatoire pour que le témoignage paraisse sur le site.
    */
@@ -956,6 +1007,111 @@ export interface ContactMessage {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications".
+ */
+export interface Application {
+  id: number;
+  numero?: number | null;
+  source?: ('en-ligne' | 'papier') | null;
+  papierLieu?: string | null;
+  bulletin?: (number | null) | Piece;
+  civilite?: ('madame' | 'monsieur') | null;
+  fonction?: string | null;
+  nom: string;
+  prenom: string;
+  telephone: string;
+  email: string;
+  trancheAge?: ('18-25' | '26-35' | '36-45' | '46+') | null;
+  pieceIdentite?: string | null;
+  raisonSociale: string;
+  formeJuridique?: ('informelle' | 'individuelle' | 'sarl' | 'sa' | 'autre') | null;
+  rccm?: string | null;
+  anneeCreation?: string | null;
+  effectif?: ('porteur' | '1-9' | '10-49' | '50+') | null;
+  localite: number | Locality;
+  quartier?: string | null;
+  description?: string | null;
+  services?: string | null;
+  secteurs: (number | Sector)[];
+  anciennete?: ('porteur' | 'moins-1' | '1-3' | '3-5' | 'plus-5') | null;
+  connuPar?: ('membre' | 'whatsapp' | 'reseaux' | 'evenement' | 'autre') | null;
+  parrain?: string | null;
+  objectifs?: ('projet' | 'formations' | 'afterworks' | 'affaires' | 'visibilite' | 'formalisation')[] | null;
+  categorie: 'A' | 'B' | 'C' | 'expert' | 'partenaire' | 'honneur';
+  modalite?: ('une-fois' | 'deux-tranches') | null;
+  modePaiement?: ('mobile' | 'siege') | null;
+  operateur?: ('mtn' | 'airtel') | null;
+  numeroPayeur?: string | null;
+  paiements?: {
+    docs?: (number | Payment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  pieces?: (number | Piece)[] | null;
+  autorisations?: {
+    annuaire?: boolean | null;
+    coordonnees?: boolean | null;
+    logo?: boolean | null;
+    portrait?: boolean | null;
+  };
+  consentement?: boolean | null;
+  acceptationTextes?: boolean | null;
+  statut?: ('recue' | 'en-examen' | 'complement' | 'acceptee' | 'active' | 'refusee' | 'archivee') | null;
+  responsable?: (number | null) | User;
+  rendezVous?: string | null;
+  motifRefus?: string | null;
+  pieceVerifiee?: boolean | null;
+  charteSignee?: boolean | null;
+  avisCommission?: boolean | null;
+  notes?:
+    | {
+        auteurNom?: string | null;
+        date?: string | null;
+        texte: string;
+        id?: string | null;
+      }[]
+    | null;
+  emails?:
+    | {
+        date?: string | null;
+        auteur?: string | null;
+        modele?: string | null;
+        objet?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  historique?:
+    | {
+        date?: string | null;
+        auteur?: string | null;
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces".
+ */
+export interface Piece {
+  id: number;
+  type?: ('justificatif' | 'bulletin') | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * Villes de la candidature et de l’annuaire.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -969,6 +1125,50 @@ export interface Locality {
    */
   slug?: string | null;
   ordre?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: number;
+  /**
+   * Attribué à la confirmation du paiement (PAY-0001…), sans trou.
+   */
+  numero?: number | null;
+  statut?: ('en-attente' | 'paye' | 'echoue' | 'remboursement' | 'rembourse') | null;
+  candidature?: (number | null) | Application;
+  objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart';
+  exercice?: string | null;
+  montant: number;
+  mode: 'mtn' | 'airtel' | 'especes' | 'virement';
+  referenceOperateur?: string | null;
+  telephonePayeur?: string | null;
+  datePaiement?: string | null;
+  idOperateur?: string | null;
+  journalOperateur?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  enregistrePar?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "counters".
+ */
+export interface Counter {
+  id: number;
+  name: string;
+  value: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -1100,7 +1300,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'publierProgrammes';
+        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements';
         taskID: string;
         input?:
           | {
@@ -1133,7 +1333,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'publierProgrammes') | null;
+  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1199,6 +1399,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contactMessages';
         value: number | ContactMessage;
+      } | null)
+    | ({
+        relationTo: 'applications';
+        value: number | Application;
+      } | null)
+    | ({
+        relationTo: 'payments';
+        value: number | Payment;
+      } | null)
+    | ({
+        relationTo: 'pieces';
+        value: number | Piece;
+      } | null)
+    | ({
+        relationTo: 'counters';
+        value: number | Counter;
       } | null)
     | ({
         relationTo: 'sectors';
@@ -1333,6 +1549,39 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               note?: T;
               aValider?: T;
+              id?: T;
+              blockName?: T;
+            };
+        comparatif?:
+          | T
+          | {
+              ancre?: T;
+              titre?: T;
+              lignes?:
+                | T
+                | {
+                    libelle?: T;
+                    visiteur?: T;
+                    membre?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        statutsMembres?:
+          | T
+          | {
+              ancre?: T;
+              titre?: T;
+              lignes?:
+                | T
+                | {
+                    nom?: T;
+                    categorie?: T;
+                    pour?: T;
+                    droits?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -1771,6 +2020,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   personne?: T;
   entreprise?: T;
   photo?: T;
+  logo?: T;
   accordPublication?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1822,6 +2072,138 @@ export interface ContactMessagesSelect<T extends boolean = true> {
         id?: T;
       };
   page?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications_select".
+ */
+export interface ApplicationsSelect<T extends boolean = true> {
+  numero?: T;
+  source?: T;
+  papierLieu?: T;
+  bulletin?: T;
+  civilite?: T;
+  fonction?: T;
+  nom?: T;
+  prenom?: T;
+  telephone?: T;
+  email?: T;
+  trancheAge?: T;
+  pieceIdentite?: T;
+  raisonSociale?: T;
+  formeJuridique?: T;
+  rccm?: T;
+  anneeCreation?: T;
+  effectif?: T;
+  localite?: T;
+  quartier?: T;
+  description?: T;
+  services?: T;
+  secteurs?: T;
+  anciennete?: T;
+  connuPar?: T;
+  parrain?: T;
+  objectifs?: T;
+  categorie?: T;
+  modalite?: T;
+  modePaiement?: T;
+  operateur?: T;
+  numeroPayeur?: T;
+  paiements?: T;
+  pieces?: T;
+  autorisations?:
+    | T
+    | {
+        annuaire?: T;
+        coordonnees?: T;
+        logo?: T;
+        portrait?: T;
+      };
+  consentement?: T;
+  acceptationTextes?: T;
+  statut?: T;
+  responsable?: T;
+  rendezVous?: T;
+  motifRefus?: T;
+  pieceVerifiee?: T;
+  charteSignee?: T;
+  avisCommission?: T;
+  notes?:
+    | T
+    | {
+        auteurNom?: T;
+        date?: T;
+        texte?: T;
+        id?: T;
+      };
+  emails?:
+    | T
+    | {
+        date?: T;
+        auteur?: T;
+        modele?: T;
+        objet?: T;
+        id?: T;
+      };
+  historique?:
+    | T
+    | {
+        date?: T;
+        auteur?: T;
+        action?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments_select".
+ */
+export interface PaymentsSelect<T extends boolean = true> {
+  numero?: T;
+  statut?: T;
+  candidature?: T;
+  objet?: T;
+  exercice?: T;
+  montant?: T;
+  mode?: T;
+  referenceOperateur?: T;
+  telephonePayeur?: T;
+  datePaiement?: T;
+  idOperateur?: T;
+  journalOperateur?: T;
+  enregistrePar?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces_select".
+ */
+export interface PiecesSelect<T extends boolean = true> {
+  type?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "counters_select".
+ */
+export interface CountersSelect<T extends boolean = true> {
+  name?: T;
+  value?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2183,6 +2565,7 @@ export interface EmailTemplate {
           | 'invitationAdmin'
           | 'accuseReceptionFormulaire'
           | 'alerteMessage'
+          | 'remboursementATraiter'
           | 'nouveauDocument'
           | 'opportuniteSecteur'
           | 'lienConnexion';
@@ -2383,6 +2766,16 @@ export interface TaskPublierProgrammes {
   input?: unknown;
   output: {
     publiees?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskVerifierPaiements".
+ */
+export interface TaskVerifierPaiements {
+  input?: unknown;
+  output: {
+    traites?: number | null;
   };
 }
 /**

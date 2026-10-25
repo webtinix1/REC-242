@@ -136,6 +136,18 @@ export async function seedPages(payload: Payload): Promise<void> {
     antennes_back_office: { v: string; ref: string; tel: string; st: string }[]
     antennes: { v: string; d: string }[]
   }>('gouvernance')
+  const adhesion = readSeed<{
+    avec_ou_sans: { t: string; sans: boolean; avec: boolean }[]
+    statuts_de_membre: { nom: string; pour: string; droits: string }[]
+    parcours: { t: string; d: string }[]
+  }>('adhesion')
+  const temoignages = await payload.find({
+    collection: 'testimonials',
+    limit: 10,
+    depth: 0,
+    sort: 'createdAt',
+    overrideAccess: true,
+  })
   const STATUT: Record<string, string> = {
     Active: 'active',
     'En création': 'creation',
@@ -588,7 +600,83 @@ export async function seedPages(payload: Payload): Promise<void> {
         }),
       ],
     },
-    { title: 'Adhérer', chemin: '/adherer', menu: 'Adhérer', layout: [] },
+    {
+      title: 'Adhérer',
+      chemin: '/adherer',
+      menu: 'Adhérer',
+      layout: [
+        S('hero', {
+          surtitre: 'Adhérer',
+          titre: 'Rejoignez le cercle.',
+          texte:
+            'Un dossier en ligne, un paiement en une ou deux fois, une rencontre avec le comité de direction. Chaque candidature est examinée par le comité de direction.',
+          image: await img(
+            'photos/commercant-boutique.webp',
+            'Commerçant devant sa boutique',
+            [70, 30],
+          ),
+          boutons: [
+            B('Commencer ma candidature', '/adherer/candidature'),
+            B('Bulletin d’adhésion PDF', 'document:Bulletin d’adhésion'),
+          ],
+          // Délai proposé par Webtinix, à confirmer par REC 242 (docs/11-a-obtenir-de-rec242.md).
+          note: 'Délai habituel de réponse : 10 jours ouvrés.',
+        }),
+        C('avantages', {
+          surtitre: 'Avantages',
+          titre: 'Six bonnes raisons d’adhérer',
+          cartes: AVANTAGES,
+        }),
+        S('qui', {
+          surtitre: 'Qui peut adhérer ?',
+          texte:
+            'Toute personne physique majeure ou morale qui exerce une activité économique légale ou porte un projet sérieux, partage les valeurs du réseau et accepte les statuts et le règlement intérieur.',
+        }),
+        {
+          blockType: 'comparatif',
+          ancre: 'comparatif',
+          titre: 'Avec ou sans adhésion',
+          lignes: adhesion.avec_ou_sans.map((l) => ({
+            libelle: l.t,
+            visiteur: l.sans,
+            membre: l.avec,
+          })),
+        },
+        S('categories', { surtitre: 'Catégories et cotisations', titre: 'Choisissez la vôtre' }),
+        {
+          blockType: 'statutsMembres',
+          ancre: 'statuts',
+          titre: 'Les statuts de membre',
+          lignes: adhesion.statuts_de_membre.map((l, i) => ({
+            nom: l.nom,
+            categorie: ['A', 'B', 'C', 'expert', 'partenaire', 'honneur'][i],
+            pour: l.pour,
+            droits: l.droits,
+          })),
+        },
+        C('parcours', {
+          surtitre: 'Le parcours',
+          titre: 'Cinq étapes pour devenir membre',
+          style: 'numerotees',
+          cartes: adhesion.parcours.map((p) => ({ titre: p.t, texte: p.d })),
+        }),
+        {
+          blockType: 'temoignages',
+          ancre: 'temoignages',
+          titre: 'Ils ont rejoint le réseau',
+          temoignages: temoignages.docs.map((t) => t.id),
+        },
+        S('faq', {
+          surtitre: 'Questions fréquentes',
+          titre: 'Vous vous demandez peut-être…',
+          texte: 'Une autre question ? L’équipe répond sur WhatsApp.',
+          boutons: [
+            B('Commencer ma candidature', '/adherer/candidature'),
+            B('Poser ma question', '/contact?motif=Adhésion'),
+          ],
+        }),
+      ],
+    },
     {
       title: 'Espace presse',
       chemin: '/presse',

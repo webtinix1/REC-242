@@ -294,8 +294,76 @@ export const Antennes: Block = {
   ],
 }
 
+/** Tableau « Avec ou sans adhésion » (page Adhérer). */
+export const Comparatif: Block = {
+  slug: 'comparatif',
+  labels: { singular: 'Comparatif visiteur / membre', plural: 'Comparatifs' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
+  fields: [
+    ancre,
+    titre,
+    {
+      name: 'lignes',
+      label: 'Lignes',
+      type: 'array',
+      fields: [
+        { name: 'libelle', label: 'Ce que vous pouvez faire', type: 'text', required: true },
+        {
+          type: 'row',
+          fields: [
+            { name: 'visiteur', label: 'Visiteur', type: 'checkbox', defaultValue: false },
+            { name: 'membre', label: 'Membre', type: 'checkbox', defaultValue: true },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+/** Tableau « Les statuts de membre » (page Adhérer) : les montants viennent des Paramètres, onglet Tarifs. */
+export const StatutsMembres: Block = {
+  slug: 'statutsMembres',
+  labels: { singular: 'Statuts de membre', plural: 'Statuts de membre' },
+  admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
+  fields: [
+    ancre,
+    titre,
+    {
+      name: 'lignes',
+      label: 'Statuts',
+      type: 'array',
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'nom', label: 'Statut', type: 'text', required: true },
+            {
+              name: 'categorie',
+              label: 'Montant de la catégorie',
+              type: 'select',
+              required: true,
+              options: [
+                { value: 'A', label: 'A' },
+                { value: 'B', label: 'B' },
+                { value: 'C', label: 'C' },
+                { value: 'expert', label: 'Expert' },
+                { value: 'partenaire', label: 'Partenaire (convention)' },
+                { value: 'honneur', label: 'Membre d’honneur (convention)' },
+              ],
+            },
+          ],
+        },
+        { name: 'pour', label: 'Pour qui', type: 'text' },
+        { name: 'droits', label: 'Ce qu’il ouvre', type: 'text' },
+      ],
+    },
+  ],
+}
+
 export const PAGE_BLOCKS: Block[] = [
   Section,
+  Comparatif,
+  StatutsMembres,
   Entete,
   Texte,
   Image,

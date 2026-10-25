@@ -239,11 +239,26 @@ async function annexes(payload: Payload) {
     },
   ]
   for (const t of temoignages) {
-    await upsert(payload, 'testimonials', 'personne', t.personne, {
-      ...t,
-      photo: await media(payload, t.photo, `Portrait de ${t.personne}`),
-      accordPublication: true,
-    })
+    const doc = await upsert<{ id: number; logo?: number | null }>(
+      payload,
+      'testimonials',
+      'personne',
+      t.personne,
+      {
+        ...t,
+        photo: await media(payload, t.photo, `Portrait de ${t.personne}`),
+        accordPublication: true,
+      },
+    )
+    if (!doc.logo) {
+      const logo = await media(
+        payload,
+        `design/images/logos-membres/${slugify(t.entreprise)}.png`,
+        `Logo de ${t.entreprise}`,
+      )
+      if (logo)
+        await payload.db.updateOne({ collection: 'testimonials', id: doc.id, data: { logo } })
+    }
   }
 }
 

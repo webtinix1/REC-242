@@ -3,6 +3,7 @@ import * as migration_20261024_232132_lot1_comptes from './20261024_232132_lot1_
 import * as migration_20261024_233603_lot2_contenus from './20261024_233603_lot2_contenus';
 import * as migration_20261025_012157_lot3_site from './20261025_012157_lot3_site';
 import * as migration_20261025_020052_lot4_messages from './20261025_020052_lot4_messages';
+import * as migration_20261025_030501_lot5_adhesion from './20261025_030501_lot5_adhesion';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261025_020052_lot4_messages.up,
     down: migration_20261025_020052_lot4_messages.down,
-    name: '20261025_020052_lot4_messages'
+    name: '20261025_020052_lot4_messages',
+  },
+  {
+    up: migration_20261025_030501_lot5_adhesion.up,
+    down: migration_20261025_030501_lot5_adhesion.down,
+    name: '20261025_030501_lot5_adhesion'
   },
 ];

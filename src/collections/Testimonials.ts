@@ -22,6 +22,7 @@ export const Testimonials: CollectionConfig = {
     { name: 'personne', label: 'Personne', type: 'text', required: true },
     { name: 'entreprise', label: 'Entreprise', type: 'text' },
     { name: 'photo', label: 'Photo', type: 'upload', relationTo: 'media' },
+    { name: 'logo', label: 'Logo de l’entreprise', type: 'upload', relationTo: 'media' },
     {
       name: 'accordPublication',
       label: 'Accord de publication',

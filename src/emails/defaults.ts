@@ -38,6 +38,7 @@ export type TemplateKey =
   | 'invitationAdmin'
   | 'accuseReceptionFormulaire'
   | 'alerteMessage'
+  | 'remboursementATraiter'
   | 'nouveauDocument'
   | 'opportuniteSecteur'
   | 'lienConnexion'
@@ -380,6 +381,16 @@ Pour une réponse plus rapide, écrivez-nous sur WhatsApp au {{whatsapp}}.`,
 
 [bouton] Ouvrir la boîte de réception | {{lien_back_office}}`,
     variables: ['nom', 'formulaire', 'motif', 'objet', 'destinataire', 'lien_back_office'],
+  },
+  remboursementATraiter: {
+    label: '5 bis. Remboursement à traiter (trésorier)',
+    objet: 'Remboursement à traiter : dossier {{numero_dossier}}',
+    corps: `Le dossier {{numero_dossier}} ({{candidat}}) a été refusé alors qu'un paiement avait été reçu. Le paiement est passé au statut « remboursement à traiter ».
+
+La règle de remboursement est à appliquer selon la décision du comité de direction.
+
+[bouton] Voir les paiements | {{lien_back_office}}`,
+    variables: ['numero_dossier', 'candidat', 'lien_back_office'],
   },
   nouveauDocument: {
     label: '24. Nouveau document',

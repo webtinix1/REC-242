@@ -11,8 +11,10 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 
+import { Applications } from './collections/Applications'
 import { AuditLog } from './collections/AuditLog'
 import { Commissions } from './collections/Commissions'
+import { Counters } from './collections/Counters'
 import { ContactMessages } from './collections/ContactMessages'
 import { Documents } from './collections/Documents'
 import { Faq } from './collections/Faq'
@@ -20,7 +22,9 @@ import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
+import { Payments } from './collections/Payments'
 import { People } from './collections/People'
+import { Pieces } from './collections/Pieces'
 import { EventTypes, ExpertiseTags, Localities, Sectors } from './collections/taxonomies'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
@@ -29,6 +33,7 @@ import { EmailTemplates } from './globals/EmailTemplates'
 import { Navigation } from './globals/Navigation'
 import { Settings } from './globals/Settings'
 import { publierProgrammes } from './jobs/publierProgrammes'
+import { verifierPaiements } from './jobs/verifierPaiements'
 import { withSiteRevalidation } from './hooks/revalidate'
 import { searchConfig } from './search/config'
 
@@ -74,6 +79,10 @@ export default buildConfig({
     Faq,
     Testimonials,
     ContactMessages,
+    Applications,
+    Payments,
+    Pieces,
+    Counters,
     Sectors,
     Localities,
     EventTypes,
@@ -82,7 +91,7 @@ export default buildConfig({
   ].map((c) => withSiteRevalidation(c, 'collection')),
   globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
-    tasks: [publierProgrammes],
+    tasks: [publierProgrammes, verifierPaiements],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
     access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },
