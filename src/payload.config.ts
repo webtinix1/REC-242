@@ -18,6 +18,9 @@ import { Companies } from './collections/Companies'
 import { ConnectionRequests } from './collections/ConnectionRequests'
 import { DirectoryAds } from './collections/DirectoryAds'
 import { Events } from './collections/Events'
+import { Fichiers } from './collections/Fichiers'
+import { Opportunities } from './collections/Opportunities'
+import { OpportunityReplies } from './collections/OpportunityReplies'
 import { Registrations } from './collections/Registrations'
 import { Counters } from './collections/Counters'
 import { ContactMessages } from './collections/ContactMessages'
@@ -41,6 +44,7 @@ import { EmailTemplates } from './globals/EmailTemplates'
 import { Navigation } from './globals/Navigation'
 import { Settings } from './globals/Settings'
 import { publierProgrammes } from './jobs/publierProgrammes'
+import { expirerOpportunites } from './jobs/expirerOpportunites'
 import { rappelVeille } from './jobs/rappelVeille'
 import { verifierPaiements } from './jobs/verifierPaiements'
 import { withSiteRevalidation } from './hooks/revalidate'
@@ -86,6 +90,9 @@ export default buildConfig({
     DirectoryAds,
     Events,
     Registrations,
+    Opportunities,
+    OpportunityReplies,
+    Fichiers,
     Pages,
     News,
     Documents,
@@ -108,7 +115,7 @@ export default buildConfig({
   ].map((c) => withSiteRevalidation(c, 'collection')),
   globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
-    tasks: [publierProgrammes, verifierPaiements, rappelVeille],
+    tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
     access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },

@@ -29,6 +29,7 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { EvenementView as EvenementView_6fd93fe3290981b0c7da679ea79136ba } from '@/components/admin/evenements/EvenementView'
 import { EvenementsView as EvenementsView_79b62736a8f6acb47807deddf6dd49fc } from '@/components/admin/evenements/EvenementsView'
+import { OpportunitesView as OpportunitesView_7b4afd3f3c1f4bd9fe4f713c6c8f674a } from '@/components/admin/opportunites/OpportunitesView'
 import { BlockLabel as BlockLabel_65d5559e4024d0730eedfbb5dfb037d8 } from '@/components/admin/BlockLabel'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -90,6 +91,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/evenements/EvenementView#EvenementView": EvenementView_6fd93fe3290981b0c7da679ea79136ba,
   "@/components/admin/evenements/EvenementsView#EvenementsView": EvenementsView_79b62736a8f6acb47807deddf6dd49fc,
+  "@/components/admin/opportunites/OpportunitesView#OpportunitesView": OpportunitesView_7b4afd3f3c1f4bd9fe4f713c6c8f674a,
   "@/components/admin/BlockLabel#BlockLabel": BlockLabel_65d5559e4024d0730eedfbb5dfb037d8,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,

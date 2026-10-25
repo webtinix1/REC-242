@@ -68,6 +68,26 @@ export const People: CollectionConfig = {
       ],
     },
     {
+      type: 'row',
+      fields: [
+        {
+          name: 'email',
+          label: 'E-mail (questions des membres)',
+          type: 'email',
+          // Jamais publié : sert à transmettre les questions des membres (lot 10).
+          access: { read: ({ req }) => Boolean(req.user && req.user.collection === 'users') },
+          admin: { description: 'Reçoit les questions posées depuis « Solliciter un expert ». Jamais affiché sur le site.' },
+        },
+        {
+          name: 'membre',
+          label: 'Membre lié',
+          type: 'relationship',
+          relationTo: 'members',
+          admin: { description: 'Pour un expert qui est aussi membre du réseau.' },
+        },
+      ],
+    },
+    {
       name: 'etiquettes',
       label: 'Étiquettes d’expertise',
       type: 'relationship',

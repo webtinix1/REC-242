@@ -26,3 +26,10 @@
 .sb .card-soft > form{display:flex;flex-direction:column;gap:inherit}
 .sb .card-soft > form > .rec-btn,.sb .card-soft > .rec-btn{justify-content:center}
 .sb .card-soft > form > .rec-btn--primary{width:100%}
+
+/* Opportunités : « Répondre » qui déplie le comment répondre */
+.sb details.opp-rep{background:none;border:0;padding:0}
+.sb details.opp-rep summary{list-style:none;cursor:pointer}
+.sb details.opp-rep summary::-webkit-details-marker{display:none}
+.sb details.opp-rep summary::after{display:none}
+.sb details.opp-rep p{padding:0;color:var(--text)}

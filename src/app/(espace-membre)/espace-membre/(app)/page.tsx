@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import React from 'react'
 
 import { CarteResume } from '@/components/espace/CarteMembre'
@@ -10,6 +11,7 @@ import { heureFr, lieuDe, type Evenement } from '@/lib/evenements/notifications'
 import {
   completude,
   dateCourte,
+  dateLongue,
   exigerMembre,
   initialesDe,
   lettreCategorie,
@@ -18,6 +20,7 @@ import {
   urlMedia,
 } from '@/lib/membres/espace'
 import { statutMembreLabel } from '@/lib/membres/options'
+import { joursRestants, typeLabel } from '@/lib/opportunites/regles'
 import { getPayloadClient } from '@/lib/site/payload'
 
 export const metadata: Metadata = { title: 'Accueil' }
@@ -40,6 +43,17 @@ export default async function TableauPage() {
       select: { titre: true, slug: true, datePublication: true },
     }),
   ])
+  const { user } = await payload.auth({ headers: await headers() })
+  const mesSecteurs = (m.entreprise?.secteurs ?? []).map((x) => x.id)
+  const lireOpps = (where: object, limit: number) =>
+    payload.find({ collection: 'opportunities', where: { and: [{ statut: { equals: 'publiee' } }, where] } as never, sort: 'dateLimite', limit, depth: 0, user, overrideAccess: false })
+  const apres = { dateLimite: { greater_than_equal: new Date(maintenantMs() - 86400e3).toISOString() } }
+  type OppDoc = { id: number; titre: string; type: string; dateLimite: string }
+  let opps = (mesSecteurs.length ? (await lireOpps({ and: [apres, { secteurs: { in: mesSecteurs } }] }, 3)).docs : []) as unknown as OppDoc[]
+  if (opps.length < 3) {
+    const autres = (await lireOpps({ and: [apres, { id: { not_in: opps.map((o) => o.id) } }] }, 3 - opps.length)).docs as unknown as OppDoc[]
+    opps = [...opps, ...autres]
+  }
   const rdv = inscriptions
     .filter((i) => ['inscrit', 'attente'].includes(i.statut) && new Date(i.evenement.debut).getTime() >= maintenantMs())
     .sort((a, b) => a.evenement.debut.localeCompare(b.evenement.debut))
@@ -139,6 +153,31 @@ export default async function TableauPage() {
               })
             ) : (
               <p className="small muted">Aucun rendez-vous à venir.</p>
+            )}
+          </div>
+          <div className="card">
+            <div className="row between">
+              <h2 className="h3">Opportunités pour vous</h2>
+              <Link className="linkbtn" href="/espace-membre/opportunites">
+                Tout voir
+              </Link>
+            </div>
+            {opps.length ? (
+              opps.map((o) => (
+                <div className="item" key={o.id}>
+                  <span className="av sand" aria-hidden="true">
+                    {Math.max(0, joursRestants(o.dateLimite))} j
+                  </span>
+                  <div className="grow">
+                    <p style={{ fontWeight: 600 }}>{o.titre}</p>
+                    <p className="small muted">
+                      {typeLabel(o.type)} · date limite {dateLongue(o.dateLimite)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="small muted">Aucune opportunité pour le moment.</p>
             )}
           </div>
           <div className="card">

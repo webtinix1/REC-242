@@ -3,6 +3,8 @@ import Link from 'next/link'
 import React from 'react'
 
 import { Btn, Boutons, Img, KeyFigures, Lnk, SecHead } from '@/components/site/Blocks'
+import { OpportuniteCarte } from '@/components/site/OpportuniteCarte'
+import { opportunitesAccueil } from '@/components/site/OpportuniteDonnees'
 import { Words } from '@/components/site/Words'
 import { misEnAvant } from '@/lib/annuaire/donnees'
 import { disque, heureLieu, placesInfo, prochainsEvenements, tax } from '@/lib/evenements/site'
@@ -19,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Écran 01 : accueil (captures/site/01-accueil-*). */
 export default async function Accueil() {
-  const [page, figs, faq, partners, news, visagesMembres, agendaEv] = await Promise.all([
+  const [page, figs, faq, partners, news, visagesMembres, agendaEv, opps] = await Promise.all([
     getPage('/'),
     getKeyFigures(),
     getFaq('accueil'),
@@ -27,6 +29,7 @@ export default async function Accueil() {
     getNews({ limit: 3 }),
     misEnAvant(6),
     prochainsEvenements(3),
+    opportunitesAccueil(2),
   ])
   const hero = block(page, 'hero')
   const piliers = block<CartesBlock>(page, 'piliers')
@@ -228,7 +231,23 @@ export default async function Accueil() {
         </section>
       )}
 
-      {/* Opportunités (lot 9) s'affichent quand leurs données existent. */}
+      {opps.length > 0 && (
+        <section className="band bg-mint band-s" style={{ paddingTop: 72 }}>
+          <div className="wrap">
+            <SecHead
+              surtitre="Opportunités"
+              titre="Opportunités ouvertes à tous"
+              bouton={{ libelle: 'Toutes les opportunités', lien: '/opportunites' }}
+              btnCls="rec-btn--secondary"
+            />
+            <div className="g2" data-m="deal" data-m-stagger="">
+              {opps.map((o) => (
+                <OpportuniteCarte key={o.id} o={o} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {visages && visagesMembres.length > 0 && (
         <>

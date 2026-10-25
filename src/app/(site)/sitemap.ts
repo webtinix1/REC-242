@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       overrideAccess: false,
     }),
   ])
-  const fixes = ['/actualites', '/presse', '/plan-du-site', '/membres', '/agenda']
+  const fixes = ['/actualites', '/presse', '/plan-du-site', '/membres', '/agenda', '/opportunites']
   return [
     ...pages.docs
       .filter((p) => (p as { chemin?: string }).chemin)

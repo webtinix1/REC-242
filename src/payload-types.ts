@@ -77,6 +77,9 @@ export interface Config {
     directoryAds: DirectoryAd;
     events: Event;
     registrations: Registration;
+    opportunities: Opportunity;
+    opportunityReplies: OpportunityReply;
+    fichiers: Fichier;
     pages: Page;
     news: News;
     documents: Document;
@@ -104,6 +107,9 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    opportunities: {
+      reponses: 'opportunityReplies';
+    };
     applications: {
       paiements: 'payments';
     };
@@ -118,6 +124,9 @@ export interface Config {
     directoryAds: DirectoryAdsSelect<false> | DirectoryAdsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     registrations: RegistrationsSelect<false> | RegistrationsSelect<true>;
+    opportunities: OpportunitiesSelect<false> | OpportunitiesSelect<true>;
+    opportunityReplies: OpportunityRepliesSelect<false> | OpportunityRepliesSelect<true>;
+    fichiers: FichiersSelect<false> | FichiersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -170,6 +179,7 @@ export interface Config {
       publierProgrammes: TaskPublierProgrammes;
       verifierPaiements: TaskVerifierPaiements;
       rappelVeille: TaskRappelVeille;
+      expirerOpportunites: TaskExpirerOpportunites;
       inline: {
         input: unknown;
         output: unknown;
@@ -652,6 +662,14 @@ export interface Person {
   fonction: string;
   role: 'fondatrice' | 'comite' | 'expert';
   pole?: ('direction' | 'numerique' | 'juridique' | 'programme' | 'communication' | 'relations') | null;
+  /**
+   * Reçoit les questions posées depuis « Solliciter un expert ». Jamais affiché sur le site.
+   */
+  email?: string | null;
+  /**
+   * Pour un expert qui est aussi membre du réseau.
+   */
+  membre?: (number | null) | Member;
   etiquettes?: (number | ExpertiseTag)[] | null;
   ordre?: number | null;
   visible?: boolean | null;
@@ -1447,6 +1465,83 @@ export interface Registration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "opportunities".
+ */
+export interface Opportunity {
+  id: number;
+  type: 'partenariat' | 'evenement' | 'appel-offres' | 'financement' | 'b2b' | 'offre-membre';
+  visibilite?: ('public' | 'membres') | null;
+  /**
+   * Obligatoire. L’annonce passe en « Expirée » le lendemain.
+   */
+  dateLimite?: string | null;
+  titre: string;
+  description: string;
+  secteurs?: (number | Sector)[] | null;
+  source?: {
+    /**
+     * Obligatoire pour un appel d’offres relayé.
+     */
+    lien?: string | null;
+    libelle?: string | null;
+  };
+  commentRepondre?: string | null;
+  pieceJointe?: (number | null) | Fichier;
+  auteur?: ('rec242' | 'membre') | null;
+  membre?: (number | null) | Member;
+  prevenirSecteurs?: boolean | null;
+  miseEnAvant?: boolean | null;
+  reponses?: {
+    docs?: (number | OpportunityReply)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  statut?: ('brouillon' | 'a-moderer' | 'modification' | 'publiee' | 'refusee' | 'expiree') | null;
+  messageModeration?: string | null;
+  motifRefus?: string | null;
+  coordonnees?: string | null;
+  publieLe?: string | null;
+  alerteEnvoyee?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fichiers".
+ */
+export interface Fichier {
+  id: number;
+  visibilite?: ('public' | 'membres' | 'prive') | null;
+  proprietaire?: (number | null) | Member;
+  destinataire?: (number | null) | Member;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "opportunityReplies".
+ */
+export interface OpportunityReply {
+  id: number;
+  opportunite: number | Opportunity;
+  membre?: (number | null) | Member;
+  message: string;
+  pieceJointe?: (number | null) | Fichier;
+  lue?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
 export interface Partner {
@@ -1662,7 +1757,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille';
+        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille' | 'expirerOpportunites';
         taskID: string;
         input?:
           | {
@@ -1695,7 +1790,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille') | null;
+  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille' | 'expirerOpportunites') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1753,6 +1848,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'registrations';
         value: number | Registration;
+      } | null)
+    | ({
+        relationTo: 'opportunities';
+        value: number | Opportunity;
+      } | null)
+    | ({
+        relationTo: 'opportunityReplies';
+        value: number | OpportunityReply;
+      } | null)
+    | ({
+        relationTo: 'fichiers';
+        value: number | Fichier;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2203,6 +2310,72 @@ export interface RegistrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "opportunities_select".
+ */
+export interface OpportunitiesSelect<T extends boolean = true> {
+  type?: T;
+  visibilite?: T;
+  dateLimite?: T;
+  titre?: T;
+  description?: T;
+  secteurs?: T;
+  source?:
+    | T
+    | {
+        lien?: T;
+        libelle?: T;
+      };
+  commentRepondre?: T;
+  pieceJointe?: T;
+  auteur?: T;
+  membre?: T;
+  prevenirSecteurs?: T;
+  miseEnAvant?: T;
+  reponses?: T;
+  statut?: T;
+  messageModeration?: T;
+  motifRefus?: T;
+  coordonnees?: T;
+  publieLe?: T;
+  alerteEnvoyee?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "opportunityReplies_select".
+ */
+export interface OpportunityRepliesSelect<T extends boolean = true> {
+  opportunite?: T;
+  membre?: T;
+  message?: T;
+  pieceJointe?: T;
+  lue?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fichiers_select".
+ */
+export interface FichiersSelect<T extends boolean = true> {
+  visibilite?: T;
+  proprietaire?: T;
+  destinataire?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -2639,6 +2812,8 @@ export interface PeopleSelect<T extends boolean = true> {
   fonction?: T;
   role?: T;
   pole?: T;
+  email?: T;
+  membre?: T;
   etiquettes?: T;
   ordre?: T;
   visible?: T;
@@ -3469,6 +3644,16 @@ export interface TaskRappelVeille {
   input?: unknown;
   output: {
     envoyes?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExpirerOpportunites".
+ */
+export interface TaskExpirerOpportunites {
+  input?: unknown;
+  output: {
+    expirees?: number | null;
   };
 }
 /**

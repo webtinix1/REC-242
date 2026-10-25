@@ -11,6 +11,7 @@ import { seedCandidatures } from './candidatures'
 import { seedEvenements } from './evenements'
 import { seedMembres } from './membres'
 import { seedMessages } from './messages'
+import { seedOpportunites } from './opportunites'
 import { seedUsers } from './users'
 
 export async function seed(payload: Payload): Promise<void> {
@@ -27,4 +28,5 @@ export async function seed(payload: Payload): Promise<void> {
   await seedCandidatures(payload)
   await seedMembres(payload)
   await seedEvenements(payload)
+  await seedOpportunites(payload)
 }
