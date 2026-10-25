@@ -17,6 +17,8 @@ import { Commissions } from './collections/Commissions'
 import { Companies } from './collections/Companies'
 import { ConnectionRequests } from './collections/ConnectionRequests'
 import { DirectoryAds } from './collections/DirectoryAds'
+import { Events } from './collections/Events'
+import { Registrations } from './collections/Registrations'
 import { Counters } from './collections/Counters'
 import { ContactMessages } from './collections/ContactMessages'
 import { Documents } from './collections/Documents'
@@ -39,6 +41,7 @@ import { EmailTemplates } from './globals/EmailTemplates'
 import { Navigation } from './globals/Navigation'
 import { Settings } from './globals/Settings'
 import { publierProgrammes } from './jobs/publierProgrammes'
+import { rappelVeille } from './jobs/rappelVeille'
 import { verifierPaiements } from './jobs/verifierPaiements'
 import { withSiteRevalidation } from './hooks/revalidate'
 import { searchConfig } from './search/config'
@@ -81,6 +84,8 @@ export default buildConfig({
     NetworkMessages,
     ConnectionRequests,
     DirectoryAds,
+    Events,
+    Registrations,
     Pages,
     News,
     Documents,
@@ -103,7 +108,7 @@ export default buildConfig({
   ].map((c) => withSiteRevalidation(c, 'collection')),
   globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
-    tasks: [publierProgrammes, verifierPaiements],
+    tasks: [publierProgrammes, verifierPaiements, rappelVeille],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
     access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },

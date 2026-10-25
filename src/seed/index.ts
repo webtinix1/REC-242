@@ -8,6 +8,7 @@ import type { Payload } from 'payload'
 import { seedContenus } from './contenus'
 import { seedEmailTemplates } from './emailTemplates'
 import { seedCandidatures } from './candidatures'
+import { seedEvenements } from './evenements'
 import { seedMembres } from './membres'
 import { seedMessages } from './messages'
 import { seedUsers } from './users'
@@ -25,4 +26,5 @@ export async function seed(payload: Payload): Promise<void> {
   await seedMessages(payload)
   await seedCandidatures(payload)
   await seedMembres(payload)
+  await seedEvenements(payload)
 }

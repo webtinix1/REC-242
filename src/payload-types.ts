@@ -75,6 +75,8 @@ export interface Config {
     networkMessages: NetworkMessage;
     connectionRequests: ConnectionRequest;
     directoryAds: DirectoryAd;
+    events: Event;
+    registrations: Registration;
     pages: Page;
     news: News;
     documents: Document;
@@ -114,6 +116,8 @@ export interface Config {
     networkMessages: NetworkMessagesSelect<false> | NetworkMessagesSelect<true>;
     connectionRequests: ConnectionRequestsSelect<false> | ConnectionRequestsSelect<true>;
     directoryAds: DirectoryAdsSelect<false> | DirectoryAdsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    registrations: RegistrationsSelect<false> | RegistrationsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -165,6 +169,7 @@ export interface Config {
     tasks: {
       publierProgrammes: TaskPublierProgrammes;
       verifierPaiements: TaskVerifierPaiements;
+      rappelVeille: TaskRappelVeille;
       inline: {
         input: unknown;
         output: unknown;
@@ -751,6 +756,372 @@ export interface DirectoryAd {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  titre: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  type?: (number | null) | EventType;
+  commission?: (number | null) | Commission;
+  secteurs?: (number | Sector)[] | null;
+  chapeau?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  debut: string;
+  fin?: string | null;
+  format?: ('sur-place' | 'visio' | 'communique') | null;
+  lieu?: string | null;
+  ville?: (number | null) | Locality;
+  adresse?: string | null;
+  /**
+   * Communiqué aux inscrits seulement.
+   */
+  lienCarte?: string | null;
+  indicationsAcces?: string | null;
+  image?: (number | null) | Media;
+  acces?: ('tous' | 'membres' | 'invitation') | null;
+  /**
+   * Vide : places illimitées.
+   */
+  capacite?: number | null;
+  cloture?: string | null;
+  listeAttente?: boolean | null;
+  rappelVeille?: boolean | null;
+  billetQr?: boolean | null;
+  /**
+   * Texte libre, par exemple « Gratuit ». Vide : « À préciser ».
+   */
+  tarif?: string | null;
+  programme?:
+    | {
+        heure?: string | null;
+        intitule: string;
+        id?: string | null;
+      }[]
+    | null;
+  intervenants?:
+    | {
+        nom: string;
+        fonction?: string | null;
+        photo?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  documents?:
+    | {
+        document: number | Document;
+        visibilite?: ('tous' | 'inscrits') | null;
+        id?: string | null;
+      }[]
+    | null;
+  compteRendu?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  participants?: number | null;
+  galerie?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  actualite?: (number | null) | News;
+  statut?: ('brouillon' | 'publie' | 'complet' | 'annule' | 'reporte' | 'termine') | null;
+  messageInscrits?: string | null;
+  nouvelleDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventTypes".
+ */
+export interface EventType {
+  id: number;
+  nom: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  ordre?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  titre: string;
+  rubrique: 'textes' | 'vie' | 'ateliers' | 'presse' | 'evenements';
+  visibilite: 'public' | 'membres' | 'inscrits' | 'comite';
+  typePresse?: ('communique' | 'kit') | null;
+  dateDocument?: string | null;
+  /**
+   * Image de la première page, affichée dans les listes.
+   */
+  couverture?: (number | null) | Media;
+  version?: number | null;
+  telechargements?: number | null;
+  /**
+   * Envoie l’e-mail « Nouveau document » aux membres concernés (branché au lot 6).
+   */
+  annonceAuxMembres?: boolean | null;
+  historique?:
+    | {
+        version?: number | null;
+        fichier?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Brouillon, relecture, programmation et archivage.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  titre: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  /**
+   * Visible par tous, même quand l’actualité est réservée aux membres.
+   */
+  chapeau: string;
+  /**
+   * Le texte alternatif de l’image est obligatoire.
+   */
+  image?: (number | null) | Media;
+  corps?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  blocs?:
+    | (
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            surtitre?: string | null;
+            titre?: string | null;
+            contenu: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'texte';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            image: number | Media;
+            legende?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            surtitre?: string | null;
+            titre?: string | null;
+            /**
+             * Les chiffres viennent des Paramètres.
+             */
+            note?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'chiffresCles';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            surtitre?: string | null;
+            titre?: string | null;
+            intro?: string | null;
+            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles' | 'legal') | null;
+            /**
+             * Par exemple « Article 8 des statuts ».
+             */
+            reference?: string | null;
+            boutons?:
+              | {
+                  libelle: string;
+                  lien: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Petite ligne sous la liste.
+             */
+            note?: string | null;
+            aValider?: boolean | null;
+            cartes?:
+              | {
+                  titre: string;
+                  texte?: string | null;
+                  lien?: string | null;
+                  libelleLien?: string | null;
+                  image?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cartes';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            surtitre?: string | null;
+            titre?: string | null;
+            emplacement?: ('accueil' | 'adherer') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            titre: string;
+            texte?: string | null;
+            boutons?:
+              | {
+                  libelle: string;
+                  lien: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'appelAction';
+          }
+      )[]
+    | null;
+  pdf?: (number | null) | Document;
+  type: 'article' | 'communique' | 'interview' | 'annonce' | 'retour';
+  secteurs?: (number | Sector)[] | null;
+  etiquettes?: string[] | null;
+  datePublication?: string | null;
+  /**
+   * Sans actualité à la une, la plus récente est mise en avant.
+   */
+  aLaUne?: boolean | null;
+  reserveMembres?: boolean | null;
+  /**
+   * « En relecture » signale l’article à un éditeur. « Programmé » le publie automatiquement à la date de publication. « Archivé » le retire du site sans le supprimer.
+   */
+  etat?: ('brouillon' | 'relecture' | 'programme' | 'publie' | 'archive') | null;
+  auteur?: (number | null) | User;
+  /**
+   * Par exemple « la Communication ». Affichée après la date : « par … ».
+   */
+  signature?: string | null;
+  /**
+   * Actualité ou page proposée en fin d’article.
+   */
+  aLireAussi?:
+    | ({
+        relationTo: 'news';
+        value: number | News;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null);
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Édition par blocs dans la charte, prévisualisation avant publication.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1051,249 +1422,28 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
- * Brouillon, relecture, programmation et archivage.
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
+ * via the `definition` "registrations".
  */
-export interface News {
+export interface Registration {
   id: number;
-  titre: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  /**
-   * Visible par tous, même quand l’actualité est réservée aux membres.
-   */
-  chapeau: string;
-  /**
-   * Le texte alternatif de l’image est obligatoire.
-   */
-  image?: (number | null) | Media;
-  corps?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  blocs?:
-    | (
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            surtitre?: string | null;
-            titre?: string | null;
-            contenu: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'texte';
-          }
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            image: number | Media;
-            legende?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'image';
-          }
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            surtitre?: string | null;
-            titre?: string | null;
-            /**
-             * Les chiffres viennent des Paramètres.
-             */
-            note?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'chiffresCles';
-          }
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            surtitre?: string | null;
-            titre?: string | null;
-            intro?: string | null;
-            style?: ('cartes' | 'numerotees' | 'liste' | 'pastilles' | 'legal') | null;
-            /**
-             * Par exemple « Article 8 des statuts ».
-             */
-            reference?: string | null;
-            boutons?:
-              | {
-                  libelle: string;
-                  lien: string;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * Petite ligne sous la liste.
-             */
-            note?: string | null;
-            aValider?: boolean | null;
-            cartes?:
-              | {
-                  titre: string;
-                  texte?: string | null;
-                  lien?: string | null;
-                  libelleLien?: string | null;
-                  image?: (number | null) | Media;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'cartes';
-          }
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            surtitre?: string | null;
-            titre?: string | null;
-            emplacement?: ('accueil' | 'adherer') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'faq';
-          }
-        | {
-            /**
-             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
-             */
-            ancre?: string | null;
-            titre: string;
-            texte?: string | null;
-            boutons?:
-              | {
-                  libelle: string;
-                  lien: string;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'appelAction';
-          }
-      )[]
-    | null;
-  pdf?: (number | null) | Document;
-  type: 'article' | 'communique' | 'interview' | 'annonce' | 'retour';
-  secteurs?: (number | Sector)[] | null;
-  etiquettes?: string[] | null;
-  datePublication?: string | null;
-  /**
-   * Sans actualité à la une, la plus récente est mise en avant.
-   */
-  aLaUne?: boolean | null;
-  reserveMembres?: boolean | null;
-  /**
-   * « En relecture » signale l’article à un éditeur. « Programmé » le publie automatiquement à la date de publication. « Archivé » le retire du site sans le supprimer.
-   */
-  etat?: ('brouillon' | 'relecture' | 'programme' | 'publie' | 'archive') | null;
-  auteur?: (number | null) | User;
-  /**
-   * Par exemple « la Communication ». Affichée après la date : « par … ».
-   */
-  signature?: string | null;
-  /**
-   * Actualité ou page proposée en fin d’article.
-   */
-  aLireAussi?:
-    | ({
-        relationTo: 'news';
-        value: number | News;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: number | Page;
-      } | null);
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
+  evenement: number | Event;
+  membre?: (number | null) | Member;
+  statut?: ('inscrit' | 'attente' | 'annule' | 'present') | null;
+  visiteur?: {
+    nom?: string | null;
+    email?: string | null;
+    telephone?: string | null;
+    entreprise?: string | null;
   };
+  position?: number | null;
+  numeroBillet?: string | null;
+  pointeLe?: string | null;
+  pointePar?: string | null;
+  annuleLe?: string | null;
+  rappelEnvoye?: boolean | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  titre: string;
-  rubrique: 'textes' | 'vie' | 'ateliers' | 'presse' | 'evenements';
-  visibilite: 'public' | 'membres' | 'inscrits' | 'comite';
-  typePresse?: ('communique' | 'kit') | null;
-  dateDocument?: string | null;
-  /**
-   * Image de la première page, affichée dans les listes.
-   */
-  couverture?: (number | null) | Media;
-  version?: number | null;
-  telechargements?: number | null;
-  /**
-   * Envoie l’e-mail « Nouveau document » aux membres concernés (branché au lot 6).
-   */
-  annonceAuxMembres?: boolean | null;
-  historique?:
-    | {
-        version?: number | null;
-        fichier?: string | null;
-        date?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1396,21 +1546,6 @@ export interface Counter {
   id: number;
   name: string;
   value: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "eventTypes".
- */
-export interface EventType {
-  id: number;
-  nom: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  ordre?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1527,7 +1662,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements';
+        taskSlug: 'inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille';
         taskID: string;
         input?:
           | {
@@ -1560,7 +1695,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements') | null;
+  taskSlug?: ('inline' | 'publierProgrammes' | 'verifierPaiements' | 'rappelVeille') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1610,6 +1745,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'directoryAds';
         value: number | DirectoryAd;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'registrations';
+        value: number | Registration;
       } | null)
     | ({
         relationTo: 'pages';
@@ -1965,6 +2108,96 @@ export interface DirectoryAdsSelect<T extends boolean = true> {
   montant?: T;
   paiement?: T;
   statut?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  titre?: T;
+  slug?: T;
+  type?: T;
+  commission?: T;
+  secteurs?: T;
+  chapeau?: T;
+  description?: T;
+  debut?: T;
+  fin?: T;
+  format?: T;
+  lieu?: T;
+  ville?: T;
+  adresse?: T;
+  lienCarte?: T;
+  indicationsAcces?: T;
+  image?: T;
+  acces?: T;
+  capacite?: T;
+  cloture?: T;
+  listeAttente?: T;
+  rappelVeille?: T;
+  billetQr?: T;
+  tarif?: T;
+  programme?:
+    | T
+    | {
+        heure?: T;
+        intitule?: T;
+        id?: T;
+      };
+  intervenants?:
+    | T
+    | {
+        nom?: T;
+        fonction?: T;
+        photo?: T;
+        id?: T;
+      };
+  documents?:
+    | T
+    | {
+        document?: T;
+        visibilite?: T;
+        id?: T;
+      };
+  compteRendu?: T;
+  participants?: T;
+  galerie?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  actualite?: T;
+  statut?: T;
+  messageInscrits?: T;
+  nouvelleDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "registrations_select".
+ */
+export interface RegistrationsSelect<T extends boolean = true> {
+  evenement?: T;
+  membre?: T;
+  statut?: T;
+  visiteur?:
+    | T
+    | {
+        nom?: T;
+        email?: T;
+        telephone?: T;
+        entreprise?: T;
+      };
+  position?: T;
+  numeroBillet?: T;
+  pointeLe?: T;
+  pointePar?: T;
+  annuleLe?: T;
+  rappelEnvoye?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3226,6 +3459,16 @@ export interface TaskVerifierPaiements {
   input?: unknown;
   output: {
     traites?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRappelVeille".
+ */
+export interface TaskRappelVeille {
+  input?: unknown;
+  output: {
+    envoyes?: number | null;
   };
 }
 /**

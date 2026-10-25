@@ -17,3 +17,6 @@
   .mb .side,.mb .topbar,.mb .tabbar,.mb .sheet-wrap,.mb .top{display:none !important}
 }
 .mb a.chip{display:inline-flex;align-items:center;text-decoration:none}
+.mb .seg a{display:inline-flex;align-items:center;min-height:44px;border-radius:var(--radius-full);padding:0 18px;font-weight:600;font-size:14px;color:var(--text-muted);text-decoration:none}
+.mb .seg a[aria-current="page"]{background:var(--bg-surface);color:var(--text-brand);box-shadow:0 0 0 1px var(--border)}
+.mb .evthumb > img,.mb .evband > img{display:block;width:100%;height:100%;object-fit:cover}

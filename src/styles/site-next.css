@@ -20,3 +20,9 @@
 .sb .card > form{display:flex;flex-direction:column;gap:inherit}
 /* Pied de page mobile : l’interrupteur d’animations gardait son décalage vers le haut et chevauchait le copyright (défaut aussi présent dans la maquette). */
 @container site (max-width: 760px){.sb .foot-bottom .m-toggle{bottom:auto;display:block;width:max-content;margin-top:10px}}
+/* Agenda : QR code du billet affiché en grand. */
+.sb .qr-grand{width:min(100%,260px);margin:8px auto;padding:12px;background:#fff;border-radius:var(--radius-md);box-shadow:0 0 0 1px var(--border)}
+.sb .qr-grand svg{display:block;width:100%;height:auto}
+.sb .card-soft > form{display:flex;flex-direction:column;gap:inherit}
+.sb .card-soft > form > .rec-btn,.sb .card-soft > .rec-btn{justify-content:center}
+.sb .card-soft > form > .rec-btn--primary{width:100%}

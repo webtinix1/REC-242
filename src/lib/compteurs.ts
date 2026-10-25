@@ -34,3 +34,14 @@ export const numeroDossier = (n?: number | null) => (n ? `C-${String(n).padStart
 export const numeroDossierCandidat = (n?: number | null, date?: string | Date | null) =>
   n ? `REC-C-${new Date(date ?? Date.now()).getFullYear()}-${String(n).padStart(4, '0')}` : ''
 export const numeroRecu = (n?: number | null) => (n ? `PAY-${String(n).padStart(4, '0')}` : '')
+
+/** Verrouille une ligne (SELECT … FOR UPDATE) dans la transaction de la requête : sérialise les inscriptions d'un même événement. */
+export async function verrouiller(payload: Payload, table: string, id: number, req?: Partial<PayloadRequest>): Promise<void> {
+  const adapter = payload.db as unknown as {
+    drizzle: { execute: (q: unknown) => Promise<unknown> }
+    sessions?: Record<string, { db: { execute: (q: unknown) => Promise<unknown> } }>
+  }
+  const tid = req?.transactionID ? await req.transactionID : undefined
+  const db = (tid && adapter.sessions?.[String(tid)]?.db) || adapter.drizzle
+  await db.execute(sql`SELECT "id" FROM ${sql.identifier(table)} WHERE "id" = ${id} FOR UPDATE`)
+}

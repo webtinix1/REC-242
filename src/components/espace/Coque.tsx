@@ -23,7 +23,7 @@ export type Moi = {
  */
 const NAV = [
   { href: '/espace-membre', label: 'Accueil', icon: 'home', pret: true },
-  { href: '/espace-membre/evenements', label: 'Mes événements', icon: 'calendar', pret: false },
+  { href: '/espace-membre/evenements', label: 'Mes événements', icon: 'calendar', pret: true },
   { href: '/espace-membre/opportunites', label: 'Opportunités', icon: 'briefcase', pret: false },
   { href: '/espace-membre/annuaire', label: 'Annuaire', icon: 'users', pret: true },
   { href: '/espace-membre/experts', label: 'Experts', icon: 'spark', pret: false },
@@ -36,7 +36,7 @@ const NAV = [
 
 const TABS = [
   { href: '/espace-membre', label: 'Accueil', icon: 'home', pret: true },
-  { href: '/espace-membre/evenements', label: 'Événements', icon: 'calendar', pret: false },
+  { href: '/espace-membre/evenements', label: 'Événements', icon: 'calendar', pret: true },
   { href: '/espace-membre/opportunites', label: 'Opportunités', icon: 'briefcase', pret: false },
   { href: '/espace-membre/annuaire', label: 'Annuaire', icon: 'users', pret: true },
   { href: '/espace-membre/profil', label: 'Moi', icon: 'user', pret: true },

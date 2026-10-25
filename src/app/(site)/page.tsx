@@ -5,11 +5,13 @@ import React from 'react'
 import { Btn, Boutons, Img, KeyFigures, Lnk, SecHead } from '@/components/site/Blocks'
 import { Words } from '@/components/site/Words'
 import { misEnAvant } from '@/lib/annuaire/donnees'
+import { disque, heureLieu, placesInfo, prochainsEvenements, tax } from '@/lib/evenements/site'
 import { dateCourt } from '@/lib/site/format'
 import { getFaq, getNews, getPartners, NEWS_TYPE_LABEL } from '@/lib/site/data'
 import { block, getPage, type CartesBlock, type SectionBlock } from '@/lib/site/payload'
 import { pageMetadata } from '@/lib/site/seo'
 import { getKeyFigures } from '@/lib/site/settings'
+
 
 export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata('/', { absoluteTitle: true })
@@ -17,19 +19,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Écran 01 : accueil (captures/site/01-accueil-*). */
 export default async function Accueil() {
-  const [page, figs, faq, partners, news, visagesMembres] = await Promise.all([
+  const [page, figs, faq, partners, news, visagesMembres, agendaEv] = await Promise.all([
     getPage('/'),
     getKeyFigures(),
     getFaq('accueil'),
     getPartners(),
     getNews({ limit: 3 }),
     misEnAvant(6),
+    prochainsEvenements(3),
   ])
   const hero = block(page, 'hero')
   const piliers = block<CartesBlock>(page, 'piliers')
   const avantages = block<CartesBlock>(page, 'avantages')
   const visages = block<CartesBlock>(page, 'visages')
   const formalisation = block(page, 'formalisation')
+  const agenda = block(page, 'agenda')
   const actualites = block(page, 'actualites')
   const partenaires = block(page, 'partenaires')
   const faqS = block(page, 'faq')
@@ -141,7 +145,90 @@ export default async function Accueil() {
         </section>
       ) : null}
 
-      {/* Agenda (lot 8) et opportunités (lot 9) s'affichent quand leurs données existent. */}
+      {agenda && agendaEv.evs.length > 0 && (
+        <section className="band bg-warm">
+          <div className="wrap">
+            <SecHead surtitre={agenda.surtitre} titre={agenda.titre} bouton={agenda.boutons?.[0]} />
+            <div className="evx">
+              {(() => {
+                const [premier, ...suite] = agendaEv.evs
+                const d = disque(premier)
+                const p = placesInfo(premier, agendaEv.places.get(premier.id))
+                return (
+                  <>
+                    <div className="evx-main net net-sm" data-m="lift" data-m-scrub="">
+                      <figure className="evx-photo">
+                        <Img media={premier.image ?? agenda.image} alt="" size="carte" />
+                      </figure>
+                      <div className="person" style={{ position: 'relative' }}>
+                        <div className="datedisc">
+                          <b>{d.d}</b>
+                          <span>{d.m}</span>
+                        </div>
+                        {tax(premier.type) && <span className="rec-tag">{tax(premier.type)!.nom}</span>}
+                      </div>
+                      <p className="h-m" style={{ position: 'relative', maxWidth: 420 }}>
+                        {premier.titre}
+                      </p>
+                      <p className="muted" style={{ position: 'relative' }}>
+                        {heureLieu(premier)}
+                      </p>
+                      {p && (
+                        <span className={`seat ${p.classe}`} style={{ position: 'relative' }}>
+                          {p.texte}
+                        </span>
+                      )}
+                      <Link
+                        href={`/agenda/${premier.slug}`}
+                        className="rec-btn rec-btn--primary"
+                        style={{ width: 'max-content', position: 'relative' }}
+                      >
+                        S’inscrire
+                      </Link>
+                    </div>
+                    <div className="evx-side" data-m="deal-side" data-m-stagger="" data-m-d="2">
+                      {suite.map((ev) => {
+                        const dq = disque(ev)
+                        const pl = placesInfo(ev, agendaEv.places.get(ev.id))
+                        return (
+                          <div className="card" key={ev.id}>
+                            <div className="person">
+                              <div className="datedisc">
+                                <b>{dq.d}</b>
+                                <span>{dq.m}</span>
+                              </div>
+                              <div className="stack" style={{ gap: 6 }}>
+                                {tax(ev.type) && (
+                                  <span className="rec-tag" style={{ width: 'max-content' }}>
+                                    {tax(ev.type)!.nom}
+                                  </span>
+                                )}
+                                <p className="h-s">{ev.titre}</p>
+                              </div>
+                              {ev.image && typeof ev.image !== 'number' && (
+                                <Img media={ev.image} size="vignette" alt="" className="evdot" />
+                              )}
+                            </div>
+                            <p className="small muted">{heureLieu(ev)}</p>
+                            <div className="rec-row" style={{ justifyContent: 'space-between' }}>
+                              {pl ? <span className={`seat ${pl.classe}`}>{pl.texte}</span> : <span />}
+                              <Link href={`/agenda/${ev.slug}`} className="linkbtn">
+                                S’inscrire →
+                              </Link>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )
+              })()}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Opportunités (lot 9) s'affichent quand leurs données existent. */}
 
       {visages && visagesMembres.length > 0 && (
         <>

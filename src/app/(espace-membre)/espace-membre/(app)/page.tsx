@@ -5,6 +5,8 @@ import React from 'react'
 import { CarteResume } from '@/components/espace/CarteMembre'
 import { Icone } from '@/components/espace/Icones'
 import { fcfa } from '@/lib/adhesion/categories'
+import { inscriptionsDe, jourMois, maintenantMs, statutInscription } from '@/lib/evenements/espace'
+import { heureFr, lieuDe, type Evenement } from '@/lib/evenements/notifications'
 import {
   completude,
   dateCourte,
@@ -24,8 +26,9 @@ export const metadata: Metadata = { title: 'Accueil' }
 export default async function TableauPage() {
   const m = await exigerMembre()
   const payload = await getPayloadClient()
-  const [paiements, s, news] = await Promise.all([
+  const [paiements, inscriptions, s, news] = await Promise.all([
     paiementsDe(m),
+    inscriptionsDe(m.id),
     payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ whatsapp?: { lienGroupe?: string } }>,
     payload.find({
       collection: 'news',
@@ -37,6 +40,10 @@ export default async function TableauPage() {
       select: { titre: true, slug: true, datePublication: true },
     }),
   ])
+  const rdv = inscriptions
+    .filter((i) => ['inscrit', 'attente'].includes(i.statut) && new Date(i.evenement.debut).getTime() >= maintenantMs())
+    .sort((a, b) => a.evenement.debut.localeCompare(b.evenement.debut))
+    .slice(0, 2)
   const c = completude(m)
   const cot = situationCotisation(m, paiements)
   const annee = m.dateAdhesion ? new Date(m.dateAdhesion).getFullYear() : undefined
@@ -103,6 +110,37 @@ export default async function TableauPage() {
               ))}
             </div>
           )}
+          <div className="card">
+            <div className="row between">
+              <h2 className="h3">Mes prochains rendez-vous</h2>
+              <Link className="linkbtn" href="/espace-membre/evenements">
+                Tout voir
+              </Link>
+            </div>
+            {rdv.length ? (
+              rdv.map((i) => {
+                const st = statutInscription(i)
+                const dm = jourMois(i.evenement.debut)
+                return (
+                  <div className="item" key={i.id}>
+                    <div className="datedisc">
+                      <b>{dm.jour}</b>
+                      <span>{dm.mois}</span>
+                    </div>
+                    <div className="grow">
+                      <p style={{ fontWeight: 600 }}>{i.evenement.titre}</p>
+                      <p className="small muted">
+                        {lieuDe(i.evenement as unknown as Evenement)} · {heureFr(i.evenement.debut)}
+                      </p>
+                    </div>
+                    <span className={`rec-badge rec-badge--${st.classe}`}>{st.libelle}</span>
+                  </div>
+                )
+              })
+            ) : (
+              <p className="small muted">Aucun rendez-vous à venir.</p>
+            )}
+          </div>
           <div className="card">
             <h2 className="h3">Actualités réservées</h2>
             {news.docs.length ? (
