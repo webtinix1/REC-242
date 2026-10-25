@@ -27,6 +27,7 @@ import {
 } from '@/lib/adhesion/options'
 import { situationPaiement, type PaiementResume } from '@/lib/adhesion/paiement'
 import { logAction } from '@/lib/audit'
+import { convertirCandidature } from '@/lib/membres/conversion'
 import { numeroDossier, numeroDossierCandidat, prochainNumero } from '@/lib/compteurs'
 
 type Doc = Record<string, unknown> & {
@@ -323,6 +324,16 @@ export const Applications: CollectionConfig = {
     ],
   },
   endpoints: [
+    {
+      // « Convertir en membre » (écran 04) : fiche membre, fiche entreprise, numéro d'adhérent, lien d'activation.
+      path: '/:id/convertir',
+      method: 'post',
+      handler: async (req) => {
+        const d = await chargerDossier(req)
+        const m = await convertirCandidature(req.payload, d.id as number, req)
+        return Response.json({ membre: m.id, numeroAdherent: (m as { numeroAdherent?: string }).numeroAdherent })
+      },
+    },
     {
       // Candidature papier (écran 03) : mêmes contrôles qu'en ligne (anti-doublon, trois secteurs au maximum).
       path: '/papier',
@@ -850,6 +861,7 @@ export const Applications: CollectionConfig = {
               relationTo: 'users',
             },
             { name: 'rendezVous', label: 'Rendez-vous', type: 'date' },
+            { name: 'membre', label: 'Membre créé', type: 'relationship', relationTo: 'members', admin: { readOnly: true } },
           ],
         },
         { name: 'motifRefus', label: 'Motif du refus', type: 'textarea' },

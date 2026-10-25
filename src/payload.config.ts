@@ -14,11 +14,15 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { Applications } from './collections/Applications'
 import { AuditLog } from './collections/AuditLog'
 import { Commissions } from './collections/Commissions'
+import { Companies } from './collections/Companies'
 import { Counters } from './collections/Counters'
 import { ContactMessages } from './collections/ContactMessages'
 import { Documents } from './collections/Documents'
 import { Faq } from './collections/Faq'
 import { Media } from './collections/Media'
+import { Members } from './collections/Members'
+import { ModificationRequests } from './collections/ModificationRequests'
+import { NetworkMessages } from './collections/NetworkMessages'
 import { News } from './collections/News'
 import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
@@ -69,6 +73,10 @@ export default buildConfig({
   },
   collections: [
     Users,
+    Members,
+    Companies,
+    ModificationRequests,
+    NetworkMessages,
     Pages,
     News,
     Documents,

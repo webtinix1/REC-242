@@ -64,10 +64,15 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    members: MemberAuthOperations;
   };
   blocks: {};
   collections: {
     users: User;
+    members: Member;
+    companies: Company;
+    modificationRequests: ModificationRequest;
+    networkMessages: NetworkMessage;
     pages: Page;
     news: News;
     documents: Document;
@@ -101,6 +106,10 @@ export interface Config {
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    companies: CompaniesSelect<false> | CompaniesSelect<true>;
+    modificationRequests: ModificationRequestsSelect<false> | ModificationRequestsSelect<true>;
+    networkMessages: NetworkMessagesSelect<false> | NetworkMessagesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -147,7 +156,7 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | Member;
   jobs: {
     tasks: {
       publierProgrammes: TaskPublierProgrammes;
@@ -161,6 +170,24 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface MemberAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -284,6 +311,395 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  numeroAdherent?: string | null;
+  statut?: ('attente' | 'actif' | 'suspendu' | 'ancien') | null;
+  motifStatut?: string | null;
+  civilite?: ('madame' | 'monsieur') | null;
+  prenom: string;
+  nom: string;
+  nomComplet?: string | null;
+  fonction?: string | null;
+  telephone?: string | null;
+  whatsapp?: string | null;
+  trancheAge?: ('18-25' | '26-35' | '36-45' | '46+') | null;
+  photo?: (number | null) | Media;
+  entreprise?: (number | null) | Company;
+  categorie: 'A' | 'B' | 'C' | 'expert' | 'partenaire' | 'honneur';
+  dateAdhesion?: string | null;
+  validiteCarte?: string | null;
+  dateLimiteCotisation?: string | null;
+  /**
+   * Un changement de tarif ne modifie jamais une échéance déjà émise.
+   */
+  cotisation?: {
+    droit?: number | null;
+    montant?: number | null;
+    tranches?: number | null;
+  };
+  candidature?: (number | null) | Application;
+  commissions?: (number | Commission)[] | null;
+  notifications?: {
+    rappels?: boolean | null;
+    opportunites?: boolean | null;
+    echanges?: boolean | null;
+    cotisation?: boolean | null;
+    lettre?: boolean | null;
+  };
+  consentementAnnuaire?: string | null;
+  conditionsAcceptees?: string | null;
+  derniereConnexion?: string | null;
+  fin?: {
+    type?: ('demission' | 'deces' | 'perte' | 'exclusion') | null;
+    date?: string | null;
+    suppressionDemandee?: string | null;
+  };
+  activationHash?: string | null;
+  activationExpire?: string | null;
+  lienHash?: string | null;
+  lienExpire?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'members';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies".
+ */
+export interface Company {
+  id: number;
+  nom: string;
+  titulaire?: (number | null) | Member;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  logo?: (number | null) | Media;
+  secteurs?: (number | Sector)[] | null;
+  localite?: (number | null) | Locality;
+  quartier?: string | null;
+  effectif?: ('porteur' | '1-9' | '10-49' | '50+') | null;
+  formeJuridique?: ('informelle' | 'individuelle' | 'sarl' | 'sa' | 'autre') | null;
+  rccm?: string | null;
+  presentation?: string | null;
+  presentationProposee?: string | null;
+  presentationEnRelecture?: boolean | null;
+  services?: string | null;
+  recherches?: string | null;
+  siteWeb?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  visibilite?: {
+    annuaire?: boolean | null;
+    telephone?: boolean | null;
+    whatsapp?: boolean | null;
+    email?: boolean | null;
+    miseEnAvant?: boolean | null;
+  };
+  /**
+   * L’administration peut masquer une fiche, jamais la publier sans consentement.
+   */
+  masqueeParAdmin?: boolean | null;
+  selectionAccueil?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Secteurs d’activité : candidature, annuaire, opportunités, actualités.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sectors".
+ */
+export interface Sector {
+  id: number;
+  nom: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  ordre?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Villes de la candidature et de l’annuaire.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "localities".
+ */
+export interface Locality {
+  id: number;
+  nom: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  ordre?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications".
+ */
+export interface Application {
+  id: number;
+  numero?: number | null;
+  source?: ('en-ligne' | 'papier') | null;
+  papierLieu?: string | null;
+  bulletin?: (number | null) | Piece;
+  civilite?: ('madame' | 'monsieur') | null;
+  fonction?: string | null;
+  nom: string;
+  prenom: string;
+  telephone: string;
+  email: string;
+  trancheAge?: ('18-25' | '26-35' | '36-45' | '46+') | null;
+  pieceIdentite?: string | null;
+  raisonSociale: string;
+  formeJuridique?: ('informelle' | 'individuelle' | 'sarl' | 'sa' | 'autre') | null;
+  rccm?: string | null;
+  anneeCreation?: string | null;
+  effectif?: ('porteur' | '1-9' | '10-49' | '50+') | null;
+  localite: number | Locality;
+  quartier?: string | null;
+  description?: string | null;
+  services?: string | null;
+  secteurs: (number | Sector)[];
+  anciennete?: ('porteur' | 'moins-1' | '1-3' | '3-5' | 'plus-5') | null;
+  connuPar?: ('membre' | 'whatsapp' | 'reseaux' | 'evenement' | 'autre') | null;
+  parrain?: string | null;
+  objectifs?: ('projet' | 'formations' | 'afterworks' | 'affaires' | 'visibilite' | 'formalisation')[] | null;
+  categorie: 'A' | 'B' | 'C' | 'expert' | 'partenaire' | 'honneur';
+  modalite?: ('une-fois' | 'deux-tranches') | null;
+  modePaiement?: ('mobile' | 'siege') | null;
+  operateur?: ('mtn' | 'airtel') | null;
+  numeroPayeur?: string | null;
+  paiements?: {
+    docs?: (number | Payment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  pieces?: (number | Piece)[] | null;
+  autorisations?: {
+    annuaire?: boolean | null;
+    coordonnees?: boolean | null;
+    logo?: boolean | null;
+    portrait?: boolean | null;
+  };
+  consentement?: boolean | null;
+  acceptationTextes?: boolean | null;
+  statut?: ('recue' | 'en-examen' | 'complement' | 'acceptee' | 'active' | 'refusee' | 'archivee') | null;
+  responsable?: (number | null) | User;
+  rendezVous?: string | null;
+  membre?: (number | null) | Member;
+  motifRefus?: string | null;
+  pieceVerifiee?: boolean | null;
+  charteSignee?: boolean | null;
+  avisCommission?: boolean | null;
+  notes?:
+    | {
+        auteurNom?: string | null;
+        date?: string | null;
+        texte: string;
+        id?: string | null;
+      }[]
+    | null;
+  emails?:
+    | {
+        date?: string | null;
+        auteur?: string | null;
+        modele?: string | null;
+        objet?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  historique?:
+    | {
+        date?: string | null;
+        auteur?: string | null;
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces".
+ */
+export interface Piece {
+  id: number;
+  type?: ('justificatif' | 'bulletin') | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payments".
+ */
+export interface Payment {
+  id: number;
+  /**
+   * Attribué à la confirmation du paiement (PAY-0001…), sans trou.
+   */
+  numero?: number | null;
+  statut?: ('en-attente' | 'paye' | 'echoue' | 'remboursement' | 'rembourse') | null;
+  candidature?: (number | null) | Application;
+  membre?: (number | null) | Member;
+  objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart';
+  exercice?: string | null;
+  montant: number;
+  mode: 'mtn' | 'airtel' | 'especes' | 'virement';
+  referenceOperateur?: string | null;
+  telephonePayeur?: string | null;
+  datePaiement?: string | null;
+  idOperateur?: string | null;
+  journalOperateur?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  enregistrePar?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Organes consultatifs créés par le comité de direction (article 17 des statuts).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commissions".
+ */
+export interface Commission {
+  id: number;
+  nom: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  objet: string;
+  image?: (number | null) | Media;
+  responsable?: (number | null) | Person;
+  ouverture: 'ouverte' | 'designation';
+  experts?: (number | Person)[] | null;
+  etiquettes?: (number | ExpertiseTag)[] | null;
+  prochaineReunion?: string | null;
+  afficheeSurSite?: boolean | null;
+  ordre?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Fondatrice, comité de direction et experts du réseau, avec leurs étiquettes d’expertise.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people".
+ */
+export interface Person {
+  id: number;
+  nom: string;
+  /**
+   * Affichées sans photo.
+   */
+  initiales?: string | null;
+  photo?: (number | null) | Media;
+  fonction: string;
+  role: 'fondatrice' | 'comite' | 'expert';
+  pole?: ('direction' | 'numerique' | 'juridique' | 'programme' | 'communication' | 'relations') | null;
+  etiquettes?: (number | ExpertiseTag)[] | null;
+  ordre?: number | null;
+  visible?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Relient les questions des membres au comité et aux experts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expertiseTags".
+ */
+export interface ExpertiseTag {
+  id: number;
+  nom: string;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  ordre?: number | null;
+  filtreSite?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "modificationRequests".
+ */
+export interface ModificationRequest {
+  id: number;
+  membre: number | Member;
+  champ: 'nom' | 'raisonSociale' | 'secteurs' | 'villeQuartier' | 'telephone' | 'email';
+  valeurActuelle?: string | null;
+  nouvelleValeur: string;
+  motif?: string | null;
+  justificatif?: (number | null) | Piece;
+  statut?: ('attente' | 'validee' | 'refusee') | null;
+  motifRefus?: string | null;
+  traitePar?: (number | null) | User;
+  traiteParNom?: string | null;
+  dateTraitement?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "networkMessages".
+ */
+export interface NetworkMessage {
+  id: number;
+  membre?: (number | null) | Member;
+  tous?: boolean | null;
+  titre: string;
+  texte: string;
+  lien?: string | null;
+  luPar?: (number | Member)[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Édition par blocs dans la charte, prévisualisation avant publication.
@@ -831,89 +1247,6 @@ export interface Document {
   focalY?: number | null;
 }
 /**
- * Secteurs d’activité : candidature, annuaire, opportunités, actualités.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sectors".
- */
-export interface Sector {
-  id: number;
-  nom: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  ordre?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Fondatrice, comité de direction et experts du réseau, avec leurs étiquettes d’expertise.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "people".
- */
-export interface Person {
-  id: number;
-  nom: string;
-  /**
-   * Affichées sans photo.
-   */
-  initiales?: string | null;
-  photo?: (number | null) | Media;
-  fonction: string;
-  role: 'fondatrice' | 'comite' | 'expert';
-  pole?: ('direction' | 'numerique' | 'juridique' | 'programme' | 'communication' | 'relations') | null;
-  etiquettes?: (number | ExpertiseTag)[] | null;
-  ordre?: number | null;
-  visible?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Relient les questions des membres au comité et aux experts.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "expertiseTags".
- */
-export interface ExpertiseTag {
-  id: number;
-  nom: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  ordre?: number | null;
-  filtreSite?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Organes consultatifs créés par le comité de direction (article 17 des statuts).
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "commissions".
- */
-export interface Commission {
-  id: number;
-  nom: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  objet: string;
-  image?: (number | null) | Media;
-  responsable?: (number | null) | Person;
-  ouverture: 'ouverte' | 'designation';
-  experts?: (number | Person)[] | null;
-  etiquettes?: (number | ExpertiseTag)[] | null;
-  prochaineReunion?: string | null;
-  afficheeSurSite?: boolean | null;
-  ordre?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
@@ -1003,161 +1336,6 @@ export interface ContactMessage {
       }[]
     | null;
   page?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "applications".
- */
-export interface Application {
-  id: number;
-  numero?: number | null;
-  source?: ('en-ligne' | 'papier') | null;
-  papierLieu?: string | null;
-  bulletin?: (number | null) | Piece;
-  civilite?: ('madame' | 'monsieur') | null;
-  fonction?: string | null;
-  nom: string;
-  prenom: string;
-  telephone: string;
-  email: string;
-  trancheAge?: ('18-25' | '26-35' | '36-45' | '46+') | null;
-  pieceIdentite?: string | null;
-  raisonSociale: string;
-  formeJuridique?: ('informelle' | 'individuelle' | 'sarl' | 'sa' | 'autre') | null;
-  rccm?: string | null;
-  anneeCreation?: string | null;
-  effectif?: ('porteur' | '1-9' | '10-49' | '50+') | null;
-  localite: number | Locality;
-  quartier?: string | null;
-  description?: string | null;
-  services?: string | null;
-  secteurs: (number | Sector)[];
-  anciennete?: ('porteur' | 'moins-1' | '1-3' | '3-5' | 'plus-5') | null;
-  connuPar?: ('membre' | 'whatsapp' | 'reseaux' | 'evenement' | 'autre') | null;
-  parrain?: string | null;
-  objectifs?: ('projet' | 'formations' | 'afterworks' | 'affaires' | 'visibilite' | 'formalisation')[] | null;
-  categorie: 'A' | 'B' | 'C' | 'expert' | 'partenaire' | 'honneur';
-  modalite?: ('une-fois' | 'deux-tranches') | null;
-  modePaiement?: ('mobile' | 'siege') | null;
-  operateur?: ('mtn' | 'airtel') | null;
-  numeroPayeur?: string | null;
-  paiements?: {
-    docs?: (number | Payment)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  pieces?: (number | Piece)[] | null;
-  autorisations?: {
-    annuaire?: boolean | null;
-    coordonnees?: boolean | null;
-    logo?: boolean | null;
-    portrait?: boolean | null;
-  };
-  consentement?: boolean | null;
-  acceptationTextes?: boolean | null;
-  statut?: ('recue' | 'en-examen' | 'complement' | 'acceptee' | 'active' | 'refusee' | 'archivee') | null;
-  responsable?: (number | null) | User;
-  rendezVous?: string | null;
-  motifRefus?: string | null;
-  pieceVerifiee?: boolean | null;
-  charteSignee?: boolean | null;
-  avisCommission?: boolean | null;
-  notes?:
-    | {
-        auteurNom?: string | null;
-        date?: string | null;
-        texte: string;
-        id?: string | null;
-      }[]
-    | null;
-  emails?:
-    | {
-        date?: string | null;
-        auteur?: string | null;
-        modele?: string | null;
-        objet?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  historique?:
-    | {
-        date?: string | null;
-        auteur?: string | null;
-        action?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pieces".
- */
-export interface Piece {
-  id: number;
-  type?: ('justificatif' | 'bulletin') | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * Villes de la candidature et de l’annuaire.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "localities".
- */
-export interface Locality {
-  id: number;
-  nom: string;
-  /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  ordre?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payments".
- */
-export interface Payment {
-  id: number;
-  /**
-   * Attribué à la confirmation du paiement (PAY-0001…), sans trou.
-   */
-  numero?: number | null;
-  statut?: ('en-attente' | 'paye' | 'echoue' | 'remboursement' | 'rembourse') | null;
-  candidature?: (number | null) | Application;
-  objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart';
-  exercice?: string | null;
-  montant: number;
-  mode: 'mtn' | 'airtel' | 'especes' | 'virement';
-  referenceOperateur?: string | null;
-  telephonePayeur?: string | null;
-  datePaiement?: string | null;
-  idOperateur?: string | null;
-  journalOperateur?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  enregistrePar?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -1361,6 +1539,22 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'members';
+        value: number | Member;
+      } | null)
+    | ({
+        relationTo: 'companies';
+        value: number | Company;
+      } | null)
+    | ({
+        relationTo: 'modificationRequests';
+        value: number | ModificationRequest;
+      } | null)
+    | ({
+        relationTo: 'networkMessages';
+        value: number | NetworkMessage;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -1441,10 +1635,15 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'members';
+        value: number | Member;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -1454,10 +1653,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'members';
+        value: number | Member;
+      };
   key?: string | null;
   value?:
     | {
@@ -1519,6 +1723,148 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  numeroAdherent?: T;
+  statut?: T;
+  motifStatut?: T;
+  civilite?: T;
+  prenom?: T;
+  nom?: T;
+  nomComplet?: T;
+  fonction?: T;
+  telephone?: T;
+  whatsapp?: T;
+  trancheAge?: T;
+  photo?: T;
+  entreprise?: T;
+  categorie?: T;
+  dateAdhesion?: T;
+  validiteCarte?: T;
+  dateLimiteCotisation?: T;
+  cotisation?:
+    | T
+    | {
+        droit?: T;
+        montant?: T;
+        tranches?: T;
+      };
+  candidature?: T;
+  commissions?: T;
+  notifications?:
+    | T
+    | {
+        rappels?: T;
+        opportunites?: T;
+        echanges?: T;
+        cotisation?: T;
+        lettre?: T;
+      };
+  consentementAnnuaire?: T;
+  conditionsAcceptees?: T;
+  derniereConnexion?: T;
+  fin?:
+    | T
+    | {
+        type?: T;
+        date?: T;
+        suppressionDemandee?: T;
+      };
+  activationHash?: T;
+  activationExpire?: T;
+  lienHash?: T;
+  lienExpire?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies_select".
+ */
+export interface CompaniesSelect<T extends boolean = true> {
+  nom?: T;
+  titulaire?: T;
+  slug?: T;
+  logo?: T;
+  secteurs?: T;
+  localite?: T;
+  quartier?: T;
+  effectif?: T;
+  formeJuridique?: T;
+  rccm?: T;
+  presentation?: T;
+  presentationProposee?: T;
+  presentationEnRelecture?: T;
+  services?: T;
+  recherches?: T;
+  siteWeb?: T;
+  linkedin?: T;
+  facebook?: T;
+  visibilite?:
+    | T
+    | {
+        annuaire?: T;
+        telephone?: T;
+        whatsapp?: T;
+        email?: T;
+        miseEnAvant?: T;
+      };
+  masqueeParAdmin?: T;
+  selectionAccueil?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "modificationRequests_select".
+ */
+export interface ModificationRequestsSelect<T extends boolean = true> {
+  membre?: T;
+  champ?: T;
+  valeurActuelle?: T;
+  nouvelleValeur?: T;
+  motif?: T;
+  justificatif?: T;
+  statut?: T;
+  motifRefus?: T;
+  traitePar?: T;
+  traiteParNom?: T;
+  dateTraitement?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "networkMessages_select".
+ */
+export interface NetworkMessagesSelect<T extends boolean = true> {
+  membre?: T;
+  tous?: T;
+  titre?: T;
+  texte?: T;
+  lien?: T;
+  luPar?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2126,6 +2472,7 @@ export interface ApplicationsSelect<T extends boolean = true> {
   statut?: T;
   responsable?: T;
   rendezVous?: T;
+  membre?: T;
   motifRefus?: T;
   pieceVerifiee?: T;
   charteSignee?: T;
@@ -2166,6 +2513,7 @@ export interface PaymentsSelect<T extends boolean = true> {
   numero?: T;
   statut?: T;
   candidature?: T;
+  membre?: T;
   objet?: T;
   exercice?: T;
   montant?: T;

@@ -99,7 +99,9 @@ export const Payments: CollectionConfig = {
   },
   defaultSort: '-createdAt',
   access: {
-    read: ({ req }) => lire(req),
+    // Un membre lit ses propres paiements (tableau de bord, reçus).
+    read: ({ req }) =>
+      lire(req) ? true : req.user?.collection === 'members' ? { membre: { equals: req.user.id } } : false,
     // Paiement au siège ou par virement : enregistré par le trésorier. Les paiements mobiles sont créés par le serveur.
     create: ({ req }) => atLeast(req.user, 'cotisations', 'full'),
     update: ({ req }) => atLeast(req.user, 'cotisations', 'full'),
@@ -231,6 +233,13 @@ export const Payments: CollectionConfig = {
       label: 'Candidature',
       type: 'relationship',
       relationTo: 'applications',
+      index: true,
+    },
+    {
+      name: 'membre',
+      label: 'Membre',
+      type: 'relationship',
+      relationTo: 'members',
       index: true,
     },
     {

@@ -10,3 +10,4 @@
 @media (max-width: 768px){.bb.bo-view{padding:0 16px}.bb.bo-view .content{padding-left:0;padding-right:0}}
 .bb.bo-view a.linkbtn{text-decoration:none}
 .bb.bo-view a.linkbtn:hover{text-decoration:underline}
+.bb a.tab{text-decoration:none}

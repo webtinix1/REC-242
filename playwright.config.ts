@@ -11,6 +11,9 @@ import 'dotenv/config'
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  // Serveur de développement : la première compilation d'une route peut dépasser 30 s.
+  timeout: 120000,
+  expect: { timeout: 15000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */

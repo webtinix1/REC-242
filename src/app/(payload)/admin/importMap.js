@@ -2,6 +2,8 @@ import { StatusCell as StatusCell_ff32efc137541c6552ed42594a323755 } from '@/com
 import { LastLoginCell as LastLoginCell_e9f7ece17cd36aa710abd8669d53d441 } from '@/components/admin/LastLoginCell'
 import { PermissionsMatrix as PermissionsMatrix_b64b29cf56db32fc9406f179c855f72b } from '@/components/admin/PermissionsMatrix'
 import { InviteUser as InviteUser_bcb9e293335f68906ed531c9ee23d8e4 } from '@/components/admin/InviteUser'
+import { MembreView as MembreView_232ecdfe2db8a71a0a8f54aeed4ad448 } from '@/components/admin/membres/MembreView'
+import { MembresView as MembresView_04a58e35e550304949d2a96ad88867c2 } from '@/components/admin/membres/MembresView'
 import { BlockLabel as BlockLabel_65d5559e4024d0730eedfbb5dfb037d8 } from '@/components/admin/BlockLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -59,6 +61,8 @@ export const importMap = {
   "@/components/admin/LastLoginCell#LastLoginCell": LastLoginCell_e9f7ece17cd36aa710abd8669d53d441,
   "@/components/admin/PermissionsMatrix#PermissionsMatrix": PermissionsMatrix_b64b29cf56db32fc9406f179c855f72b,
   "@/components/admin/InviteUser#InviteUser": InviteUser_bcb9e293335f68906ed531c9ee23d8e4,
+  "@/components/admin/membres/MembreView#MembreView": MembreView_232ecdfe2db8a71a0a8f54aeed4ad448,
+  "@/components/admin/membres/MembresView#MembresView": MembresView_04a58e35e550304949d2a96ad88867c2,
   "@/components/admin/BlockLabel#BlockLabel": BlockLabel_65d5559e4024d0730eedfbb5dfb037d8,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
