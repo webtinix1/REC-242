@@ -128,7 +128,7 @@ describe('Lot 6 : membres', () => {
     expect(pay.membre).toBe(m.id)
     // Le lien d'activation est enregistré sous forme d'empreinte seulement.
     const jeton = await envoyerActivation(payload, m.id)
-    const brut = (await payload.db.findOne({ collection: 'members', where: { id: { equals: m.id } } })) as { activationHash: string; activationExpire: string }
+    const brut = (await payload.db.findOne({ collection: 'members', where: { id: { equals: m.id } } })) as unknown as { activationHash: string; activationExpire: string }
     expect(brut.activationHash).toBe(empreinte(jeton))
     expect(new Date(brut.activationExpire).getTime() - Date.now()).toBeGreaterThan(71 * 3600 * 1000)
     // Pas de seconde conversion.
