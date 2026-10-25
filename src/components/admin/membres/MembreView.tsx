@@ -8,6 +8,7 @@ import { lettreCategorie } from '@/lib/adhesion/categories'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
 import { badgeMembre, statutMembreLabel } from '@/lib/membres/options'
 import { BoView, initiales } from '../BoView'
+import { DisciplinePanel, DisciplineResume, type DossierClos, type DossierData } from './Discipline'
 import { MembreActions } from './MembreActions'
 
 type Media = { url?: string; sizes?: { vignette?: { url?: string } } } | null
@@ -64,10 +65,15 @@ export const MembreView = async (props: DocumentViewServerProps) => {
       </BoView>
     )
   const m = (await payload.findByID({ collection: 'members', id, depth: 2, user, overrideAccess: false })) as unknown as Fiche
-  const [paiements, commissions] = await Promise.all([
+  const [paiements, commissions, dossiers] = await Promise.all([
     payload.find({ collection: 'payments', where: { membre: { equals: m.id } }, depth: 0, limit: 100, overrideAccess: true }),
     payload.find({ collection: 'commissions', limit: 50, depth: 0, sort: 'ordre', overrideAccess: true }),
+    payload.find({ collection: 'disciplinaryCases', where: { membre: { equals: m.id } }, sort: '-createdAt', limit: 20, depth: 0, user, overrideAccess: false }),
   ])
+  const tous = dossiers.docs as unknown as (DossierData & { dateCloture?: string })[]
+  const enCours = tous.find((d) => d.statut !== 'close') ?? null
+  const clos: DossierClos[] = tous.filter((d) => d.statut === 'close').map((d) => ({ numero: d.numero, issue: d.issue ?? 'classee', date: d.dateCloture ?? '' }))
+  const peutAgirDiscipline = atLeast(user as never, 'membres', 'full')
   const cot = situationCotisation(m, paiements.docs as unknown as PaiementMembre[])
   const e = m.entreprise
   const v = e?.visibilite ?? {}
@@ -173,6 +179,8 @@ export const MembreView = async (props: DocumentViewServerProps) => {
             ? 'Compte pas encore activé : le lien d’activation est valable 72 heures.'
             : `Compte activé.${m.derniereConnexion ? ` Dernière connexion : ${heure(m.derniereConnexion)}.` : ''}`
         }
+        discipline={<DisciplineResume dossier={enCours} peutAgir={peutAgirDiscipline} />}
+        procedure={<DisciplinePanel membreId={m.id} libelle={`${e?.nom ? `${e.nom} · ` : ''}${nom}`} dossier={enCours} clos={clos} peutAgir={peutAgirDiscipline} />}
         cotisation={
           <section className="panel">
             <h3 className="h3">Cotisation</h3>
@@ -202,6 +210,11 @@ export const MembreView = async (props: DocumentViewServerProps) => {
               </>
             ) : (
               <p className="small muted">Catégorie sur convention : pas de cotisation à suivre ici.</p>
+            )}
+            {atLeast(user as never, 'cotisations', 'read') && (
+              <Link className="linkbtn" href={`/admin/cotisations?membre=${m.id}`}>
+                Voir les cotisations →
+              </Link>
             )}
           </section>
         }

@@ -82,6 +82,8 @@ export interface Config {
     fichiers: Fichier;
     expertRequests: ExpertRequest;
     commissionRequests: CommissionRequest;
+    dues: Due;
+    disciplinaryCases: DisciplinaryCase;
     pages: Page;
     news: News;
     documents: Document;
@@ -131,6 +133,8 @@ export interface Config {
     fichiers: FichiersSelect<false> | FichiersSelect<true>;
     expertRequests: ExpertRequestsSelect<false> | ExpertRequestsSelect<true>;
     commissionRequests: CommissionRequestsSelect<false> | CommissionRequestsSelect<true>;
+    dues: DuesSelect<false> | DuesSelect<true>;
+    disciplinaryCases: DisciplinaryCasesSelect<false> | DisciplinaryCasesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -185,6 +189,7 @@ export interface Config {
       rappelVeille: TaskRappelVeille;
       expirerOpportunites: TaskExpirerOpportunites;
       demandesSansReponse: TaskDemandesSansReponse;
+      suiviAdhesions: TaskSuiviAdhesions;
       inline: {
         input: unknown;
         output: unknown;
@@ -345,6 +350,7 @@ export interface Member {
   numeroAdherent?: string | null;
   statut?: ('attente' | 'actif' | 'suspendu' | 'ancien') | null;
   motifStatut?: string | null;
+  suspenduJusquau?: string | null;
   civilite?: ('madame' | 'monsieur') | null;
   prenom: string;
   nom: string;
@@ -604,6 +610,7 @@ export interface Payment {
   statut?: ('en-attente' | 'paye' | 'echoue' | 'remboursement' | 'rembourse') | null;
   candidature?: (number | null) | Application;
   membre?: (number | null) | Member;
+  echeance?: (number | null) | Due;
   objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart';
   exercice?: string | null;
   montant: number;
@@ -622,6 +629,57 @@ export interface Payment {
     | boolean
     | null;
   enregistrePar?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dues".
+ */
+export interface Due {
+  id: number;
+  membre: number | Member;
+  categorie?: string | null;
+  statut?: ('a-jour' | 'a-venir' | 'en-relance' | 'perte') | null;
+  exercice?: {
+    debut?: string | null;
+    fin?: string | null;
+    libelle?: string | null;
+  };
+  droit?: number | null;
+  montant?: number | null;
+  dateLimite?: string | null;
+  tranches?:
+    | {
+        numero?: number | null;
+        montant?: number | null;
+        echeance?: string | null;
+        statut?: ('a-payer' | 'paye') | null;
+        paiement?: (number | null) | Payment;
+        id?: string | null;
+      }[]
+    | null;
+  relances?:
+    | {
+        numero?: number | null;
+        date?: string | null;
+        canal?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  constat?: {
+    date?: string | null;
+    pv?: string | null;
+  };
+  rappels?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1600,6 +1658,48 @@ export interface CommissionRequest {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disciplinaryCases".
+ */
+export interface DisciplinaryCase {
+  id: number;
+  numero?: string | null;
+  membre: number | Member;
+  statut?: ('ouverte' | 'griefs' | 'defense' | 'avis' | 'decision' | 'recours' | 'close') | null;
+  griefs?: ('charte' | 'statuts' | 'illicite' | 'escroquerie' | 'autre')[] | null;
+  faits?: string | null;
+  pieces?: (number | Fichier)[] | null;
+  sanctionEnvisagee?: ('rappel' | 'avertissement' | 'suspension' | 'exclusion') | null;
+  dateGriefs?: string | null;
+  finDefense?: string | null;
+  dateDefense?: string | null;
+  defense?: string | null;
+  dateAvis?: string | null;
+  avis?: string | null;
+  sanction?: ('rappel' | 'avertissement' | 'suspension' | 'exclusion') | null;
+  dureeMois?: number | null;
+  dateDecision?: string | null;
+  finRecours?: string | null;
+  motivation?: string | null;
+  recours?: {
+    date?: string | null;
+    texte?: string | null;
+  };
+  issue?: string | null;
+  dateCloture?: string | null;
+  exclusionAppliquee?: boolean | null;
+  historique?:
+    | {
+        date?: string | null;
+        etape?: string | null;
+        auteur?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
 export interface Partner {
@@ -1821,7 +1921,8 @@ export interface PayloadJob {
           | 'verifierPaiements'
           | 'rappelVeille'
           | 'expirerOpportunites'
-          | 'demandesSansReponse';
+          | 'demandesSansReponse'
+          | 'suiviAdhesions';
         taskID: string;
         input?:
           | {
@@ -1862,6 +1963,7 @@ export interface PayloadJob {
         | 'rappelVeille'
         | 'expirerOpportunites'
         | 'demandesSansReponse'
+        | 'suiviAdhesions'
       )
     | null;
   queue?: string | null;
@@ -1941,6 +2043,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'commissionRequests';
         value: number | CommissionRequest;
+      } | null)
+    | ({
+        relationTo: 'dues';
+        value: number | Due;
+      } | null)
+    | ({
+        relationTo: 'disciplinaryCases';
+        value: number | DisciplinaryCase;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2120,6 +2230,7 @@ export interface MembersSelect<T extends boolean = true> {
   numeroAdherent?: T;
   statut?: T;
   motifStatut?: T;
+  suspenduJusquau?: T;
   civilite?: T;
   prenom?: T;
   nom?: T;
@@ -2503,6 +2614,95 @@ export interface CommissionRequestsSelect<T extends boolean = true> {
   apport?: T;
   traitePar?: T;
   dateTraitement?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dues_select".
+ */
+export interface DuesSelect<T extends boolean = true> {
+  membre?: T;
+  categorie?: T;
+  statut?: T;
+  exercice?:
+    | T
+    | {
+        debut?: T;
+        fin?: T;
+        libelle?: T;
+      };
+  droit?: T;
+  montant?: T;
+  dateLimite?: T;
+  tranches?:
+    | T
+    | {
+        numero?: T;
+        montant?: T;
+        echeance?: T;
+        statut?: T;
+        paiement?: T;
+        id?: T;
+      };
+  relances?:
+    | T
+    | {
+        numero?: T;
+        date?: T;
+        canal?: T;
+        id?: T;
+      };
+  constat?:
+    | T
+    | {
+        date?: T;
+        pv?: T;
+      };
+  rappels?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disciplinaryCases_select".
+ */
+export interface DisciplinaryCasesSelect<T extends boolean = true> {
+  numero?: T;
+  membre?: T;
+  statut?: T;
+  griefs?: T;
+  faits?: T;
+  pieces?: T;
+  sanctionEnvisagee?: T;
+  dateGriefs?: T;
+  finDefense?: T;
+  dateDefense?: T;
+  defense?: T;
+  dateAvis?: T;
+  avis?: T;
+  sanction?: T;
+  dureeMois?: T;
+  dateDecision?: T;
+  finRecours?: T;
+  motivation?: T;
+  recours?:
+    | T
+    | {
+        date?: T;
+        texte?: T;
+      };
+  issue?: T;
+  dateCloture?: T;
+  exclusionAppliquee?: T;
+  historique?:
+    | T
+    | {
+        date?: T;
+        etape?: T;
+        auteur?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3156,6 +3356,7 @@ export interface PaymentsSelect<T extends boolean = true> {
   statut?: T;
   candidature?: T;
   membre?: T;
+  echeance?: T;
   objet?: T;
   exercice?: T;
   montant?: T;
@@ -3796,6 +3997,24 @@ export interface TaskDemandesSansReponse {
   input?: unknown;
   output: {
     signalees?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSuiviAdhesions".
+ */
+export interface TaskSuiviAdhesions {
+  input?: unknown;
+  output: {
+    bilan?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
 }
 /**

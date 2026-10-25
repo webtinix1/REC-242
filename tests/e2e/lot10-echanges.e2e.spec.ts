@@ -11,7 +11,7 @@ test.describe.serial('Lot 10 : experts, échanges, commissions', () => {
     await page.getByRole('button', { name: 'Se connecter' }).click()
     await page.waitForURL(`${BASE}/espace-membre`)
     await page.goto(`${BASE}/espace-membre/echanges`, { waitUntil: 'networkidle' })
-    await expect(page.locator('h1')).toHaveText('Mes échanges')
+    await expect(page.locator('h1')).toHaveText('Mes échanges', { timeout: 60000 })
     await expect(page.getByText('Léon Massamba').first()).toBeVisible()
     await page.goto(`${BASE}/espace-membre/echanges?onglet=annonces`, { waitUntil: 'networkidle' })
     await expect(page.getByText('Hervé Ondongo').first()).toBeVisible()

@@ -21,6 +21,7 @@ import {
 } from '@/lib/membres/espace'
 import { statutMembreLabel } from '@/lib/membres/options'
 import { nonLus, type Onglet } from '@/lib/echanges/service'
+import { resteDu, type Echeance } from '@/lib/cotisations/regles'
 import { joursRestants, typeLabel } from '@/lib/opportunites/regles'
 import { getPayloadClient } from '@/lib/site/payload'
 
@@ -30,7 +31,7 @@ export const metadata: Metadata = { title: 'Accueil' }
 export default async function TableauPage() {
   const m = await exigerMembre()
   const payload = await getPayloadClient()
-  const [paiements, inscriptions, s, news] = await Promise.all([
+  const [paiements, inscriptions, s, news, dues] = await Promise.all([
     paiementsDe(m),
     inscriptionsDe(m.id),
     payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ whatsapp?: { lienGroupe?: string } }>,
@@ -43,7 +44,9 @@ export default async function TableauPage() {
       overrideAccess: true,
       select: { titre: true, slug: true, datePublication: true },
     }),
+    payload.find({ collection: 'dues', where: { membre: { equals: m.id } }, sort: '-exercice.debut', limit: 1, depth: 0, overrideAccess: true }),
   ])
+  const echeance = dues.docs[0] as unknown as (Echeance & { exercice?: { libelle?: string } }) | undefined
   const { user } = await payload.auth({ headers: await headers() })
   const mesSecteurs = (m.entreprise?.secteurs ?? []).map((x) => x.id)
   const lireOpps = (where: object, limit: number) =>
@@ -69,6 +72,20 @@ export default async function TableauPage() {
     .filter((x) => ['services', 'presentation', 'photo', 'logo'].includes(x.cle))
     .slice(0, 2)
     .map((x) => ({ t: x.libelle, d: `+${x.gain} % de complétude`, href: '/espace-membre/profil', cta: 'Compléter' }))
+  const resteCot = echeance ? resteDu(echeance) : cot.reste
+  const connue = echeance ? true : cot.connue
+  const tranchesDues = (echeance?.tranches ?? []).filter((t) => t.statut !== 'paye')
+  if (tranchesDues.length) {
+    const t = tranchesDues[0]
+    const unique = (echeance?.tranches ?? []).length === 1
+    const limite = echeance?.dateLimite ?? t.echeance
+    todo.splice(Math.min(1, todo.length), 0, {
+      t: unique ? 'Régler la cotisation' : `Régler la ${t.numero === 1 ? '1re' : `${t.numero}e`} tranche de cotisation`,
+      d: `${fcfa(t.montant)}${limite ? `, avant le ${dateLongue(limite)}` : ''}`,
+      href: '/espace-membre/cotisation',
+      cta: 'Payer',
+    })
+  }
 
   return (
     <>
@@ -215,11 +232,14 @@ export default async function TableauPage() {
             numero={m.numeroAdherent}
             statut={statutMembreLabel(m.statut)}
           />
-          {cot.connue && (
+          {connue && (
             <div className="card-gold">
-              <p className="lbl">Cotisation {exercice}</p>
+              <p className="lbl">Cotisation {echeance?.exercice?.libelle || exercice}</p>
               <p className="h3">Reste à payer</p>
-              <p className="amount">{fcfa(cot.reste)}</p>
+              <p className="amount">{resteCot > 0 ? fcfa(resteCot) : '0 FCFA'}</p>
+              <Link className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} href="/espace-membre/cotisation">
+                Voir ma cotisation
+              </Link>
             </div>
           )}
           {s.whatsapp?.lienGroupe && (

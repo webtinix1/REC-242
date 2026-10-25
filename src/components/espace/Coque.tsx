@@ -28,8 +28,8 @@ const NAV = [
   { href: '/espace-membre/annuaire', label: 'Annuaire', icon: 'users', pret: true },
   { href: '/espace-membre/experts', label: 'Experts', icon: 'spark', pret: false },
   { href: '/espace-membre/echanges', label: 'Mes échanges', icon: 'chat', pret: true },
-  { href: '/espace-membre/cotisation', label: 'Cotisation', icon: 'wallet', pret: false },
-  { href: '/espace-membre/documents', label: 'Documents', icon: 'file', pret: false },
+  { href: '/espace-membre/cotisation', label: 'Cotisation', icon: 'wallet', pret: true },
+  { href: '/espace-membre/documents', label: 'Documents', icon: 'file', pret: true },
   { href: '/espace-membre/carte', label: 'Ma carte', icon: 'card', pret: true },
   { href: '/espace-membre/profil', label: 'Mon profil', icon: 'user', pret: true },
 ].filter((n) => n.pret)
@@ -43,8 +43,8 @@ const TABS = [
 ].filter((n) => n.pret)
 
 const PLUS = [
-  { href: '/espace-membre/cotisation', label: 'Cotisation et paiements', pret: false },
-  { href: '/espace-membre/documents', label: 'Documents du réseau', pret: false },
+  { href: '/espace-membre/cotisation', label: 'Cotisation et paiements', pret: true },
+  { href: '/espace-membre/documents', label: 'Documents du réseau', pret: true },
   { href: '/espace-membre/carte', label: 'Ma carte de membre', pret: true },
   { href: '/espace-membre/profil', label: 'Mon profil', pret: true },
 ].filter((n) => n.pret)

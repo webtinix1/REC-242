@@ -1,4 +1,4 @@
-import { APIError, type CollectionConfig, type Where } from 'payload'
+import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
 import fs from 'fs/promises'
 import path from 'path'
 
@@ -24,15 +24,35 @@ const COMITE: Parameters<typeof hasRole>[1][] = ['superadmin', 'admin']
 
 /**
  * Filtre de lecture : le public ne voit que les documents publics ; un membre actif voit aussi « membres »
- * (et « inscrits » pour ses événements, branché au lot 8) ; l'équipe voit selon son rôle.
+ * et « inscrits » pour les événements auxquels il est inscrit ; l'équipe voit selon son rôle.
  * Payload applique ce filtre aussi aux fichiers (route /api/documents/file/…).
  */
-const readFilter = (user: unknown): boolean | Where => {
+const readFilter = async (req: PayloadRequest): Promise<boolean | Where> => {
+  const user = req.user
   if (extraRead(user as never, 'documents')) return true
   if (isStaff(user as never)) return { visibilite: { in: ['public', 'membres'] } }
-  const u = user as { collection?: string; statut?: string } | null
-  if (u?.collection === 'members' && u.statut === 'actif')
-    return { visibilite: { in: ['public', 'membres'] } }
+  const u = user as { id?: number; collection?: string; statut?: string } | null
+  if (u?.collection === 'members' && u.statut === 'actif') {
+    // « Inscrits » : documents joints aux événements auxquels le membre est inscrit (ou présent).
+    const inscriptions = await req.payload.find({
+      collection: 'registrations',
+      where: { and: [{ membre: { equals: u.id } }, { statut: { in: ['inscrit', 'present'] } }] },
+      depth: 0,
+      limit: 500,
+      overrideAccess: true,
+      req,
+      select: { evenement: true },
+    })
+    const evs = inscriptions.docs.map((r) => (r as unknown as { evenement: number }).evenement)
+    const ids = evs.length
+      ? (
+          await req.payload.find({ collection: 'events', where: { id: { in: evs } }, depth: 0, limit: 500, overrideAccess: true, req, select: { documents: true } })
+        ).docs.flatMap((e) => ((e as unknown as { documents?: { document: number }[] }).documents ?? []).map((d) => d.document))
+      : []
+    return ids.length
+      ? { or: [{ visibilite: { in: ['public', 'membres'] } }, { and: [{ visibilite: { equals: 'inscrits' } }, { id: { in: ids } }] }] }
+      : { visibilite: { in: ['public', 'membres'] } }
+  }
   return { visibilite: { equals: 'public' } }
 }
 
@@ -49,7 +69,7 @@ export const Documents: CollectionConfig = {
     },
   },
   access: {
-    read: ({ req }) => readFilter(req.user),
+    read: ({ req }) => readFilter(req),
     create: ({ req }) => extraFull(req.user, 'documents'),
     update: ({ req }) => extraFull(req.user, 'documents'),
     delete: ({ req }) => hasRole(req.user, ...COMITE),

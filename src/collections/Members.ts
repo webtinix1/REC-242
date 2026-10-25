@@ -156,6 +156,7 @@ export const Members: CollectionConfig = {
           access: { update: equipeSeulement },
         },
         { name: 'motifStatut', label: 'Motif du dernier changement de statut', type: 'text', access: { update: equipeSeulement } },
+        { name: 'suspenduJusquau', label: 'Suspendu jusqu’au', type: 'date', access: { update: equipeSeulement }, admin: { readOnly: true } },
       ],
     },
     {

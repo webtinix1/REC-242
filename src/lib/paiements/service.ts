@@ -13,11 +13,11 @@ type PaiementMobile = {
 
 /**
  * Crée un paiement « en attente » et envoie la demande de validation sur le téléphone du payeur.
- * Une erreur de l'opérateur passe le paiement en « échoué » sans bloquer la candidature.
+ * Une erreur de l'opérateur passe le paiement en « échoué » sans bloquer la candidature ni la cotisation.
  */
 export async function lancerPaiementMobile(
   payload: Payload,
-  p: { candidature: number; operateur: Operateur; telephone: string; montant: number; objet: string; libelle: string; reference: string },
+  p: { candidature?: number; membre?: number; echeance?: number; operateur: Operateur; telephone: string; montant: number; objet: string; libelle: string; reference: string },
   req?: PayloadRequest,
 ) {
   const doc = (await payload.create({
@@ -26,6 +26,8 @@ export async function lancerPaiementMobile(
     req,
     data: {
       candidature: p.candidature,
+      membre: p.membre,
+      echeance: p.echeance,
       objet: p.objet,
       montant: p.montant,
       mode: p.operateur,

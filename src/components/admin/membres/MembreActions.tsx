@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 import { api } from './api'
+import { DisciplineProvider } from './Discipline'
 
 type Props = {
   id: number
@@ -20,6 +21,8 @@ type Props = {
   visibilite: React.ReactNode
   fiche: React.ReactNode
   cotisation: React.ReactNode
+  discipline: React.ReactNode
+  procedure: React.ReactNode
 }
 
 const STATUTS = [
@@ -76,6 +79,7 @@ export const MembreActions = (p: Props) => {
   const fini = p.statut === 'ancien'
 
   return (
+    <DisciplineProvider>
     <div className="grid2 grid-wide">
       <div className="stack">
         <section className="panel">
@@ -221,6 +225,8 @@ export const MembreActions = (p: Props) => {
 
         {p.cotisation}
 
+        {p.discipline}
+
         <section className="panel">
           <h3 className="h3">Fin d&apos;adhésion</h3>
           <p className="small muted">
@@ -265,5 +271,7 @@ export const MembreActions = (p: Props) => {
         </section>
       </div>
     </div>
+    {p.procedure}
+    </DisciplineProvider>
   )
 }

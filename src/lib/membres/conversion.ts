@@ -5,6 +5,7 @@ import { notify } from '@/emails/send'
 import { categorie, montants, type Tarifs } from '@/lib/adhesion/categories'
 import { logAction } from '@/lib/audit'
 import { prochainNumero } from '@/lib/compteurs'
+import { creerEcheance, recalculerTranches } from '@/lib/cotisations/service'
 import { finExercice, limiteCotisation, numeroAdherent } from './options'
 import { nouveauJeton } from './session'
 
@@ -138,9 +139,12 @@ export async function convertirCandidature(payload: Payload, candidatureId: numb
     } as never,
   })
   await payload.update({ collection: 'companies', id: entreprise.id, data: { titulaire: membre.id } as never, overrideAccess: true, req })
+  // Échéance de l'exercice (lot 11) ; les paiements de la candidature y sont rattachés.
+  const echeance = await creerEcheance(payload, membre.id as number, debut, true, req)
   const paiements = await payload.find({ collection: 'payments', where: { candidature: { equals: c.id } }, overrideAccess: true, depth: 0, req })
   for (const p of paiements.docs)
-    await payload.db.updateOne({ collection: 'payments', id: p.id, data: { membre: membre.id }, req, returning: false })
+    await payload.db.updateOne({ collection: 'payments', id: p.id, data: { membre: membre.id, ...(echeance ? { echeance } : {}) }, req, returning: false })
+  if (echeance) await recalculerTranches(payload, echeance, req)
   await payload.update({
     collection: 'applications',
     id: c.id,

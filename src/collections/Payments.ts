@@ -4,6 +4,7 @@ import { atLeast, isStaff } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { MODES_PAIEMENT, modeLabel, OBJETS_PAIEMENT, objetLabel } from '@/lib/adhesion/paiement'
 import { logAction } from '@/lib/audit'
+import { rapprocherPaiement } from '@/lib/cotisations/service'
 import { numeroDossierCandidat, numeroRecu, prochainNumero } from '@/lib/compteurs'
 import { genererRecu } from '@/lib/paiements/recu'
 
@@ -29,6 +30,7 @@ type Paiement = {
         createdAt?: string
       }
     | null
+  membre?: number | { id: number; prenom?: string; nom?: string; email?: string; numeroAdherent?: string; entreprise?: number | { nom?: string } | null } | null
 }
 
 const lire = (req: PayloadRequest) =>
@@ -53,11 +55,12 @@ export async function pdfRecu(
   const full = (await payload.findByID({
     collection: 'payments',
     id: p.id,
-    depth: 1,
+    depth: 2,
     overrideAccess: true,
     req,
   })) as unknown as Paiement
   const c = typeof full.candidature === 'object' ? full.candidature : null
+  const m = typeof full.membre === 'object' ? full.membre : null
   const s = (await payload.findGlobal({
     slug: 'settings',
     depth: 0,
@@ -72,9 +75,9 @@ export async function pdfRecu(
   const contenu = await genererRecu({
     numero,
     date: dateFr(full.datePaiement ?? full.createdAt),
-    payeur: c ? `${c.prenom ?? ''} ${c.nom ?? ''}`.trim() : '',
-    entreprise: c?.raisonSociale,
-    reference: c ? `Dossier ${numeroDossierCandidat(c.numero, c.createdAt)}` : undefined,
+    payeur: m ? `${m.prenom ?? ''} ${m.nom ?? ''}`.trim() : c ? `${c.prenom ?? ''} ${c.nom ?? ''}`.trim() : '',
+    entreprise: m && typeof m.entreprise === 'object' ? m.entreprise?.nom : c?.raisonSociale,
+    reference: m?.numeroAdherent ? `Adhérent ${m.numeroAdherent}` : c ? `Dossier ${numeroDossierCandidat(c.numero, c.createdAt)}` : undefined,
     objet: objetLabel(full.objet),
     montant: full.montant,
     mode: modeLabel(full.mode),
@@ -145,10 +148,14 @@ export const Payments: CollectionConfig = {
             req,
           })) as unknown as Paiement
           const c = typeof full.candidature === 'object' ? full.candidature : null
-          if (c?.email) {
+          const m = typeof full.membre === 'object' ? full.membre : null
+          // Cotisation d'un membre : rapprochement avec son échéance (tranches payées).
+          await rapprocherPaiement(req.payload, doc as never, req)
+          const destinataire = m?.email ?? c?.email
+          if (destinataire) {
             const recu = await pdfRecu(req.payload, full, req)
             await notify(req.payload, {
-              to: c.email,
+              to: destinataire,
               template: 'recuPaiement',
               vars: {
                 numero_recu: numeroRecu(p.numero),
@@ -172,6 +179,58 @@ export const Payments: CollectionConfig = {
     ],
   },
   endpoints: [
+    {
+      // Écran 12 : export comptable des paiements (droit « Exports » partiel du trésorier), sur une période.
+      path: '/export',
+      method: 'get',
+      handler: async (req) => {
+        if (!atLeast(req.user, 'cotisations', 'read') || !atLeast(req.user, 'exports', 'partial'))
+          throw new APIError('Export non autorisé pour votre rôle.', 403)
+        const q = new URL(req.url ?? '', 'http://x').searchParams
+        const du = q.get('du') ? new Date(`${q.get('du')}T00:00:00+01:00`) : null
+        const au = q.get('au') ? new Date(`${q.get('au')}T23:59:59+01:00`) : null
+        const r = await req.payload.find({
+          collection: 'payments',
+          where: {
+            and: [
+              { statut: { in: ['paye', 'rembourse', 'remboursement'] } },
+              ...(du ? [{ datePaiement: { greater_than_equal: du.toISOString() } }] : []),
+              ...(au ? [{ datePaiement: { less_than_equal: au.toISOString() } }] : []),
+            ],
+          },
+          sort: 'numero',
+          depth: 2,
+          limit: 10000,
+          overrideAccess: false,
+          req,
+        })
+        const esc = (v: unknown) => {
+          const s = String(v ?? '')
+          return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+        }
+        const lignes = (r.docs as unknown as Paiement[]).map((p) => {
+          const m = typeof p.membre === 'object' ? p.membre : null
+          const c = typeof p.candidature === 'object' ? p.candidature : null
+          return [
+            numeroRecu(p.numero),
+            p.datePaiement ? new Date(p.datePaiement).toISOString().slice(0, 10) : '',
+            m ? `${m.prenom ?? ''} ${m.nom ?? ''}`.trim() : c ? `${c.prenom ?? ''} ${c.nom ?? ''}`.trim() : '',
+            m?.numeroAdherent ?? (c ? numeroDossierCandidat(c.numero, c.createdAt) : ''),
+            objetLabel(p.objet),
+            p.montant,
+            modeLabel(p.mode),
+            p.referenceOperateur,
+            p.statut,
+          ]
+            .map(esc)
+            .join(';')
+        })
+        await logAction(req.payload, { req, categorie: 'export', action: `Export comptable : ${r.docs.length} paiement(s)` })
+        return new Response('﻿' + ['recu;date;payeur;reference;objet;montant_fcfa;mode;reference_operateur;statut', ...lignes].join('\r\n'), {
+          headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="paiements-rec242.csv"' },
+        })
+      },
+    },
     {
       path: '/:id/recu',
       method: 'get',
@@ -242,6 +301,7 @@ export const Payments: CollectionConfig = {
       relationTo: 'members',
       index: true,
     },
+    { name: 'echeance', label: 'Échéance de cotisation', type: 'relationship', relationTo: 'dues', index: true },
     {
       type: 'row',
       fields: [

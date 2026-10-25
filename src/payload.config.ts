@@ -18,6 +18,8 @@ import { Commissions } from './collections/Commissions'
 import { Companies } from './collections/Companies'
 import { ConnectionRequests } from './collections/ConnectionRequests'
 import { DirectoryAds } from './collections/DirectoryAds'
+import { DisciplinaryCases } from './collections/DisciplinaryCases'
+import { Dues } from './collections/Dues'
 import { Events } from './collections/Events'
 import { ExpertRequests } from './collections/ExpertRequests'
 import { Fichiers } from './collections/Fichiers'
@@ -49,6 +51,7 @@ import { publierProgrammes } from './jobs/publierProgrammes'
 import { demandesSansReponse } from './jobs/demandesSansReponse'
 import { expirerOpportunites } from './jobs/expirerOpportunites'
 import { rappelVeille } from './jobs/rappelVeille'
+import { suiviAdhesionsTache } from './jobs/suiviAdhesions'
 import { verifierPaiements } from './jobs/verifierPaiements'
 import { withSiteRevalidation } from './hooks/revalidate'
 import { searchConfig } from './search/config'
@@ -72,6 +75,10 @@ export default buildConfig({
     avatar: 'default',
     components: {
       Nav: '@/components/admin/Nav#Nav',
+      views: {
+        dashboard: { Component: '@/components/admin/tableau/TableauDeBord#TableauDeBord' },
+        cotisations: { Component: '@/components/admin/cotisations/CotisationsView#CotisationsView', path: '/cotisations' },
+      },
       graphics: {
         Logo: '@/components/admin/Graphics#Logo',
         Icon: '@/components/admin/Graphics#Icon',
@@ -98,6 +105,8 @@ export default buildConfig({
     Fichiers,
     ExpertRequests,
     CommissionRequests,
+    Dues,
+    DisciplinaryCases,
     Pages,
     News,
     Documents,
@@ -120,7 +129,7 @@ export default buildConfig({
   ].map((c) => withSiteRevalidation(c, 'collection')),
   globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
-    tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites, demandesSansReponse],
+    tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites, demandesSansReponse, suiviAdhesionsTache],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
     access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },

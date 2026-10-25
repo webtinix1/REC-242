@@ -29,3 +29,19 @@
 .bb.bo-view .cards3 .comc .panel-h .pill{white-space:nowrap;flex-shrink:0}
 .bb.bo-view .conv .blk{margin-top:4px}
 .bb.bo-view .ib-item .av-photo{position:relative}
+
+/* Tableau de bord (écran 02) : cartes et lignes rendues en liens */
+.bb.bo-view a.kpi,.bb.bo-view a.ev,.bb.bo-view a.rowbtn,.bb.bo-view a.qbtn{text-decoration:none}
+.bb.bo-view a.qbtn{display:inline-flex;align-items:center}
+
+/* Cotisations (écran 12) et discipline (écran 06) */
+.bb.bo-view .kpis.kpis-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.bb.bo-view .tbl td .xs{max-width:260px;display:block}
+.bb.bo-view .tbl a.rec-btn,.bb.bo-view a.rec-btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width: 1100px){.bb.bo-view .kpis.kpis-5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bb.bo-view .kpis-dash{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width: 768px){
+  .bb.bo-view .kpis-dash{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bb.bo-view .kpis-dash a.kpi:last-child:nth-child(odd){grid-column:1 / -1}
+}
+.bb.bo-view .linkbtn:disabled{opacity:.5;cursor:not-allowed}
