@@ -8,5 +8,9 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
+    // Chaque fichier initialise Payload (et pousse le schéma en développement) : un fichier à la fois.
+    fileParallelism: false,
+    hookTimeout: 120000,
+    testTimeout: 60000,
   },
 })

@@ -47,7 +47,6 @@ export async function media(
   focal?: [number, number],
 ): Promise<number | undefined> {
   if (!relPath) return undefined
-  if (mediaCache.has(relPath) && !focal) return mediaCache.get(relPath)
   const abs = path.join(ROOT, relPath)
   if (!fs.existsSync(abs)) {
     payload.logger.warn(`Image absente : ${relPath}`)
@@ -56,7 +55,7 @@ export async function media(
   const base = path.basename(relPath).replace(/\.[a-z0-9]+$/i, '')
   const found = await payload.find({
     collection: 'media',
-    where: { filename: { like: base } },
+    where: { filename: { equals: `${base}.webp` } },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -72,9 +71,12 @@ export async function media(
       })
     ).id as number)
   mediaCache.set(relPath, id)
-  if (focal) {
-    await payload.db.updateOne({ collection: 'media', id, data: { focalX: focal[0], focalY: focal[1] } })
-  }
+  // Image déjà importée : on garde le dernier texte alternatif fourni (les pages décrivent mieux l'image que les titres d'actualités).
+  await payload.db.updateOne({
+    collection: 'media',
+    id,
+    data: focal ? { alt, focalX: focal[0], focalY: focal[1] } : { alt },
+  })
   return id
 }
 

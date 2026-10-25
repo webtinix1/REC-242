@@ -25,6 +25,7 @@ export const Commissions: CollectionConfig = {
     { name: 'nom', label: 'Nom', type: 'text', required: true },
     slugField('nom'),
     { name: 'objet', label: 'Objet', type: 'textarea', required: true },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     { name: 'responsable', label: 'Responsable', type: 'relationship', relationTo: 'people' },
     {
       name: 'ouverture',

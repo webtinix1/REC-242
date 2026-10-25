@@ -19,7 +19,12 @@ export const SubNav = () => {
   return (
     <nav className="chips subnav" aria-label="Rubrique Le réseau">
       {RESEAU.map(([href, label]) => (
-        <Link key={href} href={href} className={`chip${p === href ? ' is-on' : ''}`} aria-current={p === href ? 'page' : undefined}>
+        <Link prefetch={false}
+          key={href}
+          href={href}
+          className={`chip${p === href ? ' is-on' : ''}`}
+          aria-current={p === href ? 'page' : undefined}
+        >
           {label}
         </Link>
       ))}

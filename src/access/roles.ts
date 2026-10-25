@@ -2,7 +2,7 @@
  * Rôles d'administration et matrice des droits (docs/04-roles-et-droits.md).
  * La matrice est la source unique : les fonctions d'accès et l'écran « Utilisateurs et rôles » la lisent.
  */
-import type { Access, PayloadRequest } from 'payload'
+import type { Access, FieldAccess, PayloadRequest } from 'payload'
 
 export const ROLES = [
   { value: 'superadmin', label: 'Super administrateur' },
@@ -126,3 +126,15 @@ export const publicExtraAccess = (domain: keyof typeof EXTRA_DOMAINS) => ({
   update: (({ req }) => extraFull(req.user, domain)) as Access,
   delete: (({ req }) => extraFull(req.user, domain)) as Access,
 })
+
+/** Membre au statut actif (collection `members`, lot 6). */
+export const isActiveMember = (user: MaybeUser): boolean => {
+  const u = user as { collection?: string; statut?: string } | null | undefined
+  return u?.collection === 'members' && u.statut === 'actif'
+}
+
+/** Champ d'un contenu « réservé aux membres » : lisible par l'équipe, les membres actifs, ou si le contenu est public. */
+export const reservedFieldRead: FieldAccess = ({ req, doc }) =>
+  !(doc as { reserveMembres?: boolean } | undefined)?.reserveMembres ||
+  isStaff(req.user) ||
+  isActiveMember(req.user)

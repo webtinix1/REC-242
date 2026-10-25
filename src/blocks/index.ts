@@ -13,7 +13,10 @@ const ancre: Field = {
   name: 'ancre',
   label: 'Section',
   type: 'text',
-  admin: { description: 'Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.' },
+  admin: {
+    description:
+      'Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.',
+  },
 }
 
 const boutons: Field = {
@@ -44,7 +47,18 @@ export const Section: Block = {
     { name: 'texte', label: 'Texte', type: 'textarea' },
     { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     boutons,
-    { name: 'note', label: 'Note', type: 'text', admin: { description: 'Petite ligne sous la section (référence, légende, mention « à valider »…).' } },
+    {
+      name: 'note',
+      label: 'Note',
+      type: 'text',
+      admin: { description: 'Petite ligne sous la section (référence, légende…).' },
+    },
+    {
+      name: 'aValider',
+      label: 'Afficher la mention « À valider »',
+      type: 'checkbox',
+      defaultValue: false,
+    },
   ],
 }
 
@@ -76,7 +90,11 @@ export const Texte: Block = {
   labels: { singular: 'Texte', plural: 'Textes' },
   admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
   fields: [
-    ancre,surtitre, titre, { name: 'contenu', label: 'Texte', type: 'richText', required: true }],
+    ancre,
+    surtitre,
+    titre,
+    { name: 'contenu', label: 'Texte', type: 'richText', required: true },
+  ],
 }
 
 export const Image: Block = {
@@ -134,6 +152,19 @@ export const Cartes: Block = {
       label: 'Référence',
       type: 'text',
       admin: { description: 'Par exemple « Article 8 des statuts ».' },
+    },
+    boutons,
+    {
+      name: 'note',
+      label: 'Note',
+      type: 'text',
+      admin: { description: 'Petite ligne sous la liste.' },
+    },
+    {
+      name: 'aValider',
+      label: 'Afficher la mention « À valider »',
+      type: 'checkbox',
+      defaultValue: false,
     },
     {
       name: 'cartes',
@@ -212,8 +243,7 @@ export const Logos: Block = {
   slug: 'logos',
   labels: { singular: 'Logos', plural: 'Logos' },
   admin: { components: { Label: '@/components/admin/BlockLabel#BlockLabel' } },
-  fields: [
-    ancre,surtitre, titre, { name: 'note', label: 'Note', type: 'text' }],
+  fields: [ancre, surtitre, titre, { name: 'note', label: 'Note', type: 'text' }],
 }
 
 export const Antennes: Block = {
@@ -265,6 +295,7 @@ export const Antennes: Block = {
 }
 
 export const PAGE_BLOCKS: Block[] = [
+  Section,
   Entete,
   Texte,
   Image,

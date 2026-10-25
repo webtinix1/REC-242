@@ -15,5 +15,6 @@ export const Motion = () => {
   useEffect(() => {
     window.RECMotion?.scan()
   }, [pathname])
+
   return <Script src="/js/rec-motion.js" strategy="afterInteractive" />
 }

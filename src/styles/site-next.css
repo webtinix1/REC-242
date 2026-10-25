@@ -12,3 +12,7 @@
 .sb .logo{display:inline-flex}
 .sb .skip{position:absolute;left:-9999px;top:8px;z-index:20;background:var(--bg-surface);padding:10px 16px;border-radius:var(--radius-full)}
 .sb .skip:focus{left:16px}
+.sb a.newsx-main,.sb .newsx-side a{color:inherit;text-decoration:none}
+.sb .pick > img.on{display:block}
+/* Titres des colonnes du pied : h2 (ordre des titres) avec le style des h4 de la maquette. */
+.sb .foot h2.foot-t{font-family:inherit;font-size:14px;line-height:inherit;font-weight:600;color:#6fcb95;margin:0 0 10px;letter-spacing:0}

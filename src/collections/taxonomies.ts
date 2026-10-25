@@ -8,6 +8,7 @@ const taxonomy = (
   singular: string,
   plural: string,
   description?: string,
+  extraFields: CollectionConfig['fields'] = [],
 ): CollectionConfig => ({
   slug,
   labels: { singular, plural },
@@ -37,6 +38,7 @@ const taxonomy = (
       defaultValue: 0,
       admin: { position: 'sidebar' },
     },
+    ...extraFields,
   ],
 })
 
@@ -58,4 +60,13 @@ export const ExpertiseTags = taxonomy(
   'Étiquette d’expertise',
   'Étiquettes d’expertise',
   'Relient les questions des membres au comité et aux experts.',
+  [
+    {
+      name: 'filtreSite',
+      label: 'Proposée comme filtre sur la page Gouvernance',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar' },
+    },
+  ],
 )

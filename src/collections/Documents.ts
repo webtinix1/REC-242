@@ -136,6 +136,16 @@ export const Documents: CollectionConfig = {
       ],
     },
     {
+      name: 'typePresse',
+      label: 'Dans l’espace presse',
+      type: 'select',
+      options: [
+        { value: 'communique', label: 'Communiqué' },
+        { value: 'kit', label: 'Kit média' },
+      ],
+      admin: { condition: (d) => d?.rubrique === 'presse' },
+    },
+    {
       name: 'dateDocument',
       label: 'Date du document',
       type: 'date',

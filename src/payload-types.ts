@@ -82,6 +82,7 @@ export interface Config {
     eventTypes: EventType;
     expertiseTags: ExpertiseTag;
     auditLog: AuditLog;
+    search: Search;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -105,6 +106,7 @@ export interface Config {
     eventTypes: EventTypesSelect<false> | EventTypesSelect<true>;
     expertiseTags: ExpertiseTagsSelect<false> | ExpertiseTagsSelect<true>;
     auditLog: AuditLogSelect<false> | AuditLogSelect<true>;
+    search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -294,6 +296,31 @@ export interface Page {
              */
             ancre?: string | null;
             surtitre?: string | null;
+            titre?: string | null;
+            texte?: string | null;
+            image?: (number | null) | Media;
+            boutons?:
+              | {
+                  libelle: string;
+                  lien: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Petite ligne sous la section (référence, légende…).
+             */
+            note?: string | null;
+            aValider?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'section';
+          }
+        | {
+            /**
+             * Identifiant utilisé par la mise en page du site (par exemple « hero », « piliers »). Ne pas modifier.
+             */
+            ancre?: string | null;
+            surtitre?: string | null;
             titre: string;
             texte?: string | null;
             image?: (number | null) | Media;
@@ -373,6 +400,18 @@ export interface Page {
              * Par exemple « Article 8 des statuts ».
              */
             reference?: string | null;
+            boutons?:
+              | {
+                  libelle: string;
+                  lien: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Petite ligne sous la liste.
+             */
+            note?: string | null;
+            aValider?: boolean | null;
             cartes?:
               | {
                   titre: string;
@@ -596,6 +635,18 @@ export interface News {
              * Par exemple « Article 8 des statuts ».
              */
             reference?: string | null;
+            boutons?:
+              | {
+                  libelle: string;
+                  lien: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Petite ligne sous la liste.
+             */
+            note?: string | null;
+            aValider?: boolean | null;
             cartes?:
               | {
                   titre: string;
@@ -647,12 +698,32 @@ export interface News {
   secteurs?: (number | Sector)[] | null;
   etiquettes?: string[] | null;
   datePublication?: string | null;
+  /**
+   * Sans actualité à la une, la plus récente est mise en avant.
+   */
+  aLaUne?: boolean | null;
   reserveMembres?: boolean | null;
   /**
    * « En relecture » signale l’article à un éditeur. « Programmé » le publie automatiquement à la date de publication. « Archivé » le retire du site sans le supprimer.
    */
   etat?: ('brouillon' | 'relecture' | 'programme' | 'publie' | 'archive') | null;
   auteur?: (number | null) | User;
+  /**
+   * Par exemple « la Communication ». Affichée après la date : « par … ».
+   */
+  signature?: string | null;
+  /**
+   * Actualité ou page proposée en fin d’article.
+   */
+  aLireAussi?:
+    | ({
+        relationTo: 'news';
+        value: number | News;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null);
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -674,6 +745,7 @@ export interface Document {
   titre: string;
   rubrique: 'textes' | 'vie' | 'ateliers' | 'presse' | 'evenements';
   visibilite: 'public' | 'membres' | 'inscrits' | 'comite';
+  typePresse?: ('communique' | 'kit') | null;
   dateDocument?: string | null;
   /**
    * Image de la première page, affichée dans les listes.
@@ -759,6 +831,7 @@ export interface ExpertiseTag {
    */
   slug?: string | null;
   ordre?: number | null;
+  filtreSite?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -776,6 +849,7 @@ export interface Commission {
    */
   slug?: string | null;
   objet: string;
+  image?: (number | null) | Media;
   responsable?: (number | null) | Person;
   ouverture: 'ouverte' | 'designation';
   experts?: (number | Person)[] | null;
@@ -869,6 +943,32 @@ export interface AuditLog {
   auteurNom?: string | null;
   ip?: string | null;
   ville?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search".
+ */
+export interface Search {
+  id: number;
+  title?: string | null;
+  priority?: number | null;
+  doc:
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
+        relationTo: 'news';
+        value: number | News;
+      };
+  type?: string | null;
+  lien?: string | null;
+  extrait?: string | null;
+  contenu?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1056,6 +1156,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'auditLog';
         value: number | AuditLog;
+      } | null)
+    | ({
+        relationTo: 'search';
+        value: number | Search;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1149,6 +1253,26 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        section?:
+          | T
+          | {
+              ancre?: T;
+              surtitre?: T;
+              titre?: T;
+              texte?: T;
+              image?: T;
+              boutons?:
+                | T
+                | {
+                    libelle?: T;
+                    lien?: T;
+                    id?: T;
+                  };
+              note?: T;
+              aValider?: T;
+              id?: T;
+              blockName?: T;
+            };
         entete?:
           | T
           | {
@@ -1205,6 +1329,15 @@ export interface PagesSelect<T extends boolean = true> {
               intro?: T;
               style?: T;
               reference?: T;
+              boutons?:
+                | T
+                | {
+                    libelle?: T;
+                    lien?: T;
+                    id?: T;
+                  };
+              note?: T;
+              aValider?: T;
               cartes?:
                 | T
                 | {
@@ -1343,6 +1476,15 @@ export interface NewsSelect<T extends boolean = true> {
               intro?: T;
               style?: T;
               reference?: T;
+              boutons?:
+                | T
+                | {
+                    libelle?: T;
+                    lien?: T;
+                    id?: T;
+                  };
+              note?: T;
+              aValider?: T;
               cartes?:
                 | T
                 | {
@@ -1388,9 +1530,12 @@ export interface NewsSelect<T extends boolean = true> {
   secteurs?: T;
   etiquettes?: T;
   datePublication?: T;
+  aLaUne?: T;
   reserveMembres?: T;
   etat?: T;
   auteur?: T;
+  signature?: T;
+  aLireAussi?: T;
   meta?:
     | T
     | {
@@ -1410,6 +1555,7 @@ export interface DocumentsSelect<T extends boolean = true> {
   titre?: T;
   rubrique?: T;
   visibilite?: T;
+  typePresse?: T;
   dateDocument?: T;
   couverture?: T;
   version?: T;
@@ -1514,6 +1660,7 @@ export interface CommissionsSelect<T extends boolean = true> {
   nom?: T;
   slug?: T;
   objet?: T;
+  image?: T;
   responsable?: T;
   ouverture?: T;
   experts?: T;
@@ -1606,6 +1753,7 @@ export interface ExpertiseTagsSelect<T extends boolean = true> {
   nom?: T;
   slug?: T;
   ordre?: T;
+  filtreSite?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1622,6 +1770,21 @@ export interface AuditLogSelect<T extends boolean = true> {
   auteurNom?: T;
   ip?: T;
   ville?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search_select".
+ */
+export interface SearchSelect<T extends boolean = true> {
+  title?: T;
+  priority?: T;
+  doc?: T;
+  type?: T;
+  lien?: T;
+  extrait?: T;
+  contenu?: T;
   updatedAt?: T;
   createdAt?: T;
 }

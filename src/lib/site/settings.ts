@@ -12,12 +12,26 @@ export type Settings = {
   whatsapp?: { numero?: string; lienChaine?: string }
   chiffresCles?: { libelle: string; mode: string; valeur?: string }[]
   tarifs?: Record<string, number | undefined>
-  annuaire?: { edition?: string; cloture?: string; encartLogo?: number; encartDemiPage?: number; encartPleinePage?: number }
+  annuaire?: {
+    edition?: string
+    cloture?: string
+    encartLogo?: number
+    encartDemiPage?: number
+    encartPleinePage?: number
+  }
   seo?: { titre?: string; description?: string; image?: Media | number | null }
 }
 
-export type NavLink = { libelle: string; url?: string; page?: { chemin?: string } | number | null; sousMenu?: NavLink[] }
-export type Navigation = { principal?: NavLink[]; piedDePage?: { titre: string; liens?: NavLink[] }[] }
+export type NavLink = {
+  libelle: string
+  url?: string
+  page?: { chemin?: string } | number | null
+  sousMenu?: NavLink[]
+}
+export type Navigation = {
+  principal?: NavLink[]
+  piedDePage?: { titre: string; liens?: NavLink[] }[]
+}
 
 export const getSettings = cache(async (): Promise<Settings> => {
   const payload = await getPayloadClient()
@@ -51,10 +65,20 @@ export const getKeyFigures = cache(async (): Promise<{ libelle: string; valeur: 
   for (const c of s.chiffresCles ?? []) {
     let v = c.mode === 'saisi' ? (c.valeur ?? '').trim() : ''
     if (c.mode === 'membresActifs' && has('members')) {
-      v = String((await payload.count({ collection: 'members' as never, where: { statut: { equals: 'actif' } } as never, overrideAccess: true })).totalDocs)
+      v = String(
+        (
+          await payload.count({
+            collection: 'members' as never,
+            where: { statut: { equals: 'actif' } } as never,
+            overrideAccess: true,
+          })
+        ).totalDocs,
+      )
     }
     if (c.mode === 'entreprises' && has('companies')) {
-      v = String((await payload.count({ collection: 'companies' as never, overrideAccess: true })).totalDocs)
+      v = String(
+        (await payload.count({ collection: 'companies' as never, overrideAccess: true })).totalDocs,
+      )
     }
     if (v) out.push({ libelle: c.libelle, valeur: v })
   }

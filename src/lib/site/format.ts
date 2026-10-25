@@ -1,10 +1,24 @@
 const TZ = 'Africa/Brazzaville'
 
 export const dateLong = (iso?: string | null): string =>
-  iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ }) : ''
+  iso
+    ? new Date(iso).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: TZ,
+      })
+    : ''
 
 export const dateCourt = (iso?: string | null): string =>
-  iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: TZ }) : ''
+  iso
+    ? new Date(iso).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: TZ,
+      })
+    : ''
 
 /** Jour et mois abrégé en capitales, pour les disques de date (« 14 », « NOV. »). */
 export const dateDisque = (iso?: string | null): { d: string; m: string } => {
@@ -16,4 +30,5 @@ export const dateDisque = (iso?: string | null): { d: string; m: string } => {
   }
 }
 
-export const fcfa = (n?: number | null): string => (n == null ? '' : `${n.toLocaleString('fr-FR').replace(/ | /g, ' ')} FCFA`)
+export const fcfa = (n?: number | null): string =>
+  n == null ? '' : `${n.toLocaleString('fr-FR').replace(/ | /g, ' ')} FCFA`

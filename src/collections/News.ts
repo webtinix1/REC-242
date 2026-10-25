@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig, type Where } from 'payload'
 
-import { atLeast, hasRole, levelFor } from '@/access/roles'
+import { atLeast, hasRole, levelFor, reservedFieldRead } from '@/access/roles'
 import { NEWS_BLOCKS } from '@/blocks'
 import { slugField } from '@/fields/slug'
 import { logAction } from '@/lib/audit'
@@ -132,13 +132,26 @@ export const News: CollectionConfig = {
         },
       ],
     },
-    { name: 'corps', label: 'Corps de l’article', type: 'richText' },
-    { name: 'blocs', label: 'Blocs complémentaires', type: 'blocks', blocks: NEWS_BLOCKS },
+    // Réservé aux membres : le corps, les blocs et le PDF ne sont lus que par l'équipe et les membres actifs.
+    {
+      name: 'corps',
+      label: 'Corps de l’article',
+      type: 'richText',
+      access: { read: reservedFieldRead },
+    },
+    {
+      name: 'blocs',
+      label: 'Blocs complémentaires',
+      type: 'blocks',
+      blocks: NEWS_BLOCKS,
+      access: { read: reservedFieldRead },
+    },
     {
       name: 'pdf',
       label: 'PDF (communiqué)',
       type: 'relationship',
       relationTo: 'documents',
+      access: { read: reservedFieldRead },
       admin: { condition: (d) => d?.type === 'communique' },
     },
     {
@@ -175,6 +188,13 @@ export const News: CollectionConfig = {
       },
     },
     {
+      name: 'aLaUne',
+      label: 'À la une de la page Actualités',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar', description: 'Sans actualité à la une, la plus récente est mise en avant.' },
+    },
+    {
       name: 'reserveMembres',
       label: 'Réservé aux membres (le visiteur voit le chapeau)',
       type: 'checkbox',
@@ -206,6 +226,22 @@ export const News: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'signature',
+      label: 'Signature affichée',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        description: 'Par exemple « la Communication ». Affichée après la date : « par … ».',
+      },
+    },
+    {
+      name: 'aLireAussi',
+      label: 'À lire aussi',
+      type: 'relationship',
+      relationTo: ['news', 'pages'],
+      admin: { description: 'Actualité ou page proposée en fin d’article.' },
     },
   ],
 }

@@ -1,11 +1,27 @@
 import 'server-only'
 import config from '@payload-config'
+import { draftMode, headers } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
 export const getPayloadClient = cache(async () => getPayload({ config }))
 
-export type Media = { url?: string | null; alt?: string; sizes?: Record<string, { url?: string | null } | undefined>; focalX?: number | null; focalY?: number | null }
+/** Mode aperçu actif et visiteur membre de l'équipe connecté (le cookie seul ne suffit pas). */
+export const isPreview = cache(async (): Promise<boolean> => {
+  if (!(await draftMode()).isEnabled) return false
+  const payload = await getPayloadClient()
+  const { user } = await payload.auth({ headers: await headers() })
+  return (user as { collection?: string } | null)?.collection === 'users'
+})
+
+export type Media = {
+  url?: string | null
+  alt?: string
+  width?: number | null
+  sizes?: Record<string, { url?: string | null; width?: number | null } | undefined>
+  focalX?: number | null
+  focalY?: number | null
+}
 
 export type Bouton = { libelle: string; lien: string }
 
@@ -18,9 +34,16 @@ export type SectionBlock = {
   image?: Media | number | null
   boutons?: Bouton[]
   note?: string
+  aValider?: boolean
 }
 
-export type Carte = { titre: string; texte?: string; lien?: string; libelleLien?: string; image?: Media | number | null }
+export type Carte = {
+  titre: string
+  texte?: string
+  lien?: string
+  libelleLien?: string
+  image?: Media | number | null
+}
 
 export type CartesBlock = {
   blockType: 'cartes'
@@ -31,21 +54,42 @@ export type CartesBlock = {
   style?: string
   reference?: string
   boutons?: Bouton[]
+  note?: string
+  aValider?: boolean
   cartes?: Carte[]
 }
 
 export type AntennesBlock = {
   blockType: 'antennes'
   ancre?: string
-  antennes?: { ville: string; statut: string; adresse?: string; referent?: string; contact?: string }[]
+  antennes?: {
+    ville: string
+    statut: string
+    adresse?: string
+    referent?: string
+    contact?: string
+  }[]
 }
 
-export type AnyBlock = SectionBlock | CartesBlock | AntennesBlock | ({ blockType: string; ancre?: string } & Record<string, unknown>)
+export type AnyBlock =
+  | SectionBlock
+  | CartesBlock
+  | AntennesBlock
+  | ({ blockType: string; ancre?: string } & Record<string, unknown>)
 
-export type PageDoc = { id: number; title: string; slug: string; chemin?: string; layout?: AnyBlock[]; meta?: { title?: string; description?: string; image?: Media | number | null } }
+export type PageDoc = {
+  id: number
+  title: string
+  slug: string
+  chemin?: string
+  layout?: AnyBlock[]
+  meta?: { title?: string; description?: string; image?: Media | number | null }
+}
 
 /** Page publiée par son adresse sur le site (champ « chemin »). */
-export const getPage = cache(async (chemin: string, draft = false): Promise<PageDoc | null> => {
+export const getPage = cache(async (chemin: string): Promise<PageDoc | null> => {
+  // Mode aperçu (route /apercu, réservée à l'équipe) : la dernière version, brouillon compris.
+  const draft = await isPreview()
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'pages',
@@ -59,17 +103,26 @@ export const getPage = cache(async (chemin: string, draft = false): Promise<Page
 })
 
 /** Bloc d'une page par son identifiant de section. */
-export function block<T extends AnyBlock = SectionBlock>(page: PageDoc | null, ancre: string): T | undefined {
+export function block<T extends AnyBlock = SectionBlock>(
+  page: PageDoc | null,
+  ancre: string,
+): T | undefined {
   return page?.layout?.find((b) => b.ancre === ancre) as T | undefined
 }
 
-export const mediaUrl = (m: Media | number | null | undefined, size?: 'vignette' | 'carte' | 'grande'): string | undefined => {
+export const mediaUrl = (
+  m: Media | number | null | undefined,
+  size?: 'vignette' | 'carte' | 'grande',
+): string | undefined => {
   if (!m || typeof m === 'number') return undefined
   return (size && m.sizes?.[size]?.url) || m.url || undefined
 }
 
-export const mediaAlt = (m: Media | number | null | undefined): string => (m && typeof m !== 'number' ? m.alt || '' : '')
+export const mediaAlt = (m: Media | number | null | undefined): string =>
+  m && typeof m !== 'number' ? m.alt || '' : ''
 
 /** Position de l'image à partir du point focal choisi dans la médiathèque. */
 export const mediaPos = (m: Media | number | null | undefined): string | undefined =>
-  m && typeof m !== 'number' && m.focalX != null && m.focalY != null ? `${m.focalX}% ${m.focalY}%` : undefined
+  m && typeof m !== 'number' && m.focalX != null && m.focalY != null
+    ? `${m.focalX}% ${m.focalY}%`
+    : undefined

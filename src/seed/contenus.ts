@@ -3,6 +3,7 @@ import type { Payload } from 'payload'
 
 import { slugify } from '@/fields/slug'
 import { dateFr, media, readSeed, rich, ROOT, upsert } from './lib'
+import { seedLiensActualites, seedPages } from './pages'
 
 type Personne = {
   ini: string
@@ -76,6 +77,28 @@ const EXPERTS_PAR_COMMISSION: Record<string, string[]> = {
   Partenariats: ['Grâce Nkounkou', 'Patrick Mavoungou'],
 }
 
+// Images des cartes de commission (maquette, écran 04).
+const IMAGE_COMMISSION: Record<string, string> = {
+  'Éthique et Vérification': 'conference',
+  Formalisation: 'tailleur',
+  'B2B et Opportunités': 'vendeuse',
+  Communication: 'ordinateur',
+  Partenariats: 'poignee',
+}
+// Cadrage des images dans les cartes (site.css, .pick .v-*).
+const FOCAL: Record<string, [number, number]> = {
+  conference: [50, 22],
+  vendeuse: [50, 22],
+  ordinateur: [50, 30],
+}
+const IMAGE_ALT: Record<string, string> = {
+  conference: 'Table ronde de travail',
+  tailleur: 'Tailleur dans son atelier',
+  vendeuse: 'Commerçante à son étal',
+  ordinateur: 'Entrepreneuse travaillant sur son ordinateur',
+  poignee: 'Poignée de main entre partenaires',
+}
+
 async function taxonomies(payload: Payload) {
   const ids: Record<string, Record<string, number>> = {}
   for (const [coll, list] of [
@@ -93,8 +116,30 @@ async function taxonomies(payload: Payload) {
       ids[coll][nom] = d.id
     }
   }
+  // Étiquettes proposées en filtre sur la page Gouvernance (liste de la maquette).
+  for (const nom of FILTRES_GOUVERNANCE) {
+    await payload.db.updateOne({
+      collection: 'expertiseTags',
+      id: ids.expertiseTags[nom],
+      data: { filtreSite: true },
+    })
+  }
   return ids
 }
+
+const FILTRES_GOUVERNANCE = [
+  'Formalisation',
+  'Juridique',
+  'Fiscalité',
+  'Financement',
+  'Numérique',
+  'Communication',
+  'Partenariats',
+  'Stratégie',
+  'Agriculture',
+  'BTP',
+  'Formation',
+]
 
 async function gouvernance(payload: Payload, tags: Record<string, number>) {
   const g = readSeed<{
@@ -140,6 +185,13 @@ async function gouvernance(payload: Payload, tags: Record<string, number>) {
       ouverture: c.ouverte ? 'ouverte' : 'designation',
       experts: (EXPERTS_PAR_COMMISSION[c.t] ?? []).map((n) => ids[n]).filter(Boolean),
       prochaineReunion: bo ? dateFr(bo.next) : undefined,
+      image: await media(
+        payload,
+        `design/images/photos/${IMAGE_COMMISSION[c.t]}.webp`,
+        IMAGE_ALT[IMAGE_COMMISSION[c.t]],
+        true,
+        FOCAL[IMAGE_COMMISSION[c.t]],
+      ),
       afficheeSurSite: true,
       ordre: i + 1,
     })
@@ -300,6 +352,7 @@ async function documents(payload: Payload) {
         titre: d.titre,
         rubrique: d.rubrique,
         visibilite: d.visibilite,
+        typePresse: d.rubrique === 'presse' ? (d.cover ? 'kit' : 'communique') : undefined,
         dateDocument: dateFr(d.date),
         couverture: d.cover
           ? await media(
@@ -499,91 +552,11 @@ async function actualites(
             ? docs['Constitution de REC 242, Réseau des Entrepreneurs Congolais']
             : undefined,
         auteur,
+        signature: 'la Communication',
         etat: 'publie',
         _status: 'published',
       },
       { draft: false },
-    )
-  }
-}
-
-/** Pages institutionnelles. Le contenu détaillé de chaque gabarit est complété au lot 3. */
-async function pages(payload: Payload) {
-  const g = readSeed<{
-    antennes_back_office: { v: string; ref: string; tel: string; st: string }[]
-    antennes: { v: string; d: string }[]
-  }>('gouvernance')
-  const STATUT: Record<string, string> = {
-    Active: 'active',
-    'En création': 'creation',
-    'En projet': 'projet',
-  }
-  const antennes = g.antennes_back_office.map((x, i) => ({
-    ville: x.v.replace(' (siège)', ''),
-    statut: i === 0 ? 'siege' : (STATUT[x.st] ?? 'projet'),
-    adresse: g.antennes[i]?.d,
-    referent: x.ref === 'Référent à désigner' ? '' : x.ref,
-    contact: x.tel,
-  }))
-  const list: {
-    title: string
-    chemin: string
-    menu?: string
-    publie: boolean
-    layout?: unknown[]
-  }[] = [
-    { title: 'Accueil', chemin: '/', publie: true },
-    { title: 'Le réseau', chemin: '/le-reseau', menu: 'Le réseau', publie: true },
-    { title: 'Gouvernance', chemin: '/le-reseau/gouvernance', menu: 'Le réseau', publie: true },
-    { title: 'Commissions', chemin: '/le-reseau/commissions', menu: 'Le réseau', publie: true },
-    {
-      title: 'Antennes',
-      chemin: '/le-reseau/antennes',
-      menu: 'Le réseau',
-      publie: false,
-      layout: [
-        {
-          blockType: 'entete',
-          surtitre: 'Antennes',
-          titre: 'Un réseau présent dans tout le pays',
-          texte:
-            'Le siège est à Brazzaville. Chaque antenne a un référent, désigné par le comité de direction.',
-        },
-        { blockType: 'antennes', antennes },
-        {
-          blockType: 'appelAction',
-          titre: 'Siège',
-          texte: 'Brazzaville · 165 rue Charles Foucault, Centre-Ville',
-          boutons: [{ libelle: 'Contacter le réseau', lien: '/contact' }],
-        },
-      ],
-    },
-    {
-      title: 'Notre écosystème',
-      chemin: '/le-reseau/ecosysteme',
-      menu: 'Le réseau',
-      publie: false,
-    },
-    { title: 'Formalisation', chemin: '/formalisation', menu: 'Le réseau', publie: true },
-    { title: 'Adhérer', chemin: '/adherer', menu: 'Adhérer', publie: true },
-    { title: 'Mentions légales', chemin: '/mentions-legales', publie: true },
-    { title: 'Confidentialité', chemin: '/confidentialite', publie: true },
-    { title: 'Conditions d’utilisation', chemin: '/conditions-utilisation', publie: true },
-  ]
-  for (const p of list) {
-    await upsert(
-      payload,
-      'pages',
-      'slug',
-      slugify(p.title),
-      {
-        title: p.title,
-        chemin: p.chemin,
-        menu: p.menu,
-        layout: p.layout ?? [],
-        _status: p.publie ? 'published' : 'draft',
-      },
-      { draft: !p.publie },
     )
   }
 }
@@ -596,8 +569,92 @@ export async function seedContenus(payload: Payload, auteur?: number): Promise<v
   await settings(payload)
   await navigation(payload)
   await actualites(payload, tax.sectors, docs, auteur)
-  await pages(payload)
+  await seedPages(payload)
+  await seedLiensActualites(payload)
+  await seedComplementsLot3(payload)
+  await seedIndexRecherche(payload)
   payload.logger.info(
     'Contenus de démonstration : taxonomies, gouvernance, partenaires, FAQ, documents, paramètres, menus, actualités, pages.',
   )
+}
+
+/** Champs ajoutés au lot 3 sur des données déjà chargées par un seed précédent. */
+export async function seedComplementsLot3(payload: Payload): Promise<void> {
+  const docs = await payload.find({
+    collection: 'documents',
+    where: { and: [{ rubrique: { equals: 'presse' } }, { typePresse: { exists: false } }] },
+    limit: 100,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const d of docs.docs)
+    await payload.db.updateOne({
+      collection: 'documents',
+      id: d.id,
+      data: { typePresse: d.couverture ? 'kit' : 'communique' },
+    })
+  const comms = await payload.find({
+    collection: 'commissions',
+    where: { image: { exists: false } },
+    limit: 50,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const c of comms.docs) {
+    const img = IMAGE_COMMISSION[c.nom]
+    if (img)
+      await payload.db.updateOne({
+        collection: 'commissions',
+        id: c.id,
+        data: { image: await media(payload, `design/images/photos/${img}.webp`, IMAGE_ALT[img]) },
+      })
+  }
+  await payload.db.updateMany({
+    collection: 'news',
+    where: { signature: { exists: false } },
+    data: { signature: 'la Communication' },
+  })
+  const une = await payload.count({
+    collection: 'news',
+    where: { aLaUne: { equals: true } },
+    overrideAccess: true,
+  })
+  if (!une.totalDocs)
+    await payload.db.updateMany({
+      collection: 'news',
+      where: { slug: { equals: slugify('REC 242 tient son assemblée générale constitutive') } },
+      data: { aLaUne: true },
+    })
+}
+
+/** Index de recherche : réindexe les actualités publiées qui n'y figurent pas (chargées avant l'ajout du plugin). */
+export async function seedIndexRecherche(payload: Payload): Promise<void> {
+  const indexed = await payload.find({
+    collection: 'search',
+    limit: 1000,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const ids = new Set(
+    indexed.docs.map(
+      (d) =>
+        `${(d.doc as { relationTo: string }).relationTo}:${(d.doc as { value: number | { id: number } }).value}`,
+    ),
+  )
+  const news = await payload.find({
+    collection: 'news',
+    where: { _status: { equals: 'published' } },
+    limit: 1000,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const n of news.docs)
+    if (!ids.has(`news:${n.id}`))
+      await payload.update({
+        collection: 'news',
+        id: n.id,
+        data: { signature: n.signature ?? 'la Communication' },
+        overrideAccess: true,
+        context: { skipAudit: true },
+      })
 }

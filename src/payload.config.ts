@@ -8,6 +8,7 @@ import { fr } from '@payloadcms/translations/languages/fr'
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
+import { searchPlugin } from '@payloadcms/plugin-search'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 
 import { AuditLog } from './collections/AuditLog'
@@ -27,6 +28,8 @@ import { EmailTemplates } from './globals/EmailTemplates'
 import { Navigation } from './globals/Navigation'
 import { Settings } from './globals/Settings'
 import { publierProgrammes } from './jobs/publierProgrammes'
+import { withSiteRevalidation } from './hooks/revalidate'
+import { searchConfig } from './search/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -74,8 +77,8 @@ export default buildConfig({
     EventTypes,
     ExpertiseTags,
     AuditLog,
-  ],
-  globals: [Settings, Navigation, EmailTemplates],
+  ].map((c) => withSiteRevalidation(c, 'collection')),
+  globals: [Settings, Navigation, EmailTemplates].map((g) => withSiteRevalidation(g, 'global')),
   jobs: {
     tasks: [publierProgrammes],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
@@ -108,6 +111,7 @@ export default buildConfig({
     },
   }),
   plugins: [
+    searchPlugin(searchConfig),
     seoPlugin({
       collections: ['pages', 'news'],
       uploadsCollection: 'media',

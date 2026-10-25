@@ -2,6 +2,7 @@ import { StatusCell as StatusCell_ff32efc137541c6552ed42594a323755 } from '@/com
 import { LastLoginCell as LastLoginCell_e9f7ece17cd36aa710abd8669d53d441 } from '@/components/admin/LastLoginCell'
 import { PermissionsMatrix as PermissionsMatrix_b64b29cf56db32fc9406f179c855f72b } from '@/components/admin/PermissionsMatrix'
 import { InviteUser as InviteUser_bcb9e293335f68906ed531c9ee23d8e4 } from '@/components/admin/InviteUser'
+import { BlockLabel as BlockLabel_65d5559e4024d0730eedfbb5dfb037d8 } from '@/components/admin/BlockLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -37,6 +38,8 @@ import { VersionCell as VersionCell_99a3820a3d8575fc4ece0a349d579ef2 } from '@/c
 import { DocumentsPersonal as DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420 } from '@/components/admin/DocumentsPersonal'
 import { DocumentsFilters as DocumentsFilters_4f09b5447789f46f3aa96142dc260d76 } from '@/components/admin/DocumentsFilters'
 import { AuditLogFilters as AuditLogFilters_e55ca43cf5cda904960380e6d7704808 } from '@/components/admin/AuditLogFilters'
+import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
+import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { EmailTemplatesLink as EmailTemplatesLink_ae883e03078de72a43b26681a173a4ce } from '@/components/admin/EmailTemplatesLink'
 import { EmailTemplateVariables as EmailTemplateVariables_fc6218597b3c48094ac8987386ec522d } from '@/components/admin/EmailTemplateVariables'
 import { EmailTemplateRowLabel as EmailTemplateRowLabel_13f218899ce6833a997a01045419d728 } from '@/components/admin/EmailTemplateRowLabel'
@@ -53,6 +56,7 @@ export const importMap = {
   "@/components/admin/LastLoginCell#LastLoginCell": LastLoginCell_e9f7ece17cd36aa710abd8669d53d441,
   "@/components/admin/PermissionsMatrix#PermissionsMatrix": PermissionsMatrix_b64b29cf56db32fc9406f179c855f72b,
   "@/components/admin/InviteUser#InviteUser": InviteUser_bcb9e293335f68906ed531c9ee23d8e4,
+  "@/components/admin/BlockLabel#BlockLabel": BlockLabel_65d5559e4024d0730eedfbb5dfb037d8,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -88,6 +92,8 @@ export const importMap = {
   "@/components/admin/DocumentsPersonal#DocumentsPersonal": DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420,
   "@/components/admin/DocumentsFilters#DocumentsFilters": DocumentsFilters_4f09b5447789f46f3aa96142dc260d76,
   "@/components/admin/AuditLogFilters#AuditLogFilters": AuditLogFilters_e55ca43cf5cda904960380e6d7704808,
+  "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
+  "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@/components/admin/EmailTemplatesLink#EmailTemplatesLink": EmailTemplatesLink_ae883e03078de72a43b26681a173a4ce,
   "@/components/admin/EmailTemplateVariables#EmailTemplateVariables": EmailTemplateVariables_fc6218597b3c48094ac8987386ec522d,
   "@/components/admin/EmailTemplateRowLabel#EmailTemplateRowLabel": EmailTemplateRowLabel_13f218899ce6833a997a01045419d728,
