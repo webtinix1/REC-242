@@ -8,7 +8,7 @@ Tenu à jour à la fin de chaque lot.
 | 1 Comptes, rôles, journal | Fait | 25/10/2026 | Rôles et matrice (`src/access/roles.ts`), règles de mot de passe, blocage, session de 30 min, alerte nouvel appareil, invitation (lien 72 h), journal non modifiable avec filtres et export CSV, menu groupé avec pastilles, connexion habillée, gabarit e-mail et 30 modèles modifiables. |
 | 2 Référentiels et contenus | Fait | 25/10/2026 | Taxonomies, médiathèque WebP (3 tailles), gouvernance et experts, commissions, partenaires, FAQ, témoignages, documents protégés (route de téléchargement, compteur, versions), paramètres en onglets (dont tarifs et annuaire imprimé), menus, pages par blocs avec brouillons et versions, actualités (relecture, programmation, archivage, réservé aux membres), plugin SEO, tâche de publication programmée, données de démonstration. |
 | 3 Site institutionnel | Fait | 25/10/2026 | Mise en page commune ; écrans 01 à 07, 18 à 21, 23 à 28 en gabarits dont les textes viennent des blocs des pages (seed `src/seed/pages.ts`) et les listes des collections ; filtre des experts ; actualités (à la une, filtres type et secteur dans l’adresse, pagination, actualité réservée) ; article (`NewsArticle`, partage, « À lire aussi ») ; presse (communiqués par année, kit média) ; recherche (`@payloadcms/plugin-search`, contenu public seulement) ; plan du site ; pages légales ; 404 ; aperçu des brouillons `/apercu` (mode brouillon Next réservé à l’équipe, aperçu en direct) ; `sitemap.xml`, `robots.txt`, métadonnées et URL canonique par page, `BreadcrumbList` ; revalidation du site à chaque modification d’un contenu. Tests : 3 d’intégration, 23 E2E. Lighthouse mobile : voir « Lot 3 : performance ». |
-| 4 Formulaires et messages | À faire | | |
+| 4 Formulaires et messages | Fait | 25/10/2026 | Formulaires Contact (22, motif en pastilles, préremplissage par l’adresse `?motif=&objet=`) et Devenir partenaire (08) en actions serveur : champ piège, jeton horodaté signé (refus avant 3 s ou après 24 h), 5 envois par heure et par appareil, erreurs sous les champs sans perte de saisie. Collection `contactMessages` : routage par motif, lecture limitée aux rôles destinataires (fonctions d’accès), coordonnées de l’expéditeur non modifiables, pas de création par l’API. Accusé de réception (modèle 23), alerte à l’équipe selon « Alertes aussi pour » (modèle 23 bis). Écran back-office 13 en vue personnalisée : filtres, export CSV, réponse par e-mail (depuis l’adresse d’envoi) ou WhatsApp (`wa.me`), réponses types (Paramètres), transmission, notes internes, rouvrir, journal. Tests : 3 d’intégration, 5 E2E. |
 | 5 Adhésion | À faire | | |
 | 6 Membres et espace membre | À faire | | |
 | 7 Annuaire | À faire | | |
@@ -31,6 +31,11 @@ Tenu à jour à la fin de chaque lot.
 - Recherche : la maquette n’a pas de titre de niveau 1 sur cet écran ; un titre « Rechercher sur le site » est ajouté, masqué visuellement.
 - Pied de page : les titres de colonnes sont des `h2` (ordre des titres pour l’accessibilité) avec le style des `h4` de la maquette.
 - Apostrophes : les textes sont saisis avec l’apostrophe typographique (’), la maquette mélange ’ et '.
+- Pied de page mobile : l’interrupteur « Activer les animations » chevauchait le copyright, dans la maquette aussi ; corrigé (il passe sous le copyright).
+- Messages : pas de photo pour l’expéditeur (initiales seulement) ; un visiteur n’a pas de photo dans nos données, la maquette illustrait avec des portraits.
+- Messages : les réponses types ont les titres de la maquette ; leurs textes sont des propositions génériques à relire par REC 242 (Paramètres, onglet E-mails automatiques). La maquette ne montrait que des réponses déjà personnalisées.
+- Contact : quand un seul champ obligatoire manque, l’encadré d’erreur dit « Un champ est à compléter » (la maquette ne montre que le cas « Deux champs sont à compléter »).
+- Contact : « Une copie vous a été envoyée par e-mail » n’apparaît que si l’expéditeur a donné son e-mail (l’accusé de réception part à cette adresse).
 
 ## Notes techniques
 

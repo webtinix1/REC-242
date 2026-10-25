@@ -3,6 +3,8 @@ import { login } from '../helpers/login'
 import { seedTestUser, cleanupTestUser, testUser } from '../helpers/seedUser'
 
 test.describe('Admin Panel', () => {
+  // En développement, la première compilation de l'admin dépasse le délai par défaut de 30 s.
+  test.describe.configure({ timeout: 120000 })
   let page: Page
 
   test.beforeAll(async ({ browser }) => {

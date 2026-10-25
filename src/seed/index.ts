@@ -7,6 +7,7 @@ import type { Payload } from 'payload'
 
 import { seedContenus } from './contenus'
 import { seedEmailTemplates } from './emailTemplates'
+import { seedMessages } from './messages'
 import { seedUsers } from './users'
 
 export async function seed(payload: Payload): Promise<void> {
@@ -19,4 +20,5 @@ export async function seed(payload: Payload): Promise<void> {
     overrideAccess: true,
   })
   await seedContenus(payload, editeur.docs[0]?.id as number | undefined)
+  await seedMessages(payload)
 }

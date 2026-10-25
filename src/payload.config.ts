@@ -13,6 +13,7 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 
 import { AuditLog } from './collections/AuditLog'
 import { Commissions } from './collections/Commissions'
+import { ContactMessages } from './collections/ContactMessages'
 import { Documents } from './collections/Documents'
 import { Faq } from './collections/Faq'
 import { Media } from './collections/Media'
@@ -72,6 +73,7 @@ export default buildConfig({
     Partners,
     Faq,
     Testimonials,
+    ContactMessages,
     Sectors,
     Localities,
     EventTypes,

@@ -77,6 +77,7 @@ export interface Config {
     partners: Partner;
     faq: Faq;
     testimonials: Testimonial;
+    contactMessages: ContactMessage;
     sectors: Sector;
     localities: Locality;
     eventTypes: EventType;
@@ -101,6 +102,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     faq: FaqSelect<false> | FaqSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    contactMessages: ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     sectors: SectorsSelect<false> | SectorsSelect<true>;
     localities: LocalitiesSelect<false> | LocalitiesSelect<true>;
     eventTypes: EventTypesSelect<false> | EventTypesSelect<true>;
@@ -897,6 +899,63 @@ export interface Faq {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contactMessages".
+ */
+export interface ContactMessage {
+  id: number;
+  formulaire: 'contact' | 'partenariat';
+  motif: 'adhesion' | 'partenariat' | 'presse' | 'evenement' | 'autre';
+  objet?: string | null;
+  nom: string;
+  organisation?: string | null;
+  telephone?: string | null;
+  email?: string | null;
+  typePartenariat?: string | null;
+  message: string;
+  /**
+   * Précision affichée sous le nom (visiteur, membre, candidat…).
+   */
+  qui?: string | null;
+  destination?: ('membres' | 'partenariats' | 'communication' | 'evenements' | 'secretariat') | null;
+  transmisUtilisateur?: (number | null) | User;
+  statut?: ('a-traiter' | 'traite' | 'archive') | null;
+  luPar?: (number | User)[] | null;
+  /**
+   * Jamais envoyées à l’expéditeur.
+   */
+  notes?:
+    | {
+        auteur?: (number | null) | User;
+        auteurNom?: string | null;
+        date?: string | null;
+        texte: string;
+        id?: string | null;
+      }[]
+    | null;
+  reponses?:
+    | {
+        canal?: ('email' | 'whatsapp') | null;
+        texte?: string | null;
+        auteur?: (number | null) | User;
+        auteurNom?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  historique?:
+    | {
+        date?: string | null;
+        auteur?: string | null;
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  page?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Villes de la candidature et de l’annuaire.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1136,6 +1195,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'contactMessages';
+        value: number | ContactMessage;
       } | null)
     | ({
         relationTo: 'sectors';
@@ -1714,6 +1777,56 @@ export interface TestimonialsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contactMessages_select".
+ */
+export interface ContactMessagesSelect<T extends boolean = true> {
+  formulaire?: T;
+  motif?: T;
+  objet?: T;
+  nom?: T;
+  organisation?: T;
+  telephone?: T;
+  email?: T;
+  typePartenariat?: T;
+  message?: T;
+  qui?: T;
+  destination?: T;
+  transmisUtilisateur?: T;
+  statut?: T;
+  luPar?: T;
+  notes?:
+    | T
+    | {
+        auteur?: T;
+        auteurNom?: T;
+        date?: T;
+        texte?: T;
+        id?: T;
+      };
+  reponses?:
+    | T
+    | {
+        canal?: T;
+        texte?: T;
+        auteur?: T;
+        auteurNom?: T;
+        date?: T;
+        id?: T;
+      };
+  historique?:
+    | T
+    | {
+        date?: T;
+        auteur?: T;
+        action?: T;
+        id?: T;
+      };
+  page?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sectors_select".
  */
 export interface SectorsSelect<T extends boolean = true> {
@@ -1961,6 +2074,16 @@ export interface Setting {
     adresseAlerte?: string | null;
     copie?: string | null;
     alertesAussi?: ('messages' | 'candidatures') | null;
+    /**
+     * Proposées dans la boîte de réception (écran Messages). {{prenom}} et {{nom}} sont remplacés par ceux de l’expéditeur ; le texte reste modifiable avant l’envoi.
+     */
+    reponsesTypes?:
+      | {
+          titre: string;
+          texte: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   seo?: {
     titre?: string | null;
@@ -2059,6 +2182,7 @@ export interface EmailTemplate {
           | 'nouvelAppareil'
           | 'invitationAdmin'
           | 'accuseReceptionFormulaire'
+          | 'alerteMessage'
           | 'nouveauDocument'
           | 'opportuniteSecteur'
           | 'lienConnexion';
@@ -2156,6 +2280,13 @@ export interface SettingsSelect<T extends boolean = true> {
         adresseAlerte?: T;
         copie?: T;
         alertesAussi?: T;
+        reponsesTypes?:
+          | T
+          | {
+              titre?: T;
+              texte?: T;
+              id?: T;
+            };
       };
   seo?:
     | T

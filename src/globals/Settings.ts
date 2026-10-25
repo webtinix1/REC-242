@@ -327,6 +327,21 @@ export const Settings: GlobalConfig = {
                 components: { Field: '@/components/admin/EmailTemplatesLink#EmailTemplatesLink' },
               },
             },
+            {
+              name: 'reponsesTypes',
+              label: 'Réponses types des messages',
+              type: 'array',
+              labels: { singular: 'Réponse type', plural: 'Réponses types' },
+              admin: {
+                description:
+                  'Proposées dans la boîte de réception (écran Messages). {{prenom}} et {{nom}} sont remplacés par ceux de l’expéditeur ; le texte reste modifiable avant l’envoi.',
+                initCollapsed: true,
+              },
+              fields: [
+                { name: 'titre', label: 'Titre', type: 'text', required: true },
+                { name: 'texte', label: 'Texte', type: 'textarea', required: true },
+              ],
+            },
           ],
         },
         {

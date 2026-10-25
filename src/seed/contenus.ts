@@ -636,10 +636,10 @@ export async function seedIndexRecherche(payload: Payload): Promise<void> {
     overrideAccess: true,
   })
   const ids = new Set(
-    indexed.docs.map(
-      (d) =>
-        `${(d.doc as { relationTo: string }).relationTo}:${(d.doc as { value: number | { id: number } }).value}`,
-    ),
+    indexed.docs
+      .map((d) => d.doc as { relationTo: string; value: number | { id: number } } | undefined)
+      .filter(Boolean)
+      .map((d) => `${d!.relationTo}:${typeof d!.value === 'object' ? d!.value.id : d!.value}`),
   )
   const news = await payload.find({
     collection: 'news',

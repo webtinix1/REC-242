@@ -16,3 +16,7 @@
 .sb .pick > img.on{display:block}
 /* Titres des colonnes du pied : h2 (ordre des titres) avec le style des h4 de la maquette. */
 .sb .foot h2.foot-t{font-family:inherit;font-size:14px;line-height:inherit;font-weight:600;color:#6fcb95;margin:0 0 10px;letter-spacing:0}
+/* Formulaires : le <form> reprend l’espacement de la carte qui le contient (la maquette n’a pas d’élément form). */
+.sb .card > form{display:flex;flex-direction:column;gap:inherit}
+/* Pied de page mobile : l’interrupteur d’animations gardait son décalage vers le haut et chevauchait le copyright (défaut aussi présent dans la maquette). */
+@container site (max-width: 760px){.sb .foot-bottom .m-toggle{bottom:auto;display:block;width:max-content;margin-top:10px}}

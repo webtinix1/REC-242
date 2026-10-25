@@ -37,6 +37,7 @@ import { VisibilityCell as VisibilityCell_32e3f448b1c825cd3d9815c30408f49a } fro
 import { VersionCell as VersionCell_99a3820a3d8575fc4ece0a349d579ef2 } from '@/components/admin/VersionCell'
 import { DocumentsPersonal as DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420 } from '@/components/admin/DocumentsPersonal'
 import { DocumentsFilters as DocumentsFilters_4f09b5447789f46f3aa96142dc260d76 } from '@/components/admin/DocumentsFilters'
+import { MessagesView as MessagesView_7d7adb5b98fbfee90009e74d8e958678 } from '@/components/admin/messages/MessagesView'
 import { AuditLogFilters as AuditLogFilters_e55ca43cf5cda904960380e6d7704808 } from '@/components/admin/AuditLogFilters'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -91,6 +92,7 @@ export const importMap = {
   "@/components/admin/VersionCell#VersionCell": VersionCell_99a3820a3d8575fc4ece0a349d579ef2,
   "@/components/admin/DocumentsPersonal#DocumentsPersonal": DocumentsPersonal_d90413bc1d65ead91b2b0fd15d2f8420,
   "@/components/admin/DocumentsFilters#DocumentsFilters": DocumentsFilters_4f09b5447789f46f3aa96142dc260d76,
+  "@/components/admin/messages/MessagesView#MessagesView": MessagesView_7d7adb5b98fbfee90009e74d8e958678,
   "@/components/admin/AuditLogFilters#AuditLogFilters": AuditLogFilters_e55ca43cf5cda904960380e6d7704808,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,

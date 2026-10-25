@@ -37,6 +37,7 @@ export type TemplateKey =
   | 'nouvelAppareil'
   | 'invitationAdmin'
   | 'accuseReceptionFormulaire'
+  | 'alerteMessage'
   | 'nouveauDocument'
   | 'opportuniteSecteur'
   | 'lienConnexion'
@@ -371,6 +372,14 @@ Votre message a bien été reçu et transmis à {{destinataire}}. Nous vous rép
 
 Pour une réponse plus rapide, écrivez-nous sur WhatsApp au {{whatsapp}}.`,
     variables: ['prenom', 'destinataire', 'whatsapp'],
+  },
+  alerteMessage: {
+    label: '23 bis. Alerte nouveau message',
+    objet: 'Nouveau message ({{motif}}) : {{objet}}',
+    corps: `{{nom}} a écrit par le formulaire {{formulaire}} du site. Motif : {{motif}}, transmis à {{destinataire}}.
+
+[bouton] Ouvrir la boîte de réception | {{lien_back_office}}`,
+    variables: ['nom', 'formulaire', 'motif', 'objet', 'destinataire', 'lien_back_office'],
   },
   nouveauDocument: {
     label: '24. Nouveau document',
