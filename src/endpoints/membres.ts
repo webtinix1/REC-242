@@ -2,6 +2,7 @@ import { APIError, type Endpoint, type PayloadRequest } from 'payload'
 
 import { atLeast } from '@/access/roles'
 import { categorie, emailNormalise, telephoneAffiche, telephoneInternational } from '@/lib/adhesion/categories'
+import { archiveImprimeur } from '@/lib/annuaire/imprime'
 import { logAction } from '@/lib/audit'
 import { envoyerActivation } from '@/lib/membres/conversion'
 import { STATUTS_MEMBRE } from '@/lib/membres/options'
@@ -84,6 +85,19 @@ const fiche: Endpoint = {
     const m = await membre(req)
     const ids = ((await corps(req)).commissions as unknown[] | undefined)?.map(Number).filter(Boolean) ?? []
     await req.payload.update({ collection: 'members', id: m.id, data: { commissions: ids } as never, overrideAccess: false, req, context: { sansMotif: true } })
+    return Response.json({ ok: true })
+  },
+}
+
+/** Écran 06 : rétablit les mises en relation suspendues après plus de 10 demandes en une semaine (vérification faite). */
+const relations: Endpoint = {
+  path: '/:id/relations',
+  method: 'post',
+  handler: async (req) => {
+    exiger(req)
+    const m = await membre(req)
+    await req.payload.update({ collection: 'members', id: m.id, data: { relationsSuspendues: false } as never, overrideAccess: false, req, context: { sansMotif: true } })
+    await logAction(req.payload, { req, categorie: 'validation', action: 'Mises en relation rétablies', cible: m.numeroAdherent })
     return Response.json({ ok: true })
   },
 }
@@ -284,4 +298,19 @@ const importer: Endpoint = {
   },
 }
 
-export const endpointsMembres: Endpoint[] = [exporter, importer, statut, activation, masquer, fiche, fin]
+/** Écran 05 : export pour l'imprimeur de l'annuaire (CSV des fiches éligibles et logos, en ZIP), inscrit au journal. */
+const imprimeur: Endpoint = {
+  path: '/export-imprimeur',
+  method: 'get',
+  handler: async (req) => {
+    exiger(req, 'read')
+    if (!atLeast(req.user, 'exports', 'full')) throw new APIError('Export non autorisé pour votre rôle.', 403)
+    const { nom, donnees } = await archiveImprimeur(req.payload)
+    await logAction(req.payload, { req, categorie: 'export', action: `Export imprimeur de l’annuaire (${nom})` })
+    return new Response(Buffer.from(donnees), {
+      headers: { 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="${nom}"` },
+    })
+  },
+}
+
+export const endpointsMembres: Endpoint[] = [exporter, imprimeur, importer, statut, activation, masquer, fiche, relations, fin]

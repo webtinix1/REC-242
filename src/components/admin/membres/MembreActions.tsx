@@ -15,6 +15,7 @@ type Props = {
   commissionsMembre: number[]
   fin: string
   suppressionDemandee: string
+  relationsSuspendues: boolean
   compte: string
   visibilite: React.ReactNode
   fiche: React.ReactNode
@@ -203,6 +204,16 @@ export const MembreActions = (p: Props) => {
             >
               Renvoyer le lien d&apos;activation
             </button>
+          )}
+          {p.relationsSuspendues && (
+            <div className="stack">
+              <p className="small" style={{ color: 'var(--text-danger)' }}>Mises en relation suspendues : plus de 10 demandes en une semaine.</p>
+              {p.modifiable && (
+                <button type="button" className="linkbtn" disabled={occupe} onClick={() => void agir('compte', () => post('/relations', {}), 'Mises en relation rétablies.')}>
+                  Rétablir les mises en relation
+                </button>
+              )}
+            </div>
           )}
           {p.suppressionDemandee && <p className="small" style={{ color: 'var(--text-danger)' }}>{p.suppressionDemandee}</p>}
           {msg('compte')}

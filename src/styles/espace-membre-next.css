@@ -16,3 +16,4 @@
 @media print{
   .mb .side,.mb .topbar,.mb .tabbar,.mb .sheet-wrap,.mb .top{display:none !important}
 }
+.mb a.chip{display:inline-flex;align-items:center;text-decoration:none}

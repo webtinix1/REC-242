@@ -15,6 +15,8 @@ import { Applications } from './collections/Applications'
 import { AuditLog } from './collections/AuditLog'
 import { Commissions } from './collections/Commissions'
 import { Companies } from './collections/Companies'
+import { ConnectionRequests } from './collections/ConnectionRequests'
+import { DirectoryAds } from './collections/DirectoryAds'
 import { Counters } from './collections/Counters'
 import { ContactMessages } from './collections/ContactMessages'
 import { Documents } from './collections/Documents'
@@ -77,6 +79,8 @@ export default buildConfig({
     Companies,
     ModificationRequests,
     NetworkMessages,
+    ConnectionRequests,
+    DirectoryAds,
     Pages,
     News,
     Documents,

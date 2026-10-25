@@ -220,6 +220,13 @@ export const Members: CollectionConfig = {
       fields: NOTIFICATIONS.map((n) => ({ name: n.name, label: n.label, type: 'checkbox' as const, defaultValue: n.name !== 'lettre' })),
     },
     { name: 'consentementAnnuaire', label: 'Consentement à l’annuaire (date)', type: 'date' },
+    {
+      name: 'relationsSuspendues',
+      label: 'Mises en relation suspendues (plus de 10 demandes en une semaine)',
+      type: 'checkbox',
+      defaultValue: false,
+      access: { update: equipeSeulement },
+    },
     { name: 'conditionsAcceptees', label: 'Conditions de l’espace membre acceptées le', type: 'date' },
     { name: 'derniereConnexion', label: 'Dernière connexion', type: 'date', admin: { readOnly: true }, access: { update: () => false } },
     {

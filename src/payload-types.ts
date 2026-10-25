@@ -73,6 +73,8 @@ export interface Config {
     companies: Company;
     modificationRequests: ModificationRequest;
     networkMessages: NetworkMessage;
+    connectionRequests: ConnectionRequest;
+    directoryAds: DirectoryAd;
     pages: Page;
     news: News;
     documents: Document;
@@ -110,6 +112,8 @@ export interface Config {
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
     modificationRequests: ModificationRequestsSelect<false> | ModificationRequestsSelect<true>;
     networkMessages: NetworkMessagesSelect<false> | NetworkMessagesSelect<true>;
+    connectionRequests: ConnectionRequestsSelect<false> | ConnectionRequestsSelect<true>;
+    directoryAds: DirectoryAdsSelect<false> | DirectoryAdsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -353,6 +357,7 @@ export interface Member {
     lettre?: boolean | null;
   };
   consentementAnnuaire?: string | null;
+  relationsSuspendues?: boolean | null;
   conditionsAcceptees?: string | null;
   derniereConnexion?: string | null;
   fin?: {
@@ -698,6 +703,50 @@ export interface NetworkMessage {
   texte: string;
   lien?: string | null;
   luPar?: (number | Member)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "connectionRequests".
+ */
+export interface ConnectionRequest {
+  id: number;
+  demandeur?: (number | null) | Member;
+  destinataire?: (number | null) | Member;
+  entreprise: number | Company;
+  objet?: string | null;
+  message: string;
+  statut?: ('attente' | 'acceptee' | 'refusee' | 'annulee' | 'signalee') | null;
+  dateReponse?: string | null;
+  fil?:
+    | {
+        auteur?: (number | null) | Member;
+        texte?: string | null;
+        date?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  signalement?: {
+    motif?: string | null;
+    par?: (number | null) | Member;
+    date?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "directoryAds".
+ */
+export interface DirectoryAd {
+  id: number;
+  edition?: string | null;
+  membre: number | Member;
+  format: 'standard' | 'logo' | 'demi' | 'pleine';
+  montant?: number | null;
+  paiement?: (number | null) | Payment;
+  statut?: ('inclus' | 'a-payer' | 'paye' | 'annule') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1555,6 +1604,14 @@ export interface PayloadLockedDocument {
         value: number | NetworkMessage;
       } | null)
     | ({
+        relationTo: 'connectionRequests';
+        value: number | ConnectionRequest;
+      } | null)
+    | ({
+        relationTo: 'directoryAds';
+        value: number | DirectoryAd;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -1765,6 +1822,7 @@ export interface MembersSelect<T extends boolean = true> {
         lettre?: T;
       };
   consentementAnnuaire?: T;
+  relationsSuspendues?: T;
   conditionsAcceptees?: T;
   derniereConnexion?: T;
   fin?:
@@ -1863,6 +1921,50 @@ export interface NetworkMessagesSelect<T extends boolean = true> {
   texte?: T;
   lien?: T;
   luPar?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "connectionRequests_select".
+ */
+export interface ConnectionRequestsSelect<T extends boolean = true> {
+  demandeur?: T;
+  destinataire?: T;
+  entreprise?: T;
+  objet?: T;
+  message?: T;
+  statut?: T;
+  dateReponse?: T;
+  fil?:
+    | T
+    | {
+        auteur?: T;
+        texte?: T;
+        date?: T;
+        id?: T;
+      };
+  signalement?:
+    | T
+    | {
+        motif?: T;
+        par?: T;
+        date?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "directoryAds_select".
+ */
+export interface DirectoryAdsSelect<T extends boolean = true> {
+  edition?: T;
+  membre?: T;
+  format?: T;
+  montant?: T;
+  paiement?: T;
+  statut?: T;
   updatedAt?: T;
   createdAt?: T;
 }

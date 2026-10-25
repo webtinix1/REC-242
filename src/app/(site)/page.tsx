@@ -4,6 +4,7 @@ import React from 'react'
 
 import { Btn, Boutons, Img, KeyFigures, Lnk, SecHead } from '@/components/site/Blocks'
 import { Words } from '@/components/site/Words'
+import { misEnAvant } from '@/lib/annuaire/donnees'
 import { dateCourt } from '@/lib/site/format'
 import { getFaq, getNews, getPartners, NEWS_TYPE_LABEL } from '@/lib/site/data'
 import { block, getPage, type CartesBlock, type SectionBlock } from '@/lib/site/payload'
@@ -16,16 +17,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Écran 01 : accueil (captures/site/01-accueil-*). */
 export default async function Accueil() {
-  const [page, figs, faq, partners, news] = await Promise.all([
+  const [page, figs, faq, partners, news, visagesMembres] = await Promise.all([
     getPage('/'),
     getKeyFigures(),
     getFaq('accueil'),
     getPartners(),
     getNews({ limit: 3 }),
+    misEnAvant(6),
   ])
   const hero = block(page, 'hero')
   const piliers = block<CartesBlock>(page, 'piliers')
   const avantages = block<CartesBlock>(page, 'avantages')
+  const visages = block<CartesBlock>(page, 'visages')
   const formalisation = block(page, 'formalisation')
   const actualites = block(page, 'actualites')
   const partenaires = block(page, 'partenaires')
@@ -138,7 +141,72 @@ export default async function Accueil() {
         </section>
       ) : null}
 
-      {/* Agenda (lot 8), « Le réseau en visages » (lot 7) et opportunités (lot 9) s'affichent quand leurs données existent. */}
+      {/* Agenda (lot 8) et opportunités (lot 9) s'affichent quand leurs données existent. */}
+
+      {visages && visagesMembres.length > 0 && (
+        <>
+          <section className="mosaic" aria-label={visages.surtitre} data-m="faces" data-m-stagger>
+            {visages.cartes?.[0] && (
+              <figure className="m1">
+                <Img media={visages.cartes[0].image} />
+              </figure>
+            )}
+            <div className="mosaic-t" data-m-scrub>
+              <span className="eyebrow" style={{ background: 'rgba(255,255,255,.12)', color: '#fff' }}>
+                {visages.surtitre}
+              </span>
+              <h2 className="h-l">{visages.titre}</h2>
+            </div>
+            {visages.cartes?.[1] && (
+              <figure>
+                <Img media={visages.cartes[1].image} />
+              </figure>
+            )}
+            {visages.cartes?.[2] && (
+              <figure className="m4">
+                <Img media={visages.cartes[2].image} />
+              </figure>
+            )}
+          </section>
+          <section className="band bg-white" style={{ paddingTop: 48 }}>
+            <div className="wrap">
+              <div className="rec-row" style={{ justifyContent: 'space-between', marginBottom: 24 }} data-m="rise">
+                <p className="muted">{visages.intro}</p>
+                {visages.boutons?.[0] && <Btn b={visages.boutons[0]} />}
+              </div>
+              <div className="g3" data-m="cascade" data-m-stagger>
+                {visagesMembres.map((m) => (
+                  <Link key={m.slug} href={"/membres/" + m.slug} className="card">
+                    <div className="person">
+                      <span className="duo">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {m.portrait && <img className="duo-face" src={m.portrait} alt="" />}
+                        {m.logo ? (
+                          <span className="logo-tile">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={m.logo} alt={"Logo " + m.nom} />
+                          </span>
+                        ) : (
+                          <span className="logo-tile logo-ini">{m.ini}</span>
+                        )}
+                      </span>
+                      <div>
+                        <p className="h-s">{m.nom}</p>
+                        <p className="small muted">
+                          {m.secteur} · {m.ville}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="rec-tag" style={{ width: 'max-content' }}>
+                      Catégorie {m.categorie}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
       {formalisation && (
         <section className="pband">

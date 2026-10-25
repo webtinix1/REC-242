@@ -22,6 +22,7 @@ type Fiche = {
   motifStatut?: string
   photo?: Media
   derniereConnexion?: string
+  relationsSuspendues?: boolean
   cotisation?: { droit?: number; montant?: number; tranches?: number }
   commissions?: { id: number; nom: string }[]
   fin?: { type?: string; date?: string; suppressionDemandee?: string }
@@ -112,6 +113,7 @@ export const MembreView = async (props: DocumentViewServerProps) => {
         commissions={commissions.docs.map((c) => ({ id: c.id as number, nom: (c as unknown as { nom: string }).nom }))}
         commissionsMembre={(m.commissions ?? []).map((c) => c.id)}
         fin={m.fin?.type ? `${m.fin.type === 'deces' ? 'Décès' : m.fin.type === 'demission' ? 'Démission écrite' : 'Fin d’adhésion'} enregistré le ${jour(m.fin.date)}.` : ''}
+        relationsSuspendues={Boolean(m.relationsSuspendues)}
         suppressionDemandee={m.fin?.suppressionDemandee ? `Le membre a demandé la suppression de son compte le ${jour(m.fin.suppressionDemandee)}.` : ''}
         visibilite={
           <section className="panel">

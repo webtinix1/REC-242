@@ -41,7 +41,7 @@ test.describe.serial('Lot 6 : espace membre', () => {
         categorie: 'B',
         consentement: true,
         acceptationTextes: true,
-        autorisations: { annuaire: true },
+        autorisations: { annuaire: false },
       },
     })
     expect(c.ok(), await c.text()).toBeTruthy()
@@ -97,7 +97,7 @@ test.describe.serial('Lot 6 : espace membre', () => {
     await page.goto(`${BASE}/espace-membre/profil`, { waitUntil: 'networkidle' })
     await expect(page).toHaveURL(/connexion\?retour=%2Fespace-membre%2Fprofil/)
     // Membre suspendu de démonstration.
-    await page.fill('#mb-mail', 'leon.massamba@membres.rec242.test')
+    await page.fill('#mb-mail', 'contact@bretellesdeleon.cg')
     await page.fill('#mb-pw', PWD)
     await page.getByRole('button', { name: 'Se connecter' }).click()
     await expect(page.locator('h1')).toHaveText('Votre accès est suspendu', { timeout: 60000 })

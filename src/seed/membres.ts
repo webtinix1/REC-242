@@ -34,13 +34,30 @@ const DETAILS: Record<string, { email?: string; telephone?: string; adhesion: st
     presentation: 'Création et vente de pagnes, sacs et accessoires en wax, fabriqués à Brazzaville.',
     vis: [true, false, true, false, true],
   },
-  Khazad: { adhesion: '2026-10-03' },
-  'Hôpital Blanche Gomes': { adhesion: '2026-10-04', vis: [false, false, false, false, false] },
+  // Coordonnées et choix d'affichage : annuaire de l'espace membre de la maquette (« Masqué par le membre » sinon).
+  Khazad: { adhesion: '2026-10-03', telephone: '+242 06 512 34 18', vis: [true, true, true, false, true] },
+  'Hôpital Blanche Gomes': { adhesion: '2026-10-04', telephone: '+242 05 530 18 44', vis: [false, true, false, false, false] },
   // Membre en relance : adhésion assez ancienne pour que l'échéance de la 2e tranche soit dépassée.
-  'Les Bretelles de Léon': { adhesion: '2026-05-04', vis: [false, false, false, false, false] },
-  '3M-Partners & Conseils': { adhesion: '2026-10-08', numero: 'REC-2026-0016' },
-  'Mbongui Formation & RH': { adhesion: '2026-10-09', numero: 'REC-2026-0017' },
+  'Les Bretelles de Léon': { adhesion: '2026-05-04', email: 'contact@bretellesdeleon.cg', vis: [false, false, true, true, false] },
+  '3M-Partners & Conseils': {
+    adhesion: '2026-10-08',
+    numero: 'REC-2026-0016',
+    email: 'contact@3mpartners.cg',
+    telephone: '+242 06 877 02 61',
+    vis: [true, true, true, true, true],
+  },
+  'Mbongui Formation & RH': { adhesion: '2026-10-09', numero: 'REC-2026-0017', email: 'contact@mbongui-rh.cg', vis: [true, false, true, true, true] },
+  'Fako Drop': { adhesion: '2026-10-10', numero: 'REC-2026-0018', telephone: '+242 06 903 47 25', vis: [true, true, true, false, true] },
+  'Ferme Lékana': { adhesion: '2026-10-08', numero: 'REC-2026-0013', vis: [true, false, false, false, false] },
+  'Batimat Congo': { adhesion: '2026-10-11', numero: 'REC-2026-0019', vis: [true, false, true, false, true] },
 }
+
+// Fiches de l'annuaire du site de la maquette absentes de seed/membres-et-entreprises.json.
+const COMPLEMENTS: Annuaire[] = [
+  { nom: 'Fako Drop', dir: 'Hervé Ondongo', sect: 'Transport', ville: 'Pointe-Noire', quartier: 'Tié-Tié', cat: 'B', comm: 'B2B et Opportunités', taille: '10 à 49', dirPhoto: 'design/images/personnes/herve-ondongo.webp', logo: 'design/images/logos-membres/fako-drop.png' },
+  { nom: 'Ferme Lékana', dir: 'Serge Bouanga', sect: 'Agriculture', ville: 'Dolisie', quartier: 'Tsila', cat: 'A', comm: 'Formalisation', taille: '1 à 9', dirPhoto: 'design/images/personnes/serge-bouanga.webp', logo: '' },
+  { nom: 'Batimat Congo', dir: 'Grâce Nkounkou', sect: 'BTP', ville: 'Brazzaville', quartier: 'Mfilou', cat: 'C', comm: 'Partenariats', taille: '50 et plus', dirPhoto: 'design/images/personnes/grace-nkounkou.webp', logo: '' },
+]
 
 const VIS = ['annuaire', 'telephone', 'whatsapp', 'email', 'miseEnAvant']
 const sansAccent = (s: string) =>
@@ -64,7 +81,7 @@ export async function seedMembres(payload: Payload): Promise<void> {
   const password = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
   const parEntreprise = new Map<string, number>()
 
-  for (const a of annuaire) {
+  for (const a of [...annuaire, ...COMPLEMENTS]) {
     const bo = back_office.find((b) => b.nom === a.nom)
     const det = DETAILS[a.nom] ?? { adhesion: '2026-10-01' }
     const [prenom, ...reste] = a.dir.split(' ')
@@ -77,9 +94,25 @@ export async function seedMembres(payload: Payload): Promise<void> {
     const m = montants(cat, s.tarifs)
     const vis = det.vis ?? [true, false, true, true, false]
 
-    const existant = await payload.find({ collection: 'members', where: { email: { equals: email } }, limit: 1, depth: 0, overrideAccess: true })
+    const existant = await payload.find({
+      collection: 'members',
+      where: numero ? { or: [{ numeroAdherent: { equals: numero } }, { email: { equals: email } }] } : { email: { equals: email } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
     if (existant.docs[0]) {
-      parEntreprise.set(a.nom, existant.docs[0].id as number)
+      // Relance du seed : coordonnées et choix d'affichage remis aux valeurs de démonstration.
+      const ex = existant.docs[0] as unknown as { id: number; entreprise?: number }
+      await payload.db.updateOne({ collection: 'members', id: ex.id, data: { email, telephone: det.telephone ?? null, whatsapp: det.telephone ?? null }, returning: false })
+      if (ex.entreprise)
+        await payload.db.updateOne({
+          collection: 'companies',
+          id: ex.entreprise,
+          data: { visibilite: Object.fromEntries(VIS.map((k, i) => [k, Boolean(vis[i])])), selectionAccueil: Boolean(vis[4]) },
+          returning: false,
+        })
+      parEntreprise.set(a.nom, ex.id)
       continue
     }
     const [photo, logo] = await Promise.all([media(payload, a.dirPhoto, a.dir, false), media(payload, a.logo, `Logo ${a.nom}`, false)])
@@ -96,6 +129,8 @@ export async function seedMembres(payload: Payload): Promise<void> {
         presentation: det.presentation,
         visibilite: Object.fromEntries(VIS.map((k, i) => [k, Boolean(vis[i])])),
         masqueeParAdmin: bo?.vis === 'Masquée' && statut === 'suspendu',
+        // Sélection du bureau pour l'accueil (démonstration) : les fiches dont le membre accepte la mise en avant.
+        selectionAccueil: Boolean(vis[4]),
       } as never,
     })
     const membre = await payload.create({

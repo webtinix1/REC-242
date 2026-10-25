@@ -7,6 +7,9 @@ import { lettreCategorie } from '@/lib/adhesion/categories'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
 import { badgeMembre, champLabel, statutMembreLabel, STATUTS_MEMBRE } from '@/lib/membres/options'
 import { BoView, initiales, relatif } from '../BoView'
+import { FORMATS_ENCART } from '@/collections/DirectoryAds'
+import { fichesImprimees } from '@/lib/annuaire/imprime'
+import { AnnuaireImprime } from './AnnuaireImprime'
 import { DemandesMembres } from './DemandesMembres'
 import { ImportExport } from './ImportExport'
 
@@ -92,13 +95,43 @@ export const MembresView = async (props: ListViewServerProps) => {
     )
   }
 
-  if (onglet === 'io')
+  if (onglet === 'io') {
+    const [{ edition, cloture, fiches }, encarts, actifs, s] = await Promise.all([
+      fichesImprimees(payload),
+      payload.find({ collection: 'directoryAds', where: { statut: { not_equals: 'annule' } }, sort: '-createdAt', depth: 2, limit: 200, overrideAccess: true }),
+      payload.find({ collection: 'members', where: { statut: { equals: 'actif' } }, sort: 'nomComplet', depth: 1, limit: 2000, overrideAccess: true, select: { nomComplet: true, entreprise: true } }),
+      payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ annuaire?: Record<string, number | string | undefined> }>,
+    ])
+    const deCetteEdition = encarts.docs.filter((d) => (d as unknown as { edition?: string }).edition === edition)
     return (
       <BoView titre="Membres et entreprises">
         {tabs}
         <ImportExport peutExporter={atLeast(user as never, 'exports', 'full')} peutImporter={atLeast(user as never, 'membres', 'full')} />
+        <AnnuaireImprime
+          edition={edition}
+          cloture={cloture ? new Date(cloture).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', timeZone: 'Africa/Brazzaville' }) : undefined}
+          incluses={fiches.length}
+          peutExporter={atLeast(user as never, 'exports', 'full')}
+          peutReserver={atLeast(user as never, 'membres', 'partial')}
+          tarifs={FORMATS_ENCART.map((f) => ({ value: f.value, label: f.label, montant: f.reglage ? Number(s.annuaire?.[f.reglage] ?? NaN) : 0 }))}
+          membres={actifs.docs.map((d) => {
+            const m = d as unknown as { id: number; nomComplet?: string; entreprise?: { nom?: string } | null }
+            return { id: m.id, nom: `${m.entreprise?.nom ?? ''} · ${m.nomComplet ?? ''}` }
+          })}
+          encarts={deCetteEdition.map((d) => {
+            const a = d as unknown as { id: number; format: string; montant?: number; statut: string; membre?: { nomComplet?: string; entreprise?: { nom?: string } | null } | null }
+            return {
+              id: a.id,
+              format: FORMATS_ENCART.find((f) => f.value === a.format)?.label ?? a.format,
+              membre: a.membre?.entreprise?.nom ?? a.membre?.nomComplet ?? '',
+              montant: a.montant ?? 0,
+              statut: a.statut,
+            }
+          })}
+        />
       </BoView>
     )
+  }
 
   const where = {
     and: [
