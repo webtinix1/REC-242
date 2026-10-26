@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig, type Payload, type PayloadRequest, type Where } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { extraFull, extraRead } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { endpointsExperts } from '@/endpoints/experts'
 import { logAction } from '@/lib/audit'
@@ -68,9 +68,10 @@ export const ExpertRequests: CollectionConfig = {
   defaultSort: '-createdAt',
   endpoints: endpointsExperts,
   access: {
-    read: ({ req }) => (atLeast(req.user, 'membres', 'read') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
+    // Demandes des membres (docs/04-roles-et-droits.md, domaines ajoutés) : ni le trésorier ni le responsable événements.
+    read: ({ req }) => (extraRead(req.user, 'demandesMembres') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
     create: ({ req }) => estMembre(req.user),
-    update: ({ req }) => (atLeast(req.user, 'membres', 'partial') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
+    update: ({ req }) => (extraFull(req.user, 'demandesMembres') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
     delete: () => false,
   },
   hooks: {

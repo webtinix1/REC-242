@@ -14,7 +14,7 @@ export async function temporairement<T>(
   fn: () => Promise<T>,
 ): Promise<T> {
   const payload = await getPayload({ config })
-  const doc = (await payload.find({ collection, where: { [champ]: { equals: valeur } }, limit: 1, depth: 0, overrideAccess: true })).docs[0] as
+  const doc = (await payload.find({ collection, where: { [champ]: { equals: valeur } }, limit: 1, depth: 0, overrideAccess: true })).docs[0] as unknown as
     | (Record<string, unknown> & { id: number })
     | undefined
   if (!doc) throw new Error(`${collection} : aucun document où ${champ} = ${valeur}`)

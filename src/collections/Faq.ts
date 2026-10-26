@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { extraFull } from '@/access/roles'
+import { extraFull, isStaff } from '@/access/roles'
 
 export const Faq: CollectionConfig = {
   slug: 'faq',
@@ -13,7 +13,7 @@ export const Faq: CollectionConfig = {
   },
   defaultSort: 'ordre',
   access: {
-    read: ({ req }) => (req.user ? true : { visible: { equals: true } }),
+    read: ({ req }) => (isStaff(req.user) ? true : { visible: { equals: true } }),
     create: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     update: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     delete: ({ req }) => extraFull(req.user, 'contenusAnnexes'),

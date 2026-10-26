@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig, type Endpoint, type Payload, type PayloadRequest } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { extraFull, extraRead } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { logAction } from '@/lib/audit'
 import { prochainNumero } from '@/lib/compteurs'
@@ -46,7 +46,8 @@ const etape = (vers: Etape, appliquer: (req: PayloadRequest, c: Cas, b: Record<s
   path: `/:id/${vers}`,
   method: 'post',
   handler: async (req) => {
-    if (!atLeast(req.user, 'membres', 'full')) throw new APIError('Action réservée au responsable membres et aux administrateurs.', 403)
+    // Discipline (docs/04-roles-et-droits.md, domaines ajoutés) : décisions du super administrateur et de l'administrateur.
+    if (!extraFull(req.user, 'discipline')) throw new APIError('Action réservée aux administrateurs.', 403)
     const c = (await req.payload.findByID({ collection: 'disciplinaryCases', id: req.routeParams?.id as string, depth: 0, overrideAccess: false, req }).catch(() => null)) as unknown as Cas | null
     if (!c) throw new APIError('Dossier introuvable.', 404)
     const b = await corps(req)
@@ -174,10 +175,11 @@ export const DisciplinaryCases: CollectionConfig = {
   defaultSort: '-createdAt',
   endpoints: [griefs, defense, avis, decision, recours, clore],
   access: {
-    read: ({ req }) => atLeast(req.user, 'membres', 'read'),
-    create: ({ req }) => atLeast(req.user, 'membres', 'full'),
+    // Discipline (docs/04-roles-et-droits.md) : accès complet super admin et admin, lecture responsable membres.
+    read: ({ req }) => extraRead(req.user, 'discipline'),
+    create: ({ req }) => extraFull(req.user, 'discipline'),
     // Les étapes passent par les endpoints ; l'édition directe est limitée aux champs de préparation (hook ci-dessous).
-    update: ({ req }) => atLeast(req.user, 'membres', 'full'),
+    update: ({ req }) => extraFull(req.user, 'discipline'),
     delete: () => false,
   },
   hooks: {

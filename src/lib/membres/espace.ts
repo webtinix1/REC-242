@@ -69,6 +69,11 @@ export async function exigerMembre(): Promise<Membre> {
   const h = await headers()
   const chemin = h.get('x-rec-chemin') || '/espace-membre'
   if (!m) {
+    // Lien d'e-mail ou favori : Payload ignore le cookie d'une navigation venue d'ailleurs (contrôle CSRF). Une page du site
+    // recharge l'adresse : la nouvelle requête part du site et le cookie est lu normalement.
+    const site = h.get('sec-fetch-site')
+    if ((site === 'cross-site' || site === 'none') && (await cookies()).has('payload-token'))
+      redirect(`/espace-membre/ouverture?${new URLSearchParams({ vers: chemin })}`)
     const avait = (await cookies()).get(COOKIE_SESSION)?.value
     const q = new URLSearchParams({ retour: chemin })
     if (avait) q.set('etat', 'expiree')

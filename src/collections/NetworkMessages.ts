@@ -1,6 +1,6 @@
 import type { CollectionConfig, Where } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { atLeast, extraRead } from '@/access/roles'
 
 /** Messages du réseau aux membres (onglet « Messages du réseau » de Mes échanges, lot 10). */
 export const NetworkMessages: CollectionConfig = {
@@ -10,7 +10,8 @@ export const NetworkMessages: CollectionConfig = {
   defaultSort: '-createdAt',
   access: {
     read: ({ req }) => {
-      if (atLeast(req.user, 'membres', 'read')) return true
+      // Messages adressés à un membre : équipe des demandes des membres seulement (docs/04-roles-et-droits.md).
+      if (extraRead(req.user, 'demandesMembres')) return true
       if ((req.user as { collection?: string } | null)?.collection === 'members')
         return { or: [{ membre: { equals: req.user!.id } }, { tous: { equals: true } }] } as Where
       return false

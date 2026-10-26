@@ -2,6 +2,7 @@ import { APIError, type CollectionConfig, type PayloadRequest, type Where } from
 
 import { atLeast } from '@/access/roles'
 import { notify } from '@/emails/send'
+import { verifierPieceDuMembre } from '@/collections/Fichiers'
 import { logAction } from '@/lib/audit'
 import { alerterSecteurs } from '@/lib/opportunites/alertes'
 import { coordonneesDetectees, finDuJour, STATUTS_OPPORTUNITE, TYPES_OPPORTUNITE } from '@/lib/opportunites/regles'
@@ -47,6 +48,7 @@ export const Opportunities: CollectionConfig = {
           if (m.statut !== 'actif') throw new APIError('Réservé aux membres actifs.', 403)
           if (operation === 'update' && !['brouillon', 'modification', 'expiree', 'a-moderer', 'refusee'].includes(originalDoc?.statut))
             throw new APIError('Une annonce publiée ne se modifie plus : écrivez à l’équipe.', 403, null, true)
+          if (data.pieceJointe !== undefined) await verifierPieceDuMembre(req, data.pieceJointe, moi!.id)
           // Le membre ne publie jamais lui-même : toute soumission repart en modération.
           data.membre = moi!.id
           data.auteur = 'membre'

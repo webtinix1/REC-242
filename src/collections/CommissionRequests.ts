@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig, type Where } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { extraFull, extraRead } from '@/access/roles'
 import { logAction } from '@/lib/audit'
 
 type Moi = { id: number; collection?: string; name?: string } | null | undefined
@@ -18,9 +18,10 @@ export const CommissionRequests: CollectionConfig = {
   admin: { group: 'Activité', hidden: true },
   defaultSort: '-createdAt',
   access: {
-    read: ({ req }) => (atLeast(req.user, 'membres', 'read') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
+    // Commissions (docs/04-roles-et-droits.md, domaines ajoutés) : lecture aussi pour l'éditeur.
+    read: ({ req }) => (extraRead(req.user, 'commissions') ? true : estMembre(req.user) ? ({ membre: { equals: req.user!.id } } as Where) : false),
     create: ({ req }) => estMembre(req.user),
-    update: ({ req }) => atLeast(req.user, 'membres', 'partial'),
+    update: ({ req }) => extraFull(req.user, 'commissions'),
     delete: () => false,
   },
   hooks: {

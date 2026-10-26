@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { atLeast, extraRead } from '@/access/roles'
 import { logAction } from '@/lib/audit'
 
 export const FORMATS_ENCART = [
@@ -21,7 +21,8 @@ export const DirectoryAds: CollectionConfig = {
   defaultSort: '-createdAt',
   access: {
     read: ({ req }) =>
-      atLeast(req.user, 'membres', 'read') || atLeast(req.user, 'cotisations', 'read')
+      // Annuaire imprimé et encarts (docs/04, domaines ajoutés) : responsable membres et trésorier, pas le responsable événements.
+      extraRead(req.user, 'annuaireImprime')
         ? true
         : (req.user as { collection?: string } | null)?.collection === 'members'
           ? { membre: { equals: req.user!.id } }

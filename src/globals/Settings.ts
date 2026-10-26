@@ -1,6 +1,6 @@
-import type { Field, GlobalConfig } from 'payload'
+import type { Field, FieldAccess, GlobalConfig, Tab } from 'payload'
 
-import { atLeast, hasRole } from '@/access/roles'
+import { atLeast, hasRole, isStaff } from '@/access/roles'
 import { logAction } from '@/lib/audit'
 
 const fcfa = (name: string, label: string): Field => ({
@@ -362,3 +362,22 @@ export const Settings: GlobalConfig = {
     },
   ],
 }
+
+/**
+ * Droits par champ (docs/04-roles-et-droits.md) : « Paramètres et SEO » est complet pour le super administrateur et
+ * l'administrateur ; le droit partiel de l'éditeur ne porte que sur le référencement des contenus qu'il édite (pages,
+ * actualités), pas sur ces paramètres. Ses modifications sont ignorées champ par champ, comme celles des tarifs.
+ * Les alertes et les réponses types sont internes : elles ne sont jamais renvoyées au public.
+ */
+const lectureEquipe: FieldAccess = ({ req }) => isStaff(req.user)
+const proteger = (fields: Field[], interne: boolean): Field[] =>
+  fields.map((f) => {
+    if ('name' in f && f.name && f.type !== 'ui') {
+      const access = { update: adminsOnly.update, ...(interne ? { read: lectureEquipe } : {}), ...(f.access ?? {}) }
+      return { ...f, access } as Field
+    }
+    if (f.type === 'row' || f.type === 'collapsible') return { ...f, fields: proteger(f.fields, interne) } as Field
+    return f
+  })
+const onglets = Settings.fields[0] as { type: 'tabs'; tabs: Tab[] }
+onglets.tabs = onglets.tabs.map((t) => ({ ...t, fields: proteger(t.fields, 'name' in t && t.name === 'alertes') }) as Tab)

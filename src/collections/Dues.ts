@@ -101,7 +101,8 @@ export const Dues: CollectionConfig = {
   endpoints: [relancer, constater],
   access: {
     read: ({ req }) =>
-      atLeast(req.user, 'cotisations', 'read') || atLeast(req.user, 'membres', 'read')
+      // Cotisations et paiements (docs/04) : pas le responsable événements, même s'il lit les fiches membres.
+      atLeast(req.user, 'cotisations', 'read')
         ? true
         : (req.user as { collection?: string } | null)?.collection === 'members'
           ? { membre: { equals: req.user!.id } }

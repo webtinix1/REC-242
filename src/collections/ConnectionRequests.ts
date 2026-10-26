@@ -1,6 +1,6 @@
 import { APIError, type CollectionConfig, type Where } from 'payload'
 
-import { atLeast } from '@/access/roles'
+import { extraFull, extraRead } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { logAction } from '@/lib/audit'
 
@@ -34,13 +34,14 @@ export const ConnectionRequests: CollectionConfig = {
   defaultSort: '-createdAt',
   access: {
     read: ({ req }) => {
-      if (atLeast(req.user, 'membres', 'read')) return true
+      // Demandes des membres (docs/04-roles-et-droits.md, domaines ajoutés) : ni le trésorier ni le responsable événements.
+      if (extraRead(req.user, 'demandesMembres')) return true
       if (estMembre(req.user)) return { or: [{ demandeur: { equals: req.user!.id } }, { destinataire: { equals: req.user!.id } }] } as Where
       return false
     },
     create: ({ req }) => estMembre(req.user),
     update: ({ req }) => {
-      if (atLeast(req.user, 'membres', 'partial')) return true
+      if (extraFull(req.user, 'demandesMembres')) return true
       if (estMembre(req.user)) return { or: [{ demandeur: { equals: req.user!.id } }, { destinataire: { equals: req.user!.id } }] } as Where
       return false
     },
@@ -113,8 +114,10 @@ export const ConnectionRequests: CollectionConfig = {
             objet: originalDoc?.objet,
             fil: originalDoc?.fil,
             statut: apres,
+            dateReponse: originalDoc?.dateReponse,
+            signalement: originalDoc?.signalement,
           }
-          if (apres === 'signalee') garde.signalement = { motif: String(data.signalement?.motif ?? '').trim(), par: moi!.id, date: new Date().toISOString() }
+          if (apres === 'signalee' && avant !== 'signalee') garde.signalement = { motif: String(data.signalement?.motif ?? '').trim(), par: moi!.id, date: new Date().toISOString() }
           if (apres !== avant && ['acceptee', 'refusee'].includes(apres)) {
             garde.dateReponse = new Date().toISOString()
             // La réponse apparaît comme non lue pour le demandeur (Mes échanges).

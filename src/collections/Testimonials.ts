@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { extraFull } from '@/access/roles'
+import { extraFull, isStaff } from '@/access/roles'
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
@@ -12,7 +12,7 @@ export const Testimonials: CollectionConfig = {
     defaultColumns: ['personne', 'entreprise', 'accordPublication'],
   },
   access: {
-    read: ({ req }) => (req.user ? true : { accordPublication: { equals: true } }),
+    read: ({ req }) => (isStaff(req.user) ? true : { accordPublication: { equals: true } }),
     create: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     update: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     delete: ({ req }) => extraFull(req.user, 'contenusAnnexes'),

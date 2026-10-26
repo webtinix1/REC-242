@@ -67,7 +67,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         )}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+          // « < » échappé : un paramètre contenant « </script> » ne peut pas sortir du bloc JSON-LD.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd).replace(/</g, '\\u003c') }}
         />
       </body>
     </html>

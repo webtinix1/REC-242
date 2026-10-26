@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { publicExtraAccess } from '@/access/roles'
+import { isStaff, publicExtraAccess } from '@/access/roles'
 
 export const POLES = [
   { value: 'direction', label: 'Direction' },
@@ -26,7 +26,8 @@ export const People: CollectionConfig = {
   defaultSort: 'ordre',
   access: {
     ...publicExtraAccess('gouvernance'),
-    read: ({ req }) => (req.user ? true : { visible: { equals: true } }),
+    // Un membre connecté ne voit que les fiches visibles, comme le public.
+    read: ({ req }) => (isStaff(req.user) ? true : { visible: { equals: true } }),
   },
   fields: [
     {

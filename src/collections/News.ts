@@ -52,7 +52,7 @@ export const News: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, req, operation }) => {
+      ({ data, originalDoc, req, operation }) => {
         if (operation === 'create' && req.user?.collection === 'users' && !data.auteur)
           data.auteur = req.user.id
         if (levelFor(req.user, 'actualites') === 'partial') {
@@ -63,7 +63,8 @@ export const News: CollectionConfig = {
               null,
               true,
             )
-          if (data._status === 'published')
+          // Sans _status (enregistrement hors brouillon), la modification d'une actualité publiée paraîtrait directement.
+          if ((data._status ?? originalDoc?._status) === 'published')
             throw new APIError(
               'Votre rôle permet de préparer l’actualité en brouillon. Un éditeur la publie.',
               403,

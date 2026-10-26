@@ -1,7 +1,7 @@
 import path from 'path'
-import { APIError, type CollectionConfig, type Where } from 'payload'
+import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
 
-import { isStaff } from '@/access/roles'
+import { atLeast, extraRead, isStaff } from '@/access/roles'
 
 export const TAILLE_MAX_FICHIER = 5 * 1024 * 1024
 
@@ -16,7 +16,9 @@ export const Fichiers: CollectionConfig = {
   admin: { hidden: true, useAsTitle: 'filename' },
   access: {
     read: ({ req }) => {
-      if (isStaff(req.user)) return true
+      // Pièces jointes des échanges entre membres : équipe des demandes des membres et modération des opportunités seulement.
+      if (extraRead(req.user, 'demandesMembres') || atLeast(req.user, 'opportunites', 'read')) return true
+      if (isStaff(req.user)) return { visibilite: { equals: 'public' } } as Where
       const ou: Where[] = [{ visibilite: { equals: 'public' } }]
       if ((req.user as { collection?: string } | null)?.collection === 'members') {
         ou.push({ visibilite: { equals: 'membres' } }, { proprietaire: { equals: req.user!.id } }, { destinataire: { equals: req.user!.id } })
@@ -54,4 +56,15 @@ export const Fichiers: CollectionConfig = {
     { name: 'proprietaire', label: 'Déposé par', type: 'relationship', relationTo: 'members' },
     { name: 'destinataire', label: 'Destinataire', type: 'relationship', relationTo: 'members' },
   ],
+}
+
+/** Une pièce jointe envoyée par un membre doit être l'une des siennes (jamais le fichier privé d'un autre membre). */
+export async function verifierPieceDuMembre(req: PayloadRequest, piece: unknown, membreId: number) {
+  const id = piece && typeof piece === 'object' ? (piece as { id: number }).id : (piece as number | null | undefined)
+  if (!id) return
+  const f = (await req.payload.findByID({ collection: 'fichiers', id, depth: 0, overrideAccess: true, req }).catch(() => null)) as unknown as {
+    proprietaire?: number | { id: number } | null
+  } | null
+  const proprietaire = f?.proprietaire && typeof f.proprietaire === 'object' ? f.proprietaire.id : f?.proprietaire
+  if (proprietaire !== membreId) throw new APIError('Pièce jointe introuvable.', 400, null, true)
 }

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { extraFull } from '@/access/roles'
+import { extraFull, isStaff } from '@/access/roles'
 
 /** Partenaires. Seuls les partenaires dont la convention est signée apparaissent sur le site. */
 export const Partners: CollectionConfig = {
@@ -14,7 +14,7 @@ export const Partners: CollectionConfig = {
   },
   defaultSort: 'ordre',
   access: {
-    read: ({ req }) => (req.user ? true : { conventionSignee: { equals: true } }),
+    read: ({ req }) => (isStaff(req.user) ? true : { conventionSignee: { equals: true } }),
     create: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     update: ({ req }) => extraFull(req.user, 'contenusAnnexes'),
     delete: ({ req }) => extraFull(req.user, 'contenusAnnexes'),

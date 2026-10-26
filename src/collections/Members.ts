@@ -129,6 +129,12 @@ export const Members: CollectionConfig = {
     ],
     afterChange: [
       async ({ doc, previousDoc, req, operation }) => {
+        // Suspendu, ancien membre : les sessions ouvertes sont fermées, sinon le jeton déjà délivré resterait valable
+        // pour l'API jusqu'à son expiration (30 jours avec « Rester connecté »).
+        if (operation === 'update' && previousDoc?.statut === 'actif' && doc.statut !== 'actif') {
+          const u = await req.payload.db.findOne({ collection: 'members', where: { id: { equals: doc.id } }, req })
+          if (u) await req.payload.db.updateOne({ collection: 'members', id: doc.id, data: { ...u, sessions: [], updatedAt: null }, req, returning: false })
+        }
         if (operation === 'update' && previousDoc?.statut !== doc.statut && isStaff(req.user)) {
           await logAction(req.payload, {
             req,

@@ -31,8 +31,9 @@ export const Pages: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, req }) => {
-        if (data._status === 'published' && req.user && !atLeast(req.user, 'pages', 'full')) {
+      ({ data, originalDoc, req }) => {
+        // Sans _status (enregistrement hors brouillon), la modification d'une page publiée paraîtrait directement.
+        if ((data._status ?? originalDoc?._status) === 'published' && req.user && !atLeast(req.user, 'pages', 'full')) {
           throw new APIError(
             'Votre rôle permet de préparer la page en brouillon. La publication est faite par un administrateur.',
             403,

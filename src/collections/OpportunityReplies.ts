@@ -1,6 +1,7 @@
 import { APIError, type CollectionConfig, type Where } from 'payload'
 
 import { atLeast } from '@/access/roles'
+import { verifierPieceDuMembre } from '@/collections/Fichiers'
 import { notify } from '@/emails/send'
 
 type Moi = { id: number; collection?: string } | null | undefined
@@ -43,6 +44,7 @@ export const OpportunityReplies: CollectionConfig = {
           if (m.statut !== 'actif') throw new APIError('Réservé aux membres actifs.', 403)
           const message = String(data.message ?? '').trim()
           if (message.length < 10) throw new APIError('Écrivez votre réponse (10 caractères au moins).', 400, null, true)
+          await verifierPieceDuMembre(req, data.pieceJointe, moi!.id)
           return { ...data, membre: moi!.id, message: message.slice(0, 3000), lue: false, nonLuPar: [o.membre], fil: [] }
         }
         if (estMembre(moi) && !req.context?.systeme) return { ...originalDoc, lue: Boolean(data.lue) }

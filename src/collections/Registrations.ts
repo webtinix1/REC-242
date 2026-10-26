@@ -81,6 +81,8 @@ export const Registrations: CollectionConfig = {
           if (e.cloture && new Date(e.cloture) < new Date()) throw new APIError('Les inscriptions sont closes.', 400, null, true)
           if (new Date(e.debut) < new Date()) throw new APIError('Cet événement a déjà eu lieu.', 400, null, true)
           const staff = isStaff(req.user)
+          // Billet, pointage et rappel sont attribués par le serveur, jamais repris de la demande (numérotation sans trou).
+          if (!staff) for (const k of ['numeroBillet', 'pointeLe', 'pointePar', 'annuleLe', 'rappelEnvoye']) delete data[k]
           if (estMembre(moi)) {
             const m = (await req.payload.findByID({ collection: 'members', id: moi!.id, depth: 0, overrideAccess: true, req })) as unknown as { statut: string }
             if (m.statut !== 'actif') throw new APIError('Réservé aux membres actifs.', 403)
