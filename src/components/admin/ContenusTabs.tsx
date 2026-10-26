@@ -3,6 +3,8 @@ import { Link } from '@payloadcms/ui'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 
+import '@/styles/back-office.css'
+
 const TABS = [
   { label: 'Pages', href: '/admin/collections/pages' },
   { label: 'Menus', href: '/admin/globals/navigation' },
@@ -36,13 +38,13 @@ export const ContenusTabs = () => {
     pathname.startsWith(t.href) || Boolean(t.also?.some((a) => pathname.startsWith(a)))
   const inTaxo = TAXO.some((t) => pathname.startsWith(t.href))
   return (
-    <>
-      <nav className="rec-tabs" aria-label="Contenus">
+    <div className='bb rec-bloc rec-onglets'>
+      <nav className='tabs' aria-label='Contenus'>
         {TABS.map((t) => (
           <Link
             key={t.href}
             href={t.href}
-            className={`rec-tab${on(t) ? ' is-on' : ''}`}
+            className={`tab${on(t) ? ' is-on' : ''}`}
             aria-current={on(t) ? 'page' : undefined}
           >
             {t.label}
@@ -50,18 +52,19 @@ export const ContenusTabs = () => {
         ))}
       </nav>
       {inTaxo && (
-        <div className="rec-chips">
+        <div className='chips'>
           {TAXO.map((t) => (
             <Link
               key={t.href}
               href={t.href}
-              className={`rec-chip${pathname.startsWith(t.href) ? ' is-on' : ''}`}
+              className={`chip${pathname.startsWith(t.href) ? ' is-on' : ''}`}
+              aria-current={pathname.startsWith(t.href) ? 'page' : undefined}
             >
               {t.label}
             </Link>
           ))}
         </div>
       )}
-    </>
+    </div>
   )
 }

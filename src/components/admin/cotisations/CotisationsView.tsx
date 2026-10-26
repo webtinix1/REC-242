@@ -6,6 +6,7 @@ import { lettreCategorie } from '@/lib/adhesion/categories'
 import { modeLabel, objetLabel } from '@/lib/adhesion/paiement'
 import { numeroRecu } from '@/lib/compteurs'
 import { refusConstat, refusRelance, RELANCES_MAX, resteDu, statutEcheance, type Echeance } from '@/lib/cotisations/regles'
+import { AvecCadre } from '../AvecCadre'
 import { BoView } from '../BoView'
 import { CotisationsClient, type LigneCotisation, type MembrePaiement } from './CotisationsClient'
 
@@ -29,7 +30,7 @@ const nomMembre = (m: MembreDoc) => m.entreprise?.nom || `${m.prenom ?? ''} ${m.
 const tranchePrefixe = (e: Echeance, n: number) => ((e.tranches ?? []).length > 1 ? (n === 1 ? '1re tranche' : `${n}e tranche`) : 'Cotisation')
 
 /** Écran 12 : cotisations (compteurs, échéances, relances, constat de perte, paiement manuel, paiements reçus, export comptable). */
-export const CotisationsView = async ({ payload, user, searchParams }: AdminViewServerProps) => {
+const Contenu = async ({ payload, user, searchParams }: AdminViewServerProps) => {
   if (!atLeast(user as never, 'cotisations', 'read'))
     return (
       <BoView titre="Cotisations">
@@ -88,7 +89,6 @@ export const CotisationsView = async ({ payload, user, searchParams }: AdminView
   const aVenir = parStatut('a-venir')
   const enRelance = parStatut('en-relance')
   const maxRelances = Math.max(0, ...courantes.filter((d) => statutEcheance(d, maintenant) === 'en-relance').map((d) => (d.relances ?? []).length))
-  const aConstater = lignes.filter((l) => l.refusConstat === null).length
   const tranchesVenir = [...new Set(courantes.filter((d) => statutEcheance(d, maintenant) === 'a-venir').map((d) => { const t = (d.tranches ?? []).find((x) => x.statut !== 'paye'); return t ? tranchePrefixe(d, t.numero) : '' }).filter(Boolean))]
 
   // Membres proposés pour un paiement manuel : ceux dont une échéance est ouverte, puis le membre filtré.
@@ -132,7 +132,7 @@ export const CotisationsView = async ({ payload, user, searchParams }: AdminView
 
   return (
     <BoView titre="Cotisations">
-      <div className={`kpis${aConstater ? ' kpis-5' : ''}`}>
+      <div className="kpis">
         <div className="kpi">
           <span className="kpi-dot" />
           <b>{parStatut('a-jour').length}</b>
@@ -154,14 +154,6 @@ export const CotisationsView = async ({ payload, user, searchParams }: AdminView
             </small>
           )}
         </div>
-        {aConstater > 0 && (
-          <div className="kpi kpi-alert">
-            <span className="kpi-dot" />
-            <b>{aConstater}</b>
-            <span>Perte à constater</span>
-            <small>après trois relances</small>
-          </div>
-        )}
         <div className="kpi">
           <span className="kpi-dot" />
           <b className="mono">{new Intl.NumberFormat('fr-FR').format(total).replace(/[  ]/g, ' ')}</b>
@@ -211,3 +203,5 @@ export const CotisationsView = async ({ payload, user, searchParams }: AdminView
     </BoView>
   )
 }
+
+export const CotisationsView = async (props: AdminViewServerProps) => <AvecCadre props={props}>{await Contenu(props)}</AvecCadre>

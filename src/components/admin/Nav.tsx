@@ -1,14 +1,15 @@
 import type { ServerProps } from 'payload'
-import { Logout } from '@payloadcms/ui'
 import { NavHamburger, NavWrapper } from '@payloadcms/next/client'
 import React from 'react'
 
 import { NAV } from '@/admin/navigation'
+import { isStaff } from '@/access/roles'
+import { compterBadges } from '@/endpoints/adminBadges'
 import { NavLinks, type ResolvedGroup } from './NavLinks'
 
 /** Menu de gauche du back-office : groupes et libellés de la maquette, pastilles des éléments en attente. */
 export const Nav = async (props: ServerProps) => {
-  const { payload, visibleEntities, permissions } = props
+  const { payload, visibleEntities, permissions, user } = props
   if (!payload?.config || !visibleEntities) return null
   const canReadC = (slug: string) => Boolean(permissions?.collections?.[slug as never]?.read)
   const canReadG = (slug: string) => Boolean(permissions?.globals?.[slug as never]?.read)
@@ -45,7 +46,7 @@ export const Nav = async (props: ServerProps) => {
           ? [{ label: it.label, href: `${adminRoute}/globals/${it.global}`, badge: it.badge }]
           : []
       }
-      if (it.requires && !(allCollections.has(it.requires) && collections.has(it.requires)))
+      if (it.requires && !(allCollections.has(it.requires) && canReadC(it.requires)))
         return []
       return [
         {
@@ -82,10 +83,11 @@ export const Nav = async (props: ServerProps) => {
           <img src="/images/logo-rec242.jpg" alt="REC 242" />
           <span className="rec-nav__pill">Back-office</span>
         </div>
-        <NavLinks groups={groups} adminRoute={adminRoute} />
-        <div className="nav__controls">
-          <Logout />
-        </div>
+        <NavLinks
+          groups={groups}
+          adminRoute={adminRoute}
+          initialBadges={isStaff(user as never) ? await compterBadges(payload, user as never) : {}}
+        />
       </nav>
       <div className="nav__header">
         <div className="nav__header-content">

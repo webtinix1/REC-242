@@ -6,6 +6,7 @@
 import type { Payload } from 'payload'
 
 import { alignerSurMaquette, renumeroterRecus } from './alignement'
+import { alignerBackOffice } from './backoffice'
 import { seedContenus } from './contenus'
 import { seedEmailTemplates } from './emailTemplates'
 import { seedCandidatures } from './candidatures'
@@ -38,4 +39,5 @@ export async function seed(payload: Payload): Promise<void> {
   await seedOpportunites(payload)
   await seedEchanges(payload)
   await alignerSurMaquette(payload)
+  await alignerBackOffice(payload)
 }

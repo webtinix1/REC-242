@@ -26,6 +26,7 @@ export async function login({
 
   await page.waitForURL(`${serverURL}/admin`)
 
-  const dashboardArtifact = page.locator('span[title="Tableau de bord"]')
+  // Titre de la barre du haut du back-office (src/components/admin/BarreHaut.tsx).
+  const dashboardArtifact = page.locator('.rec-topbar__title', { hasText: 'Tableau de bord' })
   await expect(dashboardArtifact).toBeVisible()
 }

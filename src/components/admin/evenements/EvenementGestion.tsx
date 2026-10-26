@@ -12,7 +12,7 @@ export type Participant = {
   position: number
   nom: string
   profil: string
-  detail: string
+  photo?: string
   telephone: string
 }
 
@@ -141,8 +141,11 @@ export const EvenementGestion = (p: Props) => {
                     return (
                       <tr key={l.id}>
                         <td>
-                          <b>{l.nom}</b>
-                          {l.detail && <span className="small muted"> · {l.detail}</span>}
+                          <span className="ent-cell">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            {l.photo && <img className="face" src={l.photo} alt={l.nom} />}
+                            <b>{l.nom}</b>
+                          </span>
                         </td>
                         <td data-label="Profil">{l.profil}</td>
                         <td data-label="Téléphone" className="mono">
@@ -199,7 +202,6 @@ export const EvenementGestion = (p: Props) => {
                       </td>
                       <td>
                         <b>{l.nom}</b>
-                        {l.detail && <span className="small muted"> · {l.detail}</span>}
                       </td>
                       <td data-label="Profil">{l.profil}</td>
                       <td data-label="Téléphone" className="mono">

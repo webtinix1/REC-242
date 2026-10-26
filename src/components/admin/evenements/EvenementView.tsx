@@ -15,7 +15,7 @@ type Reg = {
   position?: number
   numeroBillet?: string
   visiteur?: { nom?: string; telephone?: string; entreprise?: string }
-  membre?: { prenom?: string; nom?: string; telephone?: string; entreprise?: { nom?: string } | null } | null
+  membre?: { prenom?: string; nom?: string; telephone?: string; photo?: { url?: string; sizes?: { vignette?: { url?: string } } } | null } | null
 }
 type Ev = {
   id: number
@@ -69,7 +69,7 @@ export const EvenementView = async (props: DocumentViewServerProps) => {
       position: r.position ?? 0,
       nom: m ? `${m.prenom ?? ''} ${m.nom ?? ''}`.trim() : (r.visiteur?.nom ?? ''),
       profil: m ? 'Membre' : 'Visiteur',
-      detail: m ? (m.entreprise?.nom ?? '') : (r.visiteur?.entreprise ?? ''),
+      photo: m?.photo?.sizes?.vignette?.url || m?.photo?.url || undefined,
       telephone: telephoneAffiche((m ? m.telephone : r.visiteur?.telephone) ?? undefined) ?? '',
     } satisfies Participant
   })

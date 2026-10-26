@@ -9,7 +9,7 @@ const MAP: Record<string, string> = {
 }
 
 export const VisibilityCell = ({ cellData }: { cellData?: string }) => (
-  <span className={`rec-pill${cellData === 'public' ? ' rec-pill--ok' : ''}`}>
+  <span className={`pill${cellData === 'public' ? ' pill-ok' : ''}`}>
     {MAP[cellData || ''] ?? cellData}
   </span>
 )

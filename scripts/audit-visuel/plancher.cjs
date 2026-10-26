@@ -4,6 +4,7 @@
 // SANS_DEMO=1 retire en plus les contrôles « Démo » de la maquette (boutons .demo, bascule « Vue visiteur / Vue membre
 // connecté ») : on obtient la maquette telle que l'application doit la rendre, référence des écarts réels.
 // Usage : node scripts/audit-visuel/plancher.cjs [racine du dépôt] [dossier de sortie] [filtre]
+// ZONES=back-office (ou site,espace-membre,back-office) choisit les zones ; par défaut site et espace-membre.
 const path = require('path')
 const fs = require('fs')
 const { pathToFileURL } = require('url')
@@ -14,7 +15,7 @@ const { chromium } = require(path.join(repo, 'node_modules', '@playwright', 'tes
 
 ;(async () => {
   const browser = await chromium.launch()
-  for (const zone of ['site', 'espace-membre']) {
+  for (const zone of (process.env.ZONES || 'site,espace-membre').split(',')) {
     fs.mkdirSync(path.join(out, zone), { recursive: true })
     const refs = fs.readdirSync(path.join(repo, 'captures', zone)).filter((f) => f.endsWith('.webp'))
     for (const f of refs) {

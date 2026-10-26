@@ -4,6 +4,7 @@ import { APIError, type CollectionConfig } from 'payload'
 import { atLeast, hasRole, isStaff, ROLES, type Role } from '@/access/roles'
 import { renderEmail } from '@/emails/render'
 import { getTemplate, sendTemplate } from '@/emails/send'
+import { colonne, colonneActions } from '@/fields/colonneActions'
 import { logAction } from '@/lib/audit'
 import { clientCity, deviceKey, deviceLabel, userAgent } from '@/lib/request'
 
@@ -37,7 +38,8 @@ export const Users: CollectionConfig = {
     group: 'Administration',
     useAsTitle: 'name',
     hidden: ({ user }) => !atLeast(user as never, 'utilisateurs', 'read'),
-    defaultColumns: ['name', 'roles', 'lastLogin', 'statut'],
+    defaultColumns: ['utilisateur', 'role', 'lastLogin', 'statut', 'actions'],
+    pagination: { defaultLimit: 50 },
     description:
       'Mot de passe de 12 caractères minimum, blocage après 5 essais, alerte par e-mail à chaque nouvel appareil. Chaque connexion est inscrite au journal.',
     components: {
@@ -45,6 +47,8 @@ export const Users: CollectionConfig = {
       afterList: ['@/components/admin/PermissionsMatrix#PermissionsMatrix'],
     },
   },
+  // Ordre du tableau de la maquette (écran 16) : ordre de création des comptes.
+  defaultSort: 'createdAt',
   auth: {
     tokenExpiration: 30 * 60, // 30 minutes d'inactivité
     maxLoginAttempts: 5,
@@ -388,5 +392,8 @@ export const Users: CollectionConfig = {
       admin: { hidden: true },
       access: { read: () => false, update: () => false, create: () => false },
     },
+    colonne('utilisateur', 'Utilisateur', 'UtilisateurCell'),
+    colonne('role', 'Rôle', 'RoleCell'),
+    colonneActions('desactiver'),
   ],
 }

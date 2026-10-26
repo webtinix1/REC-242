@@ -49,6 +49,9 @@ export async function seedEvenements(payload: Payload): Promise<void> {
   const idPar = (d: unknown[], nom: string) => (d as { id: number; nom?: string; titre?: string }[]).find((x) => x.nom === nom || x.titre === nom)?.id
   const christelle = await payload.find({ collection: 'members', where: { email: { equals: 'christelle@kimiacreations.cg' } }, limit: 1, overrideAccess: true })
   const cId = christelle.docs[0]?.id as number | undefined
+  // Grâce Nkounkou est membre (maquette : profil « Membre » dans la liste des inscrits).
+  const grace = await payload.find({ collection: 'members', where: { email: { equals: 'grace.nkounkou@membres.rec242.test' } }, limit: 1, overrideAccess: true })
+  const gId = grace.docs[0]?.id as number | undefined
   const intervenants = await Promise.all(intervenants_exemple.map(async (i) => ({ nom: i.nom, fonction: i.fn, photo: await media(payload, i.photo, i.nom, false) })))
 
   // Inscriptions saisies au nom de l'équipe : les règles d'accès (membres, invitation) s'appliquent comme au back-office.
@@ -83,7 +86,7 @@ export async function seedEvenements(payload: Payload): Promise<void> {
     const id = e.id as number
     if (ev.type === 'Afterwork') {
       for (const x of inscrits_exemple) {
-        const r = x.nom === 'Christelle Malonga' && cId ? await inscrire(id, { membre: cId }) : await inscrire(id, { visiteur: { nom: x.nom, email: `${x.nom.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]+/g, '.')}@demo.rec242.test`, telephone: x.tel } })
+        const r = x.nom === 'Christelle Malonga' && cId ? await inscrire(id, { membre: cId }) : x.nom === 'Grâce Nkounkou' && gId ? await inscrire(id, { membre: gId }) : await inscrire(id, { visiteur: { nom: x.nom, email: `${x.nom.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]+/g, '.')}@demo.rec242.test`, telephone: x.tel } })
         if (x.present) await payload.db.updateOne({ collection: 'registrations', id: r.id, data: { statut: 'present', pointeLe: new Date().toISOString(), pointePar: 'Démonstration' }, returning: false })
       }
     }

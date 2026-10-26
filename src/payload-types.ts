@@ -1037,10 +1037,6 @@ export interface News {
   id: number;
   titre: string;
   /**
-   * Rempli automatiquement à partir du titre. Modifiable.
-   */
-  slug?: string | null;
-  /**
    * Visible par tous, même quand l’actualité est réservée aux membres.
    */
   chapeau: string;
@@ -1193,28 +1189,6 @@ export interface News {
       )[]
     | null;
   pdf?: (number | null) | Document;
-  type: 'article' | 'communique' | 'interview' | 'annonce' | 'retour';
-  secteurs?: (number | Sector)[] | null;
-  etiquettes?: string[] | null;
-  datePublication?: string | null;
-  /**
-   * Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.
-   */
-  rang?: number | null;
-  /**
-   * Sans actualité à la une, la plus récente est mise en avant.
-   */
-  aLaUne?: boolean | null;
-  reserveMembres?: boolean | null;
-  /**
-   * « En relecture » signale l’article à un éditeur. « Programmé » le publie automatiquement à la date de publication. « Archivé » le retire du site sans le supprimer.
-   */
-  etat?: ('brouillon' | 'relecture' | 'programme' | 'publie' | 'archive') | null;
-  auteur?: (number | null) | User;
-  /**
-   * Par exemple « la Communication ». Affichée après la date : « par … ».
-   */
-  signature?: string | null;
   /**
    * Actualité ou page proposée en fin d’article.
    */
@@ -1239,6 +1213,32 @@ export interface News {
      */
     image?: (number | null) | Media;
   };
+  type: 'article' | 'communique' | 'interview' | 'annonce' | 'retour';
+  secteurs?: (number | Sector)[] | null;
+  etiquettes?: string[] | null;
+  datePublication?: string | null;
+  reserveMembres?: boolean | null;
+  /**
+   * « En relecture » signale l’article à un éditeur. « Programmé » le publie automatiquement à la date de publication. « Archivé » le retire du site sans le supprimer.
+   */
+  etat?: ('brouillon' | 'relecture' | 'programme' | 'publie' | 'archive') | null;
+  /**
+   * Rempli automatiquement à partir du titre. Modifiable.
+   */
+  slug?: string | null;
+  /**
+   * Par exemple « la Communication ». Affichée après la date : « par … ».
+   */
+  signature?: string | null;
+  /**
+   * Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.
+   */
+  rang?: number | null;
+  /**
+   * Sans actualité à la une, la plus récente est mise en avant.
+   */
+  aLaUne?: boolean | null;
+  auteur?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -2984,7 +2984,6 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface NewsSelect<T extends boolean = true> {
   titre?: T;
-  slug?: T;
   chapeau?: T;
   image?: T;
   corps?: T;
@@ -3080,16 +3079,6 @@ export interface NewsSelect<T extends boolean = true> {
             };
       };
   pdf?: T;
-  type?: T;
-  secteurs?: T;
-  etiquettes?: T;
-  datePublication?: T;
-  rang?: T;
-  aLaUne?: T;
-  reserveMembres?: T;
-  etat?: T;
-  auteur?: T;
-  signature?: T;
   aLireAussi?: T;
   aLireAussiTitre?: T;
   meta?:
@@ -3099,6 +3088,17 @@ export interface NewsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  type?: T;
+  secteurs?: T;
+  etiquettes?: T;
+  datePublication?: T;
+  reserveMembres?: T;
+  etat?: T;
+  slug?: T;
+  signature?: T;
+  rang?: T;
+  aLaUne?: T;
+  auteur?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

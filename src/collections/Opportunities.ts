@@ -25,7 +25,16 @@ export const Opportunities: CollectionConfig = {
     group: 'Activité',
     useAsTitle: 'titre',
     defaultColumns: ['titre', 'type', 'visibilite', 'dateLimite', 'statut'],
-    components: { views: { list: { Component: '@/components/admin/opportunites/OpportunitesView#OpportunitesView' } } },
+    components: {
+      views: { list: { Component: '@/components/admin/opportunites/OpportunitesView#OpportunitesView' } },
+      // Écran 20 : retour à la liste, « Enregistrer le brouillon » et « Publier ».
+      edit: {
+        beforeDocumentControls: [
+          { path: '@/components/admin/edition/BarreDocument#BarreDocument', clientProps: { retour: 'Opportunités' } },
+        ],
+        SaveButton: '@/components/admin/edition/Opportunite#BoutonsOpportunite',
+      },
+    },
   },
   defaultSort: 'dateLimite',
   access: {
@@ -167,6 +176,9 @@ export const Opportunities: CollectionConfig = {
         { name: 'miseEnAvant', label: 'Mettre en avant sur l’accueil (public seulement)', type: 'checkbox', defaultValue: false },
       ],
     },
+    // Panneau latéral de la maquette (écran 20) : aperçu en direct de la carte, puis rappel des règles.
+    { name: 'apercuCarte', type: 'ui', admin: { position: 'sidebar', components: { Field: '@/components/admin/edition/Opportunite#ApercuOpportunite' } } },
+    { name: 'regles', type: 'ui', admin: { position: 'sidebar', components: { Field: '@/components/admin/edition/Opportunite#ReglesOpportunite' } } },
     {
       name: 'rang',
       label: 'Rang dans les listes du site',

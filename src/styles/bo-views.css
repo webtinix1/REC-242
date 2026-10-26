@@ -1,7 +1,7 @@
 /* Vues personnalisées du back-office dans l'admin Payload : ajustements du cadre (le contenu suit design/back-office.css). */
 .bb.bo-view{background:transparent;min-height:0}
-.bb.bo-view .content{padding-top:8px}
-.bb.bo-view .bo-title{font-size:26px;line-height:32px;margin-bottom:4px}
+.bb.bo-view .content{padding-top:24px}
+.bb.bo-view .bo-title{margin:0}
 .bb.bo-view .ib-item{width:100%;text-align:left;cursor:pointer}
 .bb.bo-view a.chip{text-decoration:none;display:inline-flex;align-items:center}
 .bb.bo-view .composer textarea.conv-ta{min-height:140px}
@@ -11,6 +11,10 @@
 .bb.bo-view a.linkbtn{text-decoration:none}
 .bb.bo-view a.linkbtn:hover{text-decoration:underline}
 .bb a.tab{text-decoration:none}
+
+/* Vues de document personnalisées : le titre et les onglets natifs de Payload (Éditer, API) n'existent pas dans la maquette */
+.template-default__wrap > .doc-header:has(+ .bb.bo-view){display:none}
+.bb.bo-view .pick > img{display:block}
 
 /* Pointage par QR code (écran 08) */
 .bb.bo-view .scan-view .scan-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -45,3 +49,4 @@
   .bb.bo-view .kpis-dash a.kpi:last-child:nth-child(odd){grid-column:1 / -1}
 }
 .bb.bo-view .linkbtn:disabled{opacity:.5;cursor:not-allowed}
+.bb .av.face{display:inline-flex;width:36px;height:36px;font-size:13px}

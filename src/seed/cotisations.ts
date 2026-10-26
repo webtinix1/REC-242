@@ -10,7 +10,19 @@ import { creerEcheance, recalculerTranches } from '@/lib/cotisations/service'
 const ligne = <T extends object>(x: T) => ({ id: randomBytes(12).toString('hex'), ...x })
 const jours = (n: number) => new Date(Date.now() - n * 86400e3).toISOString()
 
+/** Encarts de l'annuaire imprimé de la maquette (écran 05, onglet Import et export) : deux payés, un à régler. */
+async function seedEncarts(payload: Payload): Promise<void> {
+  if ((await payload.count({ collection: 'directoryAds', overrideAccess: true })).totalDocs > 0) return
+  for (const [numero, format, paye] of [['REC-2026-0014', 'pleine', true], ['REC-2026-0016', 'demi', true], ['REC-2026-0137', 'logo', false]] as const) {
+    const m = (await payload.find({ collection: 'members', where: { numeroAdherent: { equals: numero } }, limit: 1, depth: 0, overrideAccess: true })).docs[0]
+    if (!m) continue
+    const a = await payload.create({ collection: 'directoryAds', overrideAccess: true, data: { membre: m.id, format } as never })
+    if (paye) await payload.db.updateOne({ collection: 'directoryAds', id: a.id, data: { statut: 'paye' }, returning: false })
+  }
+}
+
 export async function seedCotisations(payload: Payload): Promise<void> {
+  await seedEncarts(payload)
   const membres = await payload.find({ collection: 'members', where: { statut: { in: ['actif', 'suspendu'] } }, limit: 500, depth: 0, overrideAccess: true })
   let n = 0
   for (const m of membres.docs as unknown as { id: number; dateAdhesion?: string; email: string }[]) {

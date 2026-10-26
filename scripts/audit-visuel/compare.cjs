@@ -1,5 +1,6 @@
 // Audit visuel (2/2) : compare chaque capture à sa référence (captures/ du dépôt).
 // Usage : node compare.cjs [racine du dépôt] [dossier des captures]
+// ZONES=back-office (ou site,espace-membre,back-office) choisit les zones ; par défaut site et espace-membre.
 // Produit : mesures.json, et pour chaque écran un côte-à-côte réduit (cote/<écran>.webp).
 const path = require('path')
 const fs = require('fs')
@@ -30,7 +31,7 @@ function ecart(a, b, w, y0, y1) {
 ;(async () => {
   const mesures = []
   fs.mkdirSync(path.join(dir, 'cote'), { recursive: true })
-  for (const zone of ['site', 'espace-membre']) {
+  for (const zone of (process.env.ZONES || 'site,espace-membre').split(',')) {
     const refs = fs.readdirSync(path.join(repo, 'captures', zone)).filter((f) => f.endsWith('.webp'))
     for (const f of refs) {
       const nom = f.replace('.webp', '')

@@ -107,12 +107,12 @@ export const CotisationsClient = ({
   const visibles = lignes.filter((l) => f === 'toutes' || l.statut === f)
   const aRelancer = lignes.filter((l) => l.actif && l.refusRelance === null)
 
-  const relancer = (l: LigneCotisation) =>
-    agir(async () => {
-      await api(`/api/dues/${l.id}/relancer`, { method: 'POST', body: '{}' })
-      return `Relance envoyée à ${l.membre}. Prochaine relance possible dans 15 jours au plus tôt.`
-    })
   const relancerTout = () => {
+    if (!aRelancer.length) {
+      setErr('')
+      setOk('Aucune relance due pour le moment : le délai de 15 jours n’est pas écoulé ou les trois relances sont déjà envoyées.')
+      return
+    }
     if (!window.confirm(`Envoyer ${aRelancer.length} relance${aRelancer.length > 1 ? 's' : ''} par e-mail ?`)) return
     void agir(async () => {
       for (const l of aRelancer) await api(`/api/dues/${l.id}/relancer`, { method: 'POST', body: '{}' })
@@ -173,7 +173,7 @@ export const CotisationsClient = ({
             </button>
           )}
           {peutPayer && (
-            <button type="button" className="rec-btn rec-btn--primary" disabled={occupe || !aRelancer.length} onClick={relancerTout}>
+            <button type="button" className="rec-btn rec-btn--primary" disabled={occupe} onClick={relancerTout}>
               Envoyer les relances dues
             </button>
           )}
@@ -369,22 +369,10 @@ export const CotisationsClient = ({
                   <span className={`rec-badge rec-badge--${STATUTS[l.statut].cls}`}>{STATUTS[l.statut].label}</span>
                 </td>
                 <td>
-                  {peutPayer && l.actif && (
-                    <div className="stack" style={{ gap: 4 }}>
-                      <button type="button" className="linkbtn" disabled={occupe || l.refusRelance !== null} aria-describedby={l.refusRelance ? `rr-${l.id}` : undefined} onClick={() => void relancer(l)}>
-                        Relancer
-                      </button>
-                      {l.refusRelance && (
-                        <span className="xs muted" id={`rr-${l.id}`}>
-                          {l.refusRelance}
-                        </span>
-                      )}
-                      {l.refusConstat === null && (
-                        <button type="button" className="linkbtn danger" disabled={occupe} onClick={() => setConstat(l.id)}>
-                          Constater la perte
-                        </button>
-                      )}
-                    </div>
+                  {peutPayer && l.actif && l.refusConstat === null && (
+                    <button type="button" className="linkbtn danger" disabled={occupe} onClick={() => setConstat(l.id)}>
+                      Constater la perte
+                    </button>
                   )}
                 </td>
               </tr>

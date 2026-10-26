@@ -45,7 +45,6 @@ html[data-theme='light'] .btn--style-primary {
   gap: 14px;
   padding: 18px 14px !important;
   background: var(--bg-surface);
-  border-right: 1px solid var(--border);
 }
 .rec-nav__head {
   display: flex;
@@ -139,29 +138,6 @@ html[data-theme='light'] .btn--style-primary {
   padding: 0 6px;
 }
 
-/* ---------- Connexion ---------- */
-.rec-login-logo {
-  height: 48px;
-  width: auto;
-}
-.rec-login-intro {
-  margin-bottom: 16px;
-  p {
-    margin: 0 0 8px;
-    color: var(--text-muted);
-  }
-}
-.rec-login-kicker {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 22px;
-  color: var(--text) !important;
-}
-.rec-login-note {
-  margin-top: 16px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
 .rec-icon {
   display: inline-flex;
   width: 24px;
@@ -395,5 +371,1511 @@ html[data-theme='light'] .btn--style-primary {
   &.is-on {
     color: var(--text-brand);
     border-color: var(--green-700);
+  }
+}
+
+/* ---------- Cadre de la maquette : menu de 260 px, barre du haut de 71 px, fond sable ---------- */
+:root {
+  --nav-width: 260px;
+  --app-header-height: 71px;
+  --gutter-h: 28px;
+  --spacing-view-bottom: 48px;
+}
+html[data-theme='light'] {
+  --theme-bg: var(--bg-sunken);
+  --theme-elevation-50: var(--bg-sunken);
+}
+@media (max-width: 760px) {
+  :root {
+    --app-header-height: 67px;
+    --gutter-h: 16px;
+    --spacing-view-bottom: 40px;
+  }
+}
+/* La barre de Payload (fil d'Ariane, avatar) cède la place à celle de la maquette, qui la recouvre. */
+.app-header {
+  visibility: hidden;
+}
+.template-default--nav-open {
+  background: linear-gradient(90deg, var(--bg-surface) 0, var(--bg-surface) 259px, var(--border) 259px, var(--border) 260px, transparent 260px);
+}
+.nav {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  --nav-padding-block-start: 0px;
+  --nav-padding-inline-start: 0px;
+  --nav-padding-inline-end: 0px;
+  --nav-padding-block-end: 0px;
+}
+.nav__header {
+  display: none;
+}
+.rec-nav__pill {
+  white-space: nowrap;
+}
+.rec-nav {
+  width: 100%;
+  min-height: 100%;
+}
+.rec-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--app-header-height);
+  z-index: calc(var(--z-modal, 100) + 1);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 28px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+  &__menu {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    align-items: center;
+    justify-content: center;
+    color: var(--text-brand);
+    cursor: pointer;
+    flex: none;
+    padding: 0;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  &__title {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--text);
+  }
+  &__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-sunken);
+    border-radius: var(--radius-full);
+    padding: 0 14px;
+    min-height: 42px;
+    width: 320px;
+    color: var(--text-muted);
+    input {
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 14px;
+      flex: 1;
+      min-width: 0;
+      color: var(--text);
+      outline: none;
+      height: 42px;
+      padding: 0;
+      &::placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+      }
+    }
+    &:focus-within {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+  }
+  &__results {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-raised);
+    z-index: 5;
+    a {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-height: 44px;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      span {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      &:hover,
+      &:focus-visible {
+        background: var(--bg-sunken);
+      }
+    }
+  }
+  &__none {
+    padding: 10px;
+    font-size: 14px;
+  }
+  &__me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  &__av {
+    position: relative;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--green-100);
+    color: var(--green-900);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    flex: none;
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  &__who {
+    display: flex;
+    flex-direction: column;
+    line-height: 16px;
+    font-size: 13px;
+    span {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+  }
+  &__out {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-brand);
+    flex: none;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+    &:focus-visible,
+    &__menu:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+  }
+}
+@media (min-width: 1025px) {
+  .rec-topbar {
+    left: 260px;
+  }
+}
+@media (max-width: 1024px) {
+  .rec-topbar__menu {
+    display: flex;
+  }
+}
+@media (max-width: 760px) {
+  .rec-topbar {
+    position: fixed;
+    padding: 12px 16px;
+    gap: 10px;
+    &__title {
+      font-size: 18px;
+      line-height: 24px;
+    }
+    &__search,
+    &__who {
+      display: none;
+    }
+  }
+}
+
+.rec-nav {
+  align-items: stretch;
+  font-size: 15px;
+  line-height: 23px;
+}
+@media (min-width: 1025px) {
+  .template-default__nav-toggler-wrapper {
+    display: none;
+  }
+}
+
+/* ---------- Cadre : contenu des vues natives au corps de texte de la maquette (15/23), menu ouvert dès le premier rendu ---------- */
+.template-default__wrap {
+  font-size: 15px;
+  line-height: 23px;
+}
+@media (min-width: 1025px) {
+  .template-default,
+  .template-default--nav-hydrated {
+    grid-template-columns: var(--nav-width) minmax(0, 1fr);
+  }
+  .template-default .nav {
+    display: unset;
+    opacity: 1;
+  }
+}
+
+/* ---------- Listes natives habillées comme les tableaux de la maquette (.tblwrap, .tbl) ---------- */
+.collection-list {
+  /* Le titre reste pour les lecteurs d'écran : la barre du haut l'affiche déjà. */
+  .list-header {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    margin: 0;
+    padding: 0;
+  }
+  .list-controls {
+    display: none;
+  }
+  > .gutter {
+    padding-top: 24px;
+    padding-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    > * {
+      margin: 0 !important;
+    }
+  }
+  .table-wrap {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+  .table {
+    width: 100%;
+    left: 0;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    &::after {
+      display: none;
+    }
+  }
+  .table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 23px;
+  }
+  .table th,
+  .table td {
+    min-width: 0;
+    max-width: none;
+    z-index: auto;
+  }
+  .table thead th,
+  .table thead th:first-child,
+  .table thead th:last-child {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 23px;
+    color: var(--text-muted);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .table thead {
+    color: var(--text-muted);
+  }
+  .table tbody td,
+  .table tbody td:first-child,
+  .table tbody td:last-child {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+  }
+  .table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .table tbody tr,
+  .table tbody tr:nth-child(odd) {
+    background: transparent;
+  }
+  .table table [class^='cell'] > p,
+  .table table [class^='cell'] > span,
+  .table table [class^='cell'] > a {
+    display: inline;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    max-width: none;
+  }
+  /* Première colonne : le titre en gras, comme les <b> de la maquette (le lien vers la fiche est conservé). */
+  .table tbody td:nth-child(2) a {
+    color: var(--text);
+    font-weight: 700;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  /* Pas de cases de sélection ni de tri dans la maquette. */
+  #heading-_select,
+  .cell-_select,
+  .sort-column__buttons {
+    display: none;
+  }
+  .sort-column__label {
+    font: inherit;
+    color: inherit;
+  }
+  .sort-column__label .field-label {
+    font: inherit;
+    color: inherit;
+  }
+  /* Une seule page : la pagination disparaît (la maquette n'en a pas). */
+  .page-controls:not(:has(.paginator__page + .paginator__page)) {
+    display: none;
+  }
+  .collection-list__no-results {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+}
+.collection-list .table .rec-linkcell {
+  white-space: nowrap;
+  text-align: right;
+}
+.rec-linkbtn {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  min-height: 32px;
+  color: var(--text-brand);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  &:hover {
+    text-decoration: underline;
+  }
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+.rec-linkbtn + .rec-linkbtn {
+  margin-left: 4px;
+}
+
+/* Blocs injectés dans les vues natives (barres d'action, filtres, encadrés) : styles de la maquette, portée .bb. */
+.bb.rec-bloc {
+  background: transparent;
+  min-height: 0;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+@media (max-width: 760px) {
+  .collection-list > .gutter {
+    padding-top: 16px;
+    padding-bottom: 40px;
+  }
+  /* Tableau en fiches empilées, libellé de la colonne à gauche (maquette mobile). */
+  .collection-list .table-wrap {
+    overflow-x: visible;
+  }
+  .collection-list .table thead {
+    display: none;
+  }
+  .collection-list .table table,
+  .collection-list .table tbody {
+    display: block;
+  }
+  .collection-list .table tbody tr {
+    display: block;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .collection-list .table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .collection-list .table tbody td,
+  .collection-list .table tbody td:first-child,
+  .collection-list .table tbody td:last-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 3px 0;
+    border: 0;
+    text-align: right;
+  }
+  .collection-list .table tbody td:nth-child(2) {
+    text-align: left;
+  }
+  .collection-list .table tbody td[data-label]::before,
+  .collection-list .table tbody td.rec-lbl::before {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+    text-align: left;
+  }
+  .collection-list .table tbody td.cell-_select {
+    display: none;
+  }
+  .collection-list .table .rec-linkcell {
+    text-align: left;
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- Contenu des cellules (classes de la maquette, hors portée .bb) ---------- */
+.collection-list .table {
+  .rec-cell-lien {
+    color: var(--text);
+    text-decoration: none;
+    &:hover b {
+      text-decoration: underline;
+    }
+  }
+  .ent-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .av {
+    position: relative;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--green-100);
+    color: var(--green-900);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    flex: none;
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  }
+  .doc-th {
+    width: 36px;
+    height: 48px;
+    flex: none;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #fff;
+    display: block;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-brand);
+    background: var(--bg-brand-soft);
+    border-radius: var(--radius-full);
+    padding: 2px 10px;
+    line-height: 18px;
+  }
+  .pill-ok {
+    background: var(--green-100);
+    color: var(--green-900);
+  }
+  .mono,
+  td.cell-version,
+  td.cell-telechargements {
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .small {
+    font-size: 13px;
+    line-height: 20px;
+  }
+  .muted {
+    color: var(--text-muted);
+  }
+}
+
+/* Les collections habillées entièrement : barre de la maquette à la place de l'en-tête et des contrôles natifs. */
+.collection-list--news,
+.collection-list--users,
+.collection-list--auditLog,
+.collection-list--documents,
+.collection-list--pages {
+  .list-controls {
+    display: none;
+  }
+}
+.collection-list .list-header__title {
+  font-family: var(--font-display);
+}
+
+/* Journal (écran 17) : un panneau, une frise ; ni en-tête de colonnes ni séparateurs. */
+.collection-list--auditLog {
+  .table-wrap {
+    padding: 20px 22px;
+  }
+  .table thead {
+    display: none;
+  }
+  .table table,
+  .table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .table tbody tr {
+    display: block;
+  }
+  .table tbody td,
+  .table tbody td:first-child,
+  .table tbody td:last-child {
+    display: block;
+    padding: 0;
+    border: 0;
+    font-size: 15px;
+  }
+  .tl {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 6px 0;
+  }
+  .tl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--green-700);
+    margin-top: 5px;
+    flex: none;
+    box-shadow: 0 0 0 4px var(--green-100);
+  }
+  .tl-t {
+    display: flex;
+    flex-direction: column;
+    b {
+      font-weight: 700;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .collection-list--auditLog .table tbody td {
+    display: block;
+    text-align: left;
+  }
+  .collection-list--auditLog .table-wrap {
+    padding: 20px 22px;
+  }
+  /* Libellés des colonnes dans les fiches empilées (maquette mobile). */
+  .collection-list--news td.cell-type::before {
+    content: 'Type';
+  }
+  .collection-list--news td.cell-auteurRole::before {
+    content: 'Auteur';
+  }
+  .collection-list--news td.cell-publication::before {
+    content: 'Publication';
+  }
+  .collection-list--news td.cell-etat::before,
+  .collection-list--pages td.cell-statutPage::before,
+  .collection-list--users td.cell-statut::before {
+    content: 'Statut';
+  }
+  .collection-list--pages td.cell-miseAJour::before,
+  .collection-list--documents td.cell-miseAJour::before {
+    content: 'Mise à jour';
+  }
+  .collection-list--users td.cell-role::before {
+    content: 'Rôle';
+  }
+  .collection-list--users td.cell-lastLogin::before {
+    content: 'Connexion';
+  }
+  .collection-list--documents td.cell-rubrique::before {
+    content: 'Rubrique';
+  }
+  .collection-list--documents td.cell-visibilite::before {
+    content: 'Visibilité';
+  }
+  .collection-list--documents td.cell-version::before {
+    content: 'Version';
+  }
+  .collection-list--documents td.cell-telechargements::before {
+    content: 'Téléchargements';
+  }
+  .collection-list .table tbody td[class*='cell-']::before {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-sans);
+    flex: none;
+  }
+}
+
+/* ---------- Connexion (écran 01) : fond vert pâle de 780 px avec ses deux disques, carte de 440 px ---------- */
+.template-minimal.login {
+  position: relative;
+  overflow: hidden;
+  min-height: 780px;
+  padding: 40px 16px;
+  background: var(--bg-brand-soft);
+  align-items: center;
+  font-size: 15px;
+  line-height: 23px;
+  &::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: var(--green-100);
+    left: -80px;
+    top: -80px;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    border: 48px solid var(--gold-100);
+    right: -120px;
+    bottom: -120px;
+    box-sizing: content-box;
+  }
+  .template-minimal__wrap {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-surface);
+    border-radius: 28px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: var(--shadow-raised);
+    > * {
+      margin: 0;
+    }
+  }
+  .login__brand {
+    justify-content: flex-start;
+    margin: 0;
+  }
+  .rec-login-logo {
+    height: 48px;
+    width: auto;
+    display: block;
+  }
+  .rec-login-pill {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--text-brand);
+    background: var(--bg-brand-soft);
+    border-radius: var(--radius-full);
+    padding: 2px 10px;
+  }
+  .rec-login-small {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-muted);
+  }
+  .rec-login-h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 32px;
+    color: var(--text);
+  }
+  .login__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .login__form__inputWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+  }
+  .field-type {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+  }
+  label.field-label:not(.unstyled) {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 600;
+    color: var(--text);
+    padding: 0;
+    .required {
+      display: none;
+    }
+  }
+  .field-type input {
+    box-sizing: border-box;
+    height: 44px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 12px;
+    background: var(--bg-surface);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    box-shadow: none;
+    &:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+  }
+  .form-submit {
+    order: 2;
+    margin: 0;
+    .btn {
+      width: 100%;
+      margin: 0;
+      min-height: 44px;
+      height: 44px;
+      padding: 0 18px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .btn__content,
+    .btn__label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+  .login__form > a {
+    order: 3;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 0;
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 600;
+    color: var(--text-brand);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+@media (max-width: 760px) {
+  .template-minimal.login .template-minimal__wrap {
+    padding: 24px;
+  }
+}
+
+/* Utilisateurs (écran 16) : la matrice suit le tableau, dans la même colonne et au même espacement (18 px). */
+.collection-list--users > .gutter {
+  padding-bottom: 18px;
+}
+.bb.rec-apres-liste {
+  padding: 0 var(--gutter-h) 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+@media (max-width: 760px) {
+  .collection-list--users > .gutter {
+    padding-bottom: 18px;
+  }
+  .bb.rec-apres-liste {
+    padding-bottom: 40px;
+  }
+}
+
+/* Contenus des cellules : la mise en page native (-webkit-box) cède la place à celle de la maquette. */
+.collection-list .table table td > .rec-badge {
+  display: inline-flex;
+}
+.collection-list .table table td > .pill,
+.collection-list .table table td > .ent-cell,
+.collection-list .table table td > .rec-linkcell {
+  display: inline-flex;
+}
+.collection-list .table table td > .tl {
+  display: flex;
+}
+.collection-list--auditLog .table tbody td.cell-_select {
+  display: none;
+}
+.collection-list .table td:is(.cell-miseAJour, .cell-publication, .cell-lastLogin, .cell-statut, .cell-etat, .cell-statutPage) {
+  white-space: nowrap;
+}
+
+/* Onglets « Pages, menus et médias » (écran 14) au-dessus de la liste, dans la colonne de contenu. */
+.bb.rec-onglets {
+  padding: 24px var(--gutter-h) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  a.tab,
+  a.chip {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+}
+.rec-onglets + .gutter,
+.collection-list > .rec-onglets ~ .gutter {
+  padding-top: 18px;
+}
+.document-fields .bb.rec-onglets,
+.global-edit .bb.rec-onglets {
+  padding: 0;
+}
+@media (max-width: 760px) {
+  .bb.rec-onglets {
+    padding-top: 16px;
+  }
+}
+.collection-list .table table td > :is(.rec-badge, .pill, .ent-cell, .rec-linkcell) {
+  vertical-align: middle;
+}
+.collection-list .table tbody td a.rec-cell-lien {
+  font-weight: 400;
+  b {
+    font-weight: 700;
+  }
+}
+/* Les libellés masqués des cellules restent dans la zone défilante du tableau (pas de défilement horizontal de la page). */
+.bb.rec-bloc .tblwrap {
+  position: relative;
+}
+.bb.rec-onglets a.tab {
+  justify-content: center;
+}
+@media (max-width: 760px) {
+  .collection-list .table table td > .rec-linkcell {
+    flex: 1;
+    justify-content: space-between;
+  }
+}
+
+/* ======================================================================================================
+   Vues d'édition natives (écrans 10, 15, 20, 22) : champs, onglets et panneaux de la maquette
+   (.rec-field, .rec-input, .tabs, .panel de design/back-office.css).
+   ====================================================================================================== */
+.collection-edit {
+  /* Titre et onglets Payload (Éditer, API…) : le titre reste pour les lecteurs d'écran, la barre du haut l'affiche. */
+  --spacing-field: 14px;
+}
+.template-default__wrap > .doc-header,
+.collection-edit .doc-header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  margin: 0;
+  padding: 0;
+}
+.collection-edit .render-fields:not(.render-fields--margins-none) {
+  --spacing-field: 14px;
+}
+.collection-edit .document-fields__edit {
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+
+/* Champs */
+.collection-edit {
+  label.field-label:not(.unstyled) {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 23px;
+    font-weight: 600;
+    color: var(--text);
+    padding-bottom: 6px;
+  }
+  .field-type.text:not(.has-many) input,
+  .field-type.email input,
+  .field-type.number:not(.has-many) input,
+  .field-type.password input,
+  .field-type.date .react-datepicker__input-container input,
+  .date-time-picker .react-datepicker__input-container input,
+  .field-type.textarea textarea,
+  .react-select .rs__control {
+    box-shadow: none;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 12px;
+    background: var(--bg-surface);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+  }
+  .field-type.text:not(.has-many) input,
+  .field-type.email input,
+  .field-type.number:not(.has-many) input,
+  .field-type.password input,
+  .date-time-picker .react-datepicker__input-container input {
+    height: 44px;
+    padding: 0 12px;
+  }
+  .react-select .rs__control {
+    min-height: 44px;
+  }
+  .field-type.textarea textarea {
+    min-height: 96px;
+    padding: 10px 12px;
+    line-height: 23px;
+  }
+  .field-description {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-muted);
+  }
+}
+
+/* Onglets d'un formulaire : pastilles dans un cadre blanc arrondi (.tabs, .tab) */
+.collection-edit .tabs-field {
+  margin: 0;
+}
+.collection-edit .tabs-field__tabs-wrap {
+  margin-bottom: 18px;
+  overflow: visible;
+}
+.collection-edit .tabs-field__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  width: max-content;
+  max-width: 100%;
+  padding: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+.collection-edit .tabs-field__tab-button {
+  margin: 0;
+  padding: 0 16px;
+  min-height: 38px;
+  align-items: center;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 23px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  opacity: 1;
+  &::after {
+    display: none;
+  }
+  &:hover {
+    background: var(--bg-sunken);
+  }
+  &--active {
+    background: var(--bg-brand-soft);
+    color: var(--text-brand);
+  }
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+.collection-edit .tabs-field__content-wrap {
+  padding: 20px 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.collection-edit .tabs-field__tab > .field-description {
+  font-size: 13px;
+  line-height: 20px;
+  margin-bottom: 12px;
+}
+.collection-edit .array-field__title,
+.collection-edit .group-field__title,
+.collection-edit .blocks-field__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+}
+.collection-edit .group-field--top-level,
+.collection-edit .group-field--within-tab {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Barre des actions du document : boutons arrondis de la maquette. */
+.collection-edit .doc-controls {
+  background: transparent;
+  .btn {
+    border-radius: var(--radius-full);
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .btn .btn__content {
+    font-size: 14px;
+  }
+}
+.collection-edit .doc-controls__divider {
+  display: none;
+}
+@media (max-width: 760px) {
+  .collection-edit .document-fields__edit {
+    padding-top: 16px;
+    padding-bottom: 40px;
+  }
+  .collection-edit .tabs-field__tabs {
+    width: 100%;
+  }
+  .collection-edit .tabs-field__tab-button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* Pas de voile flouté sous la barre des actions (la maquette n'en a pas). */
+.collection-edit .doc-controls::before,
+.collection-edit .doc-controls::after {
+  display: none;
+}
+.collection-edit .doc-controls {
+  background: var(--bg-sunken);
+}
+
+/* Paramètres (écran 15) : onglets en tête, bouton « Enregistrer » dans le panneau, sous les champs (gap 12, marge 20). */
+.global-edit--settings .collection-edit__form {
+  display: flex;
+  flex-direction: column;
+}
+.global-edit--settings .tabs-field__content-wrap {
+  padding-bottom: 76px;
+}
+.global-edit--settings .doc-controls {
+  order: 2;
+  position: relative;
+  z-index: 2;
+  background: transparent;
+  margin-top: -112px;
+  margin-bottom: 68px;
+  padding-left: calc(var(--gutter-h) + 23px);
+  pointer-events: none;
+}
+.global-edit--settings .doc-controls__wrapper {
+  height: auto;
+  padding: 0;
+}
+.global-edit--settings .doc-controls__content {
+  display: none;
+}
+.global-edit--settings .doc-controls__controls-wrapper,
+.global-edit--settings .doc-controls__controls {
+  pointer-events: auto;
+}
+@media (max-width: 760px) {
+  .global-edit--settings .doc-controls {
+    margin-top: -104px;
+    margin-bottom: 60px;
+  }
+}
+
+/* ---------- Éditeurs avec panneau latéral (écrans 10, 20, 22) : deux panneaux, grille 1,5 / 1 (.grid2.grid-wide) ---------- */
+.collection-edit .render-fields:not(.render-fields--margins-none) {
+  --spacing-field: 12px;
+}
+.collection-edit--news,
+.collection-edit--pages,
+.collection-edit--opportunities {
+  .doc-controls {
+    position: relative;
+    padding-top: 24px;
+    background: var(--bg-sunken);
+  }
+  .doc-controls__wrapper {
+    height: 44px;
+    padding: 0;
+  }
+  .doc-controls__content {
+    display: none;
+  }
+  .doc-controls__controls-wrapper,
+  .doc-controls__controls {
+    flex: 1;
+    min-width: 0;
+    gap: 10px;
+  }
+  .document-fields--has-sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    padding: 18px var(--gutter-h) 48px;
+  }
+  .document-fields__main,
+  .document-fields--has-sidebar .document-fields__edit {
+    padding: 0;
+    border: 0;
+    width: auto;
+    min-width: 0;
+  }
+  .document-fields__sidebar-wrap {
+    position: static;
+    height: auto;
+    width: auto;
+    min-width: 0;
+    border: 0;
+    top: auto;
+  }
+  .document-fields__sidebar {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    position: static;
+  }
+  .document-fields__sidebar-fields {
+    padding: 0;
+    height: auto;
+    > .render-fields {
+      padding: 20px 22px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+  }
+  /* Panneau principal sans onglets (pages, opportunités) : les champs dans un panneau. */
+  .document-fields__fields:not(:has(> .tabs-field)) {
+    padding: 20px 22px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+}
+/* Actualités : les onglets surmontent les deux colonnes dans la maquette ; le panneau latéral s'aligne sur le principal. */
+.collection-edit--news .document-fields__sidebar-fields {
+  margin-top: 58px;
+}
+.rec-barre-doc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  &__retour {
+    margin-right: auto;
+  }
+  &__version {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-muted);
+  }
+}
+.collection-edit .doc-controls .rec-btn,
+.collection-edit .doc-controls a.rec-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 14px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+}
+
+/* Historique des versions (panneau latéral) */
+.rec-historique {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  &__titre {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+  }
+  &__ligne {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 6px 0;
+    p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 20px;
+    }
+  }
+  &__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--green-700);
+    margin-top: 4px;
+    flex: none;
+    box-shadow: 0 0 0 4px var(--green-100);
+  }
+}
+.rec-apercu {
+  width: 100%;
+  height: 720px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+@media (max-width: 1024px) {
+  .collection-edit--news,
+  .collection-edit--pages,
+  .collection-edit--opportunities {
+    .document-fields--has-sidebar {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .collection-edit--news .document-fields__sidebar-fields {
+    margin-top: 0;
+  }
+}
+@media (max-width: 760px) {
+  .collection-edit--news,
+  .collection-edit--pages,
+  .collection-edit--opportunities {
+    .doc-controls {
+      padding-top: 16px;
+      top: 0;
+    }
+    .document-fields--has-sidebar {
+      padding: 18px 16px 40px;
+    }
+  }
+}
+
+/* Opportunité (écran 20) : aperçu de la carte (.pv-screen) et règles dans le panneau latéral. */
+.rec-panneau {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  &__titre {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+  }
+  p {
+    margin: 0;
+  }
+}
+.rec-pv {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-brand);
+    background: var(--bg-brand-soft);
+    border-radius: var(--radius-full);
+    padding: 2px 10px;
+    line-height: 18px;
+    &--ok {
+      background: var(--green-100);
+      color: var(--green-900);
+    }
+  }
+  &__small {
+    font-size: 13px;
+    line-height: 20px;
+  }
+  &__muted {
+    color: var(--text-muted);
+  }
+}
+.rec-pv__small.rec-pv__muted {
+  color: var(--text-muted);
+}
+
+/* Blocs d'une page (écran 22) : chaque bloc dans son panneau, titre « Bloc · … » en Montserrat. */
+.collection-edit .blocks-field__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.collection-edit .blocks-field__row.collapsible {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin: 0;
+}
+.collection-edit .blocks-field__row > .collapsible__toggle-wrap {
+  background: transparent;
+  padding: 0;
+}
+.collection-edit .blocks-field__row .collapsible__content {
+  padding: 4px 22px 20px;
+}
+.rec-bloc-titre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--text);
+}
+.collection-edit .array-field__row.collapsible {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.collection-edit .field-type .required {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.collection-edit--pages .document-fields__fields:not(:has(> .tabs-field)) {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.render-fields > .field-type:has(> .rec-panneau) + .field-type:has(> .rec-panneau),
+.rec-panneau + .rec-panneau {
+  margin-top: 18px;
+}
+@media (max-width: 760px) {
+  .collection-edit--news,
+  .collection-edit--pages,
+  .collection-edit--opportunities {
+    .doc-controls__wrapper {
+      height: auto;
+      flex-direction: row;
+    }
+    .doc-controls__controls-wrapper {
+      align-items: flex-start;
+    }
+    .doc-controls__controls {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+  }
+  .rec-barre-doc {
+    flex-wrap: wrap;
+    flex-basis: 100%;
+    gap: 10px;
+    &__retour,
+    &__version {
+      flex-basis: 100%;
+    }
+  }
+}
+@media (max-width: 1024px) {
+  .collection-edit--news,
+  .collection-edit--pages,
+  .collection-edit--opportunities,
+  .global-edit--settings {
+    .doc-controls.gutter {
+      top: 0;
+      padding-left: var(--gutter-h);
+      padding-right: var(--gutter-h);
+    }
+    .doc-controls__controls-wrapper {
+      height: auto;
+      border-top: 0;
+      padding-right: 0;
+      background: transparent;
+    }
+    .doc-controls__controls {
+      overflow: visible;
+      padding-left: 0;
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+@media (max-width: 1024px) {
+  .global-edit--settings .doc-controls.gutter {
+    padding-left: calc(var(--gutter-h) + 23px);
+  }
+}
+@media (max-width: 760px) {
+  .rec-barre-doc {
+    display: contents;
   }
 }

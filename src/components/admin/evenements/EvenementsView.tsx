@@ -16,11 +16,16 @@ type Ev = {
   image?: { url?: string; alt?: string; sizes?: { vignette?: { url?: string } } } | null
 }
 
+const avenirDabord = (tous: Ev[]) => {
+  const maintenant = Date.now()
+  return [...tous.filter((e) => new Date(e.debut).getTime() >= maintenant), ...tous.filter((e) => new Date(e.debut).getTime() < maintenant).reverse()]
+}
+
 /** Écran 07 : liste des événements. */
 export const EvenementsView = async (props: ListViewServerProps) => {
   const { payload, user } = props
   const [evs, regs] = await Promise.all([
-    payload.find({ collection: 'events', sort: '-debut', limit: 200, depth: 1, user, overrideAccess: false }),
+    payload.find({ collection: 'events', sort: 'debut', limit: 200, depth: 1, user, overrideAccess: false }),
     payload.find({
       collection: 'registrations',
       where: { statut: { in: ['inscrit', 'present'] } },
@@ -34,7 +39,8 @@ export const EvenementsView = async (props: ListViewServerProps) => {
   const compte = new Map<number, number>()
   for (const r of regs.docs as unknown as { evenement: number }[]) compte.set(r.evenement, (compte.get(r.evenement) ?? 0) + 1)
   const peutCreer = atLeast(user as never, 'evenements', 'partial')
-  const liste = evs.docs as unknown as Ev[]
+  // À venir d'abord (du plus proche au plus lointain), puis les événements passés.
+  const liste = avenirDabord(evs.docs as unknown as Ev[])
 
   return (
     <BoView titre="Événements">

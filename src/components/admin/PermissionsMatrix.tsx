@@ -1,8 +1,9 @@
 'use client'
-import { useAuth } from '@payloadcms/ui'
 import React, { useState } from 'react'
 
 import { DOMAINS, MATRIX, ROLES, type Level, type Role } from '@/access/roles'
+
+import '@/styles/back-office.css'
 
 const TEXT: Record<Level, string> = {
   full: 'tous droits',
@@ -10,24 +11,23 @@ const TEXT: Record<Level, string> = {
   read: 'lecture seule',
   none: 'aucun accès',
 }
+const SYMBOLE: Record<Level, string> = { full: '●', partial: '◐', read: '○', none: '·' }
+const CLASSE: Record<Level, string> = { full: 'full', partial: 'part', read: 'read', none: 'none' }
 
 /** Matrice des permissions, générée depuis src/access/roles.ts (écran 16 de la maquette). */
 export const PermissionsMatrix = () => {
-  const { user } = useAuth()
-  const mine = ((user as { roles?: Role[] } | null)?.roles ?? [])[0] ?? 'admin'
-  const [focus, setFocus] = useState<Role>(mine)
+  // La maquette met l'administrateur en évidence à l'ouverture ; le sélecteur change le rôle mis en évidence.
+  const [focus, setFocus] = useState<Role>('admin')
 
   return (
-    <section className="rec-panel rec-matrix" aria-labelledby="rec-matrix-title">
-      <h2 id="rec-matrix-title" className="rec-h3">
-        Matrice des permissions
-      </h2>
-      <div className="rec-chips" role="group" aria-label="Rôle mis en évidence">
+    <div className="bb rec-bloc rec-apres-liste">
+      <h2 className="h2">Matrice des permissions</h2>
+      <div className="chips" role="group" aria-label="Rôle mis en évidence">
         {ROLES.map((r) => (
           <button
             key={r.value}
             type="button"
-            className={`rec-chip${focus === r.value ? ' is-on' : ''}`}
+            className={`chip${focus === r.value ? ' is-on' : ''}`}
             aria-pressed={focus === r.value}
             onClick={() => setFocus(r.value)}
           >
@@ -35,17 +35,13 @@ export const PermissionsMatrix = () => {
           </button>
         ))}
       </div>
-      <div className="rec-tblwrap">
-        <table className="rec-tbl">
+      <div className="tblwrap tblwrap-x">
+        <table className="tbl mtx">
           <thead>
             <tr>
               <th scope="col">Domaine</th>
               {ROLES.map((r) => (
-                <th
-                  scope="col"
-                  key={r.value}
-                  className={focus === r.value ? 'is-focus' : undefined}
-                >
+                <th scope="col" key={r.value}>
                   {r.label}
                 </th>
               ))}
@@ -54,17 +50,19 @@ export const PermissionsMatrix = () => {
           <tbody>
             {DOMAINS.map((d) => (
               <tr key={d.key}>
-                <th scope="row">{d.label}</th>
+                <td>
+                  <b>{d.label}</b>
+                </td>
                 {ROLES.map((r) => {
                   const l = MATRIX[d.key][r.value]
                   return (
                     <td
                       key={r.value}
-                      className={focus === r.value ? 'is-focus' : undefined}
+                      className={`perm ${CLASSE[l]}${focus === r.value ? ' is-sel' : ''}`}
                       title={TEXT[l]}
                     >
-                      <span className={`rec-lvl rec-lvl--${l}`} aria-hidden="true" />
-                      <span className="rec-sr">{TEXT[l]}</span>
+                      <span aria-hidden="true">{SYMBOLE[l]}</span>
+                      <span className="sr">{TEXT[l]}</span>
                     </td>
                   )
                 })}
@@ -73,14 +71,11 @@ export const PermissionsMatrix = () => {
           </tbody>
         </table>
       </div>
-      <p className="rec-small rec-muted">
-        <span className="rec-lvl rec-lvl--full" aria-hidden="true" /> tous droits ·{' '}
-        <span className="rec-lvl rec-lvl--partial" aria-hidden="true" /> droits partiels (brouillon
-        sans publication, ou ses propres éléments) ·{' '}
-        <span className="rec-lvl rec-lvl--read" aria-hidden="true" /> lecture seule ·{' '}
-        <span className="rec-lvl rec-lvl--none" aria-hidden="true" /> aucun accès. Rôle mis en
-        évidence : {ROLES.find((r) => r.value === focus)?.label}.
+      <p className="small muted">
+        ● tous droits · ◐ droits partiels (brouillon sans publication, ou ses propres éléments) · ○
+        lecture seule · · aucun accès. Rôle mis en évidence :{' '}
+        {ROLES.find((r) => r.value === focus)?.label}.
       </p>
-    </section>
+    </div>
   )
 }

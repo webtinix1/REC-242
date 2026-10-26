@@ -41,7 +41,7 @@ export const CandidaturesView = async (props: ListViewServerProps) => {
       user,
       overrideAccess: false,
       where: statut ? { statut: { equals: statut } } : { statut: { not_equals: 'archivee' } },
-      sort: '-createdAt',
+      sort: '-numero',
       limit: 200,
       depth: 1,
     }),

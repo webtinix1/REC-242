@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import path from 'path'
 
 import { extraFull, extraRead, hasRole, isStaff } from '@/access/roles'
+import { colonne, colonneActions } from '@/fields/colonneActions'
 import { logAction } from '@/lib/audit'
 
 export const RUBRIQUES = [
@@ -65,12 +66,17 @@ export const Documents: CollectionConfig = {
   admin: {
     group: 'Contenus',
     useAsTitle: 'titre',
-    defaultColumns: ['titre', 'rubrique', 'visibilite', 'version', 'updatedAt', 'telechargements'],
+    defaultColumns: ['document', 'rubrique', 'visibilite', 'version', 'miseAJour', 'telechargements', 'actions'],
+    // Les documents personnels (reçus, chartes signées) ne figurent pas au tableau : ils ont leur encadré (écran 18).
+    pagination: { defaultLimit: 25 },
+    baseListFilter: () => ({ visibilite: { not_equals: 'personnel' } }),
     components: {
       beforeListTable: ['@/components/admin/DocumentsFilters#DocumentsFilters'],
       afterListTable: ['@/components/admin/DocumentsPersonal#DocumentsPersonal'],
     },
   },
+  // Ordre de dépôt, comme le tableau de la maquette (écran 18). Le site et l'espace membre trient eux-mêmes.
+  defaultSort: 'createdAt',
   access: {
     read: ({ req }) => readFilter(req),
     create: ({ req }) => extraFull(req.user, 'documents'),
@@ -234,5 +240,8 @@ export const Documents: CollectionConfig = {
         { name: 'date', type: 'date' },
       ],
     },
+    colonne('document', 'Document', 'DocumentCell'),
+    colonne('miseAJour', 'Mise à jour', 'MiseAJourCell'),
+    colonneActions(),
   ],
 }

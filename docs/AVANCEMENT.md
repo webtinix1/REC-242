@@ -20,7 +20,6 @@ Tenu à jour à la fin de chaque lot.
 
 ## Écarts assumés avec la maquette
 
-- Back-office, barre du haut : c'est encore celle de Payload (fil d'Ariane, avatar). La barre de la maquette (titre, recherche globale, utilisateur) viendra avec le tableau de bord (lot 11), quand la recherche aura des contenus à parcourir.
 - Utilisateurs : le bouton natif « Créer » de Payload reste visible pour le super administrateur (création directe avec mot de passe), en plus de « Inviter un utilisateur ».
 - Actualités de démonstration : toutes publiées, comme sur le site de la maquette (l'écran 09 de la maquette en montrait trois en brouillon, programmé et relecture pour illustrer les statuts).
 - Journal : la ville n'est renseignée que si le frontal transmet un en-tête de géolocalisation (Nginx GeoIP, à configurer au lot 12) ; sinon la colonne reste vide. On n'invente pas de ville.
@@ -241,3 +240,78 @@ Mesures écran par écran (compilation de production) :
 - Règles côté serveur : un éditeur (pages) ou un responsable événements (actualités) ne modifie plus directement un contenu publié (enregistrement hors brouillon refusé) ; numéro de billet, pointage et rappel jamais repris d’une inscription envoyée par un membre ; pièce jointe d’une annonce ou d’une réponse forcément déposée par le membre ; un membre ne réécrit plus la date de réponse ni le signalement d’une mise en relation ; un membre suspendu ou ancien membre perd ses sessions ouvertes (son jeton ne vaut plus pour l’API).
 - Liens d’e-mail et favoris : le navigateur les annonce comme venant d’ailleurs (`Sec-Fetch-Site: cross-site` ou `none`) et Payload ignore alors le cookie. Plutôt que d’affaiblir ce contrôle, l’espace membre renvoie un membre qui a un cookie vers `/espace-membre/ouverture`, page du site qui recharge l’adresse demandée (seulement une adresse de l’espace membre) : la requête suivante part du site et la session est reconnue.
 - Tests : `tests/int/securite.int.spec.ts` (visiteur, membre contre membre, six rôles, paramètres, sessions fermées à la suspension) et `tests/e2e/securite.e2e.spec.ts` (en-têtes, pages protégées, API REST par rôle, CSRF).
+
+## Back-office : alignement visuel (26/10/2026)
+
+Même méthode que pour le site (compilation de production, maquette rendue par le même navigateur ; la maquette du back-office n’a pas de contrôle « Démo »). Outillage : `scripts/audit-visuel/capture-bo.cjs` (22 écrans de docs/08 aux deux largeurs, les écrans de détail ouvrent l’enregistrement de la maquette : C-0041, REC-2026-0137, l’afterwork, « Les adhésions bientôt ouvertes en ligne », « Fourniture d’équipements informatiques », la page Antennes), `ZONES=back-office` pour `plancher.cjs` et `compare.cjs`, `pnpm audit:bo`. Compte de capture : ange.mouandza@rec242.test (super administrateur).
+
+Fait :
+
+- Cadre commun : barre du haut de la maquette (`BarreHaut.tsx` : titre de l’écran, recherche globale sur les membres et candidatures avec les droits de l’utilisateur, personne connectée, déconnexion, menu mobile), menu de 260 px avec pastilles calculées au rendu, gouttières et typographie de la maquette ; `/admin/cotisations` rendu dans le cadre de l’admin (il s’affichait sans menu).
+- Connexion (01) : fond, carte et titre de la maquette (dans la cible aux deux largeurs).
+- Listes natives (09, 14, 16, 17, 18) : barre de la maquette, tableau sans cases à cocher ni tri, cellules de la maquette (photos, couvertures, dates), fiches empilées sur mobile, journal en frise, matrice des permissions, onglets Contenus.
+- Éditeurs (10, 15, 20, 22) : onglets en pastilles, panneaux, « Enregistrer », « Publier », « Prévisualiser », historique des versions avec « Restaurer », aperçu en direct de la carte d’opportunité, blocs titrés « Bloc · … ».
+- Vues personnalisées (02 à 08, 11 à 13, 19, 21) : titre et onglets natifs masqués au-dessus des vues de document, tableau de bord réduit aux quatre compteurs et blocs de docs/08, cotisations conformes à docs/08 (quatre compteurs, relances envoyées par « Envoyer les relances dues »), photos des participants, événements à venir d’abord.
+- Données : purge des versions orphelines et des comptes de test, utilisateurs, documents, journal et brouillons de la maquette (`src/seed/backoffice.ts`), inscriptions et encarts de l’annuaire. Les tests d’intégration nettoient désormais leurs données (`tests/int/nettoyage.ts`).
+
+Résultat : 3 écrans sur 44 dans la cible (au départ : 0). Causes des écarts restants :
+
+| Cause | Écrans |
+|---|---|
+| Les données de démonstration suivent le site et l’espace membre (déjà alignés), qui montrent plus de lignes que la maquette du back-office : 9 membres au lieu de 4, 8 actualités au lieu de 4, 14 pages au lieu de 10, 12 paiements au lieu de 3, 42 inscrits à l’afterwork, 5 événements. La maquette du back-office marque aussi « Les Bretelles de Léon » suspendu, actif sur le site et dans l’espace membre. | 05, 07, 08, 09, 11, 12, 14, 18 (hauteurs + 20 % à + 330 %) |
+| Éléments imposés par docs/08 absents de la maquette : filtres et recherche (05, 17), « Masquer la fiche », « Enregistrer un décès » (06), « Exporter », « Saisir une candidature papier » (03), groupe « Plan d’accès » et réseaux sociaux (15), onglet Témoignages (14). | 03, 05, 06, 14, 15, 17 |
+| Pas de photo pour les candidats, les expéditeurs de messages et les visiteurs inscrits (aucun champ dans docs/03) : initiales à la place. | 03, 04, 08, 13 |
+| Le journal enregistre chaque connexion (docs/08 §17) : celles de la capture et des tests passent devant les 5 entrées de la maquette. Les compteurs de documents personnels sont calculés (la maquette affiche des chiffres inventés, 412 et 248). | 17, 18 |
+| Formulaires de Payload : les blocs de pages et les actualités ont des champs techniques (section, image, boutons, adresse, rang, à la une, signature) que la maquette ne dessine pas ; le panneau latéral garde les champs de modération. | 10, 20, 22 (hauteurs + 33 % à + 195 %) |
+| Personne connectée : Béryl Bobanda dans la maquette, le super administrateur dans la capture (nom, rôle et initiales de la barre du haut). | tous |
+
+Reste à faire pour aller plus loin : refaire en vues personnalisées les éditeurs d’actualité, de page et d’opportunité (10, 20, 22) au lieu d’habiller les formulaires natifs ; trancher avec REC 242 les contradictions de données entre la maquette du back-office et celle du site.
+
+Mesures écran par écran (compilation de production) :
+
+| Écran | Départ (1er écran, hauteur) | Contre captures/ | Contre la maquette rendue | Hauteur (maquette → intégration) | Cible |
+|---|---|---|---|---|---|
+| 01-connexion-mobile | 25,4 %, ×1,00 | 5 % | 1,4 % | 900 → 900 (+0,0 %) | oui |
+| 01-connexion-ordinateur | 11,7 %, ×1,00 | 1,1 % | 0,1 % | 900 → 900 (+0,0 %) | oui |
+| 02-tableau-mobile | 26,2 %, ×1,26 | 27,6 % | 27,9 % | 2434 → 2465 (+1,3 %) | non |
+| 02-tableau-ordinateur | 21,6 %, ×1,40 | 4,1 % | 1 % | 1289 → 1289 (+0,0 %) | oui |
+| 03-candidatures-mobile | 18,5 %, ×1,00 | 18,1 % | 18,5 % | 2450 → 2458 (+0,3 %) | non |
+| 03-candidatures-ordinateur | 8,9 %, ×0,96 | 10,2 % | 8,9 % | 934 → 900 (−3,6 %) | non |
+| 04-candidature-mobile | 33,3 %, ×1,03 | 20,7 % | 20,8 % | 2412 → 2390 (−0,9 %) | non |
+| 04-candidature-ordinateur | 21,7 %, ×1,07 | 11,6 % | 10,1 % | 1188 → 1202 (+1,2 %) | non |
+| 05-membres-mobile | 20,5 %, ×2,11 | 20,1 % | 20,5 % | 1322 → 2795 (+111,4 %) | non |
+| 05-membres-ordinateur | 42,8 %, ×1,06 | 43,3 % | 42,8 % | 934 → 986 (+5,6 %) | non |
+| 06-membre-mobile | 32,9 %, ×1,11 | 17,3 % | 17,5 % | 2136 → 2270 (+6,3 %) | non |
+| 06-membre-ordinateur | 25,6 %, ×1,01 | 11,7 % | 10,1 % | 1167 → 1112 (−4,7 %) | non |
+| 07-evenements-mobile | 36,1 %, ×1,21 | 23,3 % | 23,7 % | 1675 → 2021 (+20,7 %) | non |
+| 07-evenements-ordinateur | 21,3 %, ×1,02 | 14,7 % | 12,8 % | 934 → 931 (−0,3 %) | non |
+| 08-evenement-mobile | 46,8 %, ×4,31 | 17,7 % | 17,7 % | 1726 → 7370 (+327,0 %) | non |
+| 08-evenement-ordinateur | 29,2 %, ×3,52 | 11,2 % | 9,6 % | 934 → 3228 (+245,6 %) | non |
+| 09-actualites-mobile | 41,4 %, ×0,96 | 14 % | 14,1 % | 1103 → 2047 (+85,6 %) | non |
+| 09-actualites-ordinateur | 31,9 %, ×0,95 | 23,1 % | 21,8 % | 934 → 900 (−3,6 %) | non |
+| 10-editeur-mobile | 61,4 %, ×1,68 | 36,2 % | 36,8 % | 1851 → 2471 (+33,5 %) | non |
+| 10-editeur-ordinateur | 49,6 %, ×1,97 | 28 % | 28,6 % | 1058 → 1455 (+37,5 %) | non |
+| 11-opportunites-mobile | 17,4 %, ×1,59 | 17,2 % | 17,4 % | 1829 → 2914 (+59,3 %) | non |
+| 11-opportunites-ordinateur | 20,6 %, ×1,27 | 21,6 % | 20,6 % | 934 → 1187 (+27,1 %) | non |
+| 12-cotisations-mobile | 32,8 %, ×2,42 | 16,6 % | 17,1 % | 2263 → 5208 (+130,1 %) | non |
+| 12-cotisations-ordinateur | 18,1 %, ×1,87 | 13,6 % | 12,2 % | 940 → 1620 (+72,3 %) | non |
+| 13-messages-mobile | 22,4 %, ×1,03 | 21,7 % | 22,4 % | 2007 → 2059 (+2,6 %) | non |
+| 13-messages-ordinateur | 3 %, ×1,04 | 6,3 % | 3 % | 1085 → 1129 (+4,1 %) | non |
+| 14-contenus-mobile | 51,4 %, ×0,75 | 23,1 % | 23,6 % | 1910 → 2635 (+38,0 %) | non |
+| 14-contenus-ordinateur | 38,1 %, ×1,00 | 11,2 % | 9,6 % | 934 → 1118 (+19,7 %) | non |
+| 15-parametres-mobile | 63 %, ×1,21 | 17,7 % | 14,9 % | 900 → 1227 (+36,3 %) | non |
+| 15-parametres-ordinateur | 40 %, ×1,05 | 29,2 % | 27,6 % | 934 → 900 (−3,6 %) | non |
+| 16-utilisateurs-mobile | 64,7 %, ×0,36 | 11,7 % | 11,2 % | 3068 → 3350 (+9,2 %) | non |
+| 16-utilisateurs-ordinateur | 37,9 %, ×1,00 | 9,7 % | 6,7 % | 1609 → 1674 (+4,0 %) | non |
+| 17-journal-mobile | 51,6 %, ×1,50 | 27,5 % | 28,3 % | 900 → 1471 (+63,4 %) | non |
+| 17-journal-ordinateur | 35,7 %, ×0,99 | 33,1 % | 32,1 % | 934 → 953 (+2,0 %) | non |
+| 18-documents-mobile | 50,2 %, ×0,72 | 21,6 % | 22 % | 2468 → 3649 (+47,9 %) | non |
+| 18-documents-ordinateur | 40,9 %, ×1,25 | 17,4 % | 16,8 % | 1025 → 1327 (+29,5 %) | non |
+| 19-commissions-mobile | 10,9 %, ×0,99 | 10,8 % | 10,9 % | 3176 → 3158 (−0,6 %) | non |
+| 19-commissions-ordinateur | 5,9 %, ×1,02 | 8,6 % | 5,9 % | 1247 → 1267 (+1,6 %) | non |
+| 20-opportunite-mobile | 57,9 %, ×1,31 | 25,8 % | 26,4 % | 1856 → 3067 (+65,2 %) | non |
+| 20-opportunite-ordinateur | 43,6 %, ×1,56 | 23,6 % | 23 % | 1096 → 1788 (+63,1 %) | non |
+| 21-demandes-mobile | 17,1 %, ×0,86 | 17,5 % | 17,1 % | 1707 → 1461 (−14,4 %) | non |
+| 21-demandes-ordinateur | 14,6 %, ×0,96 | 16,5 % | 14,6 % | 934 → 900 (−3,6 %) | non |
+| 22-page-mobile | 29,2 %, ×4,19 | 22,7 % | 23,2 % | 3024 → 7392 (+144,4 %) | non |
+| 22-page-ordinateur | 25,4 %, ×4,69 | 17 % | 16,4 % | 1598 → 4696 (+193,9 %) | non |

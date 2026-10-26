@@ -1,13 +1,17 @@
 'use client'
-import { toast, useAuth } from '@payloadcms/ui'
+import { toast, useAuth, useConfig } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 import { ROLES, type Role } from '@/access/roles'
 
+import '@/styles/back-office.css'
+
 /** Bouton « Inviter un utilisateur » et son formulaire (écran 16). Visible pour le super administrateur seulement. */
 export const InviteUser = () => {
   const { user } = useAuth()
+  const { getEntityConfig } = useConfig()
+  const description = getEntityConfig({ collectionSlug: 'users' })?.admin?.description
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -39,12 +43,15 @@ export const InviteUser = () => {
   }
 
   return (
-    <div className="rec-invite">
-      {isSuper && !open && (
-        <button type="button" className="rec-btn rec-btn--primary" onClick={() => setOpen(true)}>
-          Inviter un utilisateur
-        </button>
-      )}
+    <div className="bb rec-bloc stack">
+      <div className="bar-actions">
+        {typeof description === 'string' ? <p className="muted">{description}</p> : null}
+        {isSuper && !open && (
+          <button type="button" className="rec-btn rec-btn--primary" onClick={() => setOpen(true)}>
+            Inviter un utilisateur
+          </button>
+        )}
+      </div>
       {open && (
         <form className="rec-panel rec-form" onSubmit={submit} noValidate>
           <h2 className="rec-h3">Inviter un utilisateur</h2>

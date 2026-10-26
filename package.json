@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit",
     "audit:visuel": "node scripts/audit-visuel/capture.cjs . .audit-visuel && node scripts/audit-visuel/compare.cjs . .audit-visuel",
     "audit:maquette": "node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette && node scripts/audit-visuel/compare.cjs . .audit-visuel/maquette && cross-env SANS_DEMO=1 node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette-sans-demo",
-    "audit:reel": "cross-env REF=.audit-visuel/maquette-sans-demo node scripts/audit-visuel/compare.cjs . .audit-visuel"
+    "audit:reel": "cross-env REF=.audit-visuel/maquette-sans-demo node scripts/audit-visuel/compare.cjs . .audit-visuel",
+    "audit:bo": "node scripts/audit-visuel/capture-bo.cjs . .audit-visuel && cross-env ZONES=back-office node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette && cross-env ZONES=back-office SANS_DEMO=1 node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette-sans-demo && cross-env ZONES=back-office REF=.audit-visuel/maquette-sans-demo node scripts/audit-visuel/compare.cjs . .audit-visuel"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.92.0",

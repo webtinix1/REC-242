@@ -10,7 +10,7 @@ import '@/styles/bo-views.css'
 export const BoView = ({ titre, children }: { titre: string; children: React.ReactNode }) => (
   <div className="bb bo-view">
     <div className="content">
-      <h1 className="top-t bo-title">{titre}</h1>
+      <h1 className="sr bo-title">{titre}</h1>
       {children}
     </div>
   </div>

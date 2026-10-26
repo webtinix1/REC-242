@@ -2,6 +2,8 @@ import { APIError, type CollectionConfig } from 'payload'
 
 import { atLeast } from '@/access/roles'
 import { PAGE_BLOCKS } from '@/blocks'
+import { colonne, colonneActions } from '@/fields/colonneActions'
+import { champsSeo } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
 import { logAction } from '@/lib/audit'
 
@@ -12,14 +14,28 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   labels: { singular: 'Page', plural: 'Pages' },
   admin: {
-    components: { beforeList: ['@/components/admin/ContenusTabs#ContenusTabs'] },
+    components: {
+      beforeList: ['@/components/admin/ContenusTabs#ContenusTabs'],
+      beforeListTable: [
+        { path: '@/components/admin/liste/BarreListe#BarreListe', clientProps: { bouton: 'Nouvelle page' } },
+      ],
+      edit: {
+        beforeDocumentControls: [
+          { path: '@/components/admin/edition/BarreDocument#BarreDocument', clientProps: { retour: 'Pages' } },
+        ],
+        PreviewButton: '@/components/admin/edition/BarreDocument#BoutonPrevisualiser',
+      },
+    },
     group: 'Contenus',
     useAsTitle: 'title',
-    defaultColumns: ['title', '_status', 'updatedAt'],
+    defaultColumns: ['page', 'statutPage', 'miseAJour', 'actions'],
+    pagination: { defaultLimit: 25 },
     description: 'Édition par blocs dans la charte, prévisualisation avant publication.',
     livePreview: { url: ({ data }) => `${server()}/apercu?type=pages&slug=${data?.slug ?? ''}` },
     preview: (doc) => `${server()}/apercu?type=pages&slug=${(doc as { slug?: string }).slug ?? ''}`,
   },
+  // Dernières pages modifiées en premier (écran 14).
+  defaultSort: '-updatedAt',
   versions: { drafts: { autosave: { interval: 2000 } }, maxPerDoc: 30 },
   access: {
     read: ({ req }) =>
@@ -72,5 +88,16 @@ export const Pages: CollectionConfig = {
     },
     { name: 'menu', label: 'Rubrique du menu', type: 'text', admin: { position: 'sidebar' } },
     { name: 'layout', label: 'Contenu', type: 'blocks', blocks: PAGE_BLOCKS },
+    // Panneau latéral de la maquette (écran 22) : page, référencement, historique avec « Restaurer ».
+    champsSeo('Référencement', true),
+    {
+      name: 'historique',
+      type: 'ui',
+      admin: { position: 'sidebar', components: { Field: '@/components/admin/edition/Historique#Historique' } },
+    },
+    colonne('page', 'Page', 'TitreCell'),
+    colonne('statutPage', 'Statut', 'StatutPageCell'),
+    colonne('miseAJour', 'Mise à jour', 'MiseAJourCell'),
+    colonneActions('page', 'Actions'),
   ],
 }

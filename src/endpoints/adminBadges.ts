@@ -7,7 +7,7 @@ import { isStaff } from '@/access/roles'
  * (overrideAccess: false) : un rôle qui ne voit pas une collection reçoit 0.
  * Les lots suivants ajoutent ici leurs compteurs.
  */
-type Counter = (payload: Payload, req: PayloadRequest) => Promise<number>
+type Counter = (payload: Payload, req: PayloadRequest | { user: PayloadRequest['user'] }) => Promise<number>
 
 const countIf =
   (collection: string, where: Record<string, unknown>): Counter =>
@@ -17,7 +17,7 @@ const countIf =
       const r = await payload.count({
         collection: collection as never,
         where: where as never,
-        req,
+        ...('payload' in req ? { req } : { user: req.user }),
         overrideAccess: false,
       })
       return r.totalDocs
@@ -34,6 +34,14 @@ export const BADGES: Record<string, Counter> = {
   demandes: countIf('expertRequests', { statut: { equals: 'sans-reponse' } }),
   messages: countIf('contactMessages', { statut: { equals: 'a-traiter' } }),
 }
+
+/** Mêmes compteurs pour le premier rendu du menu (composant serveur), avec les droits de l'utilisateur connecté. */
+export const compterBadges = async (payload: Payload, user: PayloadRequest['user']) =>
+  Object.fromEntries(
+    await Promise.all(
+      Object.entries(BADGES).map(async ([k, fn]) => [k, await fn(payload, { user })] as const),
+    ),
+  ) as Record<string, number>
 
 export const adminBadges: Endpoint = {
   path: '/admin-badges',

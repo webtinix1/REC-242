@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { atLeast } from '@/access/roles'
+import { colonne } from '@/fields/colonneActions'
 import { logAction } from '@/lib/audit'
 
 export const AUDIT_CATEGORIES = [
@@ -26,7 +27,7 @@ export const AuditLog: CollectionConfig = {
   admin: {
     group: 'Administration',
     useAsTitle: 'action',
-    defaultColumns: ['action', 'createdAt', 'auteurNom', 'ville', 'categorie'],
+    defaultColumns: ['entree'],
     disableCopyToLocale: true,
     components: {
       beforeListTable: ['@/components/admin/AuditLogFilters#AuditLogFilters'],
@@ -117,5 +118,7 @@ export const AuditLog: CollectionConfig = {
     { name: 'auteurNom', label: 'Auteur', type: 'text', admin: { readOnly: true } },
     { name: 'ip', label: 'Adresse IP', type: 'text', admin: { readOnly: true } },
     { name: 'ville', label: 'Ville', type: 'text', admin: { readOnly: true } },
+    // Liste : chaque entrée est une ligne de la frise de la maquette (action, date, auteur, ville).
+    colonne('entree', 'Action', 'JournalCell'),
   ],
 }

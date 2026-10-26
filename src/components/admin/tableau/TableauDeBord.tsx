@@ -3,13 +3,10 @@ import Link from 'next/link'
 import React from 'react'
 
 import { atLeast } from '@/access/roles'
-import { AUDIT_CATEGORIES } from '@/collections/AuditLog'
 import { motifLabel } from '@/collections/ContactMessages'
-import { fcfa } from '@/lib/site/format'
-import { BoView, relatif } from '../BoView'
+import { BoView } from '../BoView'
 import { dateCourte, STATUTS_EV, taux } from '../evenements/format'
 
-const TZ = 'Africa/Brazzaville'
 const JOUR = 86400000
 const ADMIN = '/admin/collections'
 
@@ -53,11 +50,9 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
   const { payload, user } = req
   const maintenant = new Date()
   const iso = maintenant.toISOString()
-  const debutMois = new Date(Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth(), 1)).toISOString()
-  const finMois = new Date(Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth() + 1, 1)).toISOString()
   const dansUneSemaine = new Date(maintenant.getTime() + 7 * JOUR).toISOString()
 
-  const [cand, modifs, msgs, commissions, demandes, opps, relance, actifs, encarts] = await Promise.all([
+  const [cand, modifs, msgs, commissions, demandes, opps, relance, encarts] = await Promise.all([
     lister<{ createdAt: string }>(payload, user, {
       collection: 'applications',
       where: { statut: { in: ['recue', 'en-examen', 'complement'] } },
@@ -98,29 +93,16 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
       limit: 2000,
       select: { relances: true },
     }),
-    compter(payload, user, 'members', { statut: { equals: 'actif' } }),
     compter(payload, user, 'directoryAds', { statut: { equals: 'a-payer' } }),
   ])
 
-  const [paiements, evenements, journal, aTraiter, aModerer] = await Promise.all([
-    lister<{ montant?: number }>(payload, user, {
-      collection: 'payments',
-      where: { and: [{ statut: { equals: 'paye' } }, { datePaiement: { greater_than_equal: debutMois } }, { datePaiement: { less_than: finMois } }] },
-      pagination: false,
-      select: { montant: true },
-    }),
+  const [evenements, aTraiter, aModerer] = await Promise.all([
     lister<{ id: number; titre: string; debut: string; statut: string; capacite?: number | null }>(payload, user, {
       collection: 'events',
       where: { and: [{ statut: { in: ['publie', 'complet'] } }, { debut: { greater_than_equal: iso } }] },
       sort: 'debut',
       limit: 4,
       select: { titre: true, debut: true, statut: true, capacite: true },
-    }),
-    lister<{ id: number; action: string; categorie: string; createdAt: string }>(payload, user, {
-      collection: 'auditLog',
-      sort: '-createdAt',
-      limit: 6,
-      select: { action: true, categorie: true, createdAt: true },
     }),
     compter(payload, user, 'contactMessages', { statut: { equals: 'a-traiter' } }),
     compter(payload, user, 'opportunities', { statut: { equals: 'a-moderer' } }),
@@ -145,8 +127,6 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
   const perdues = relance ? relance.filter((d) => (d.relances?.length ?? 0) >= 3).length : null
   const questions = demandes?.length ?? null
   const plusAncienneQuestion = demandes?.[0] ? jours(demandes[0].createdAt) : null
-  const somme = paiements ? paiements.reduce((t, p) => t + (p.montant ?? 0), 0) : null
-  const moisCourant = maintenant.toLocaleDateString('fr-FR', { month: 'long', timeZone: TZ })
 
   const kpis: Kpi[] = []
   if (enAttente !== null)
@@ -170,13 +150,6 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
       detail: joursAvant !== null ? `Dans ${joursAvant} ${pluriel(joursAvant, 'jour', 'jours')}` : aModerer ? `${aModerer} à modérer` : 'Aucune cette semaine',
       href: `${ADMIN}/opportunities`,
     })
-
-  const kpis2: Kpi[] = []
-  if (actifs !== null) kpis2.push({ cle: 'actifs', valeur: String(actifs), libelle: pluriel(actifs, 'Membre actif', 'Membres actifs'), detail: 'Fiches membres', href: `${ADMIN}/members` })
-  if (relance !== null)
-    kpis2.push({ cle: 'relance', valeur: String(relance.length), libelle: pluriel(relance.length, 'Cotisation en relance', 'Cotisations en relance'), detail: `Dont ${perdues ?? 0} à 3 relances`, href: '/admin/cotisations' })
-  if (paiements !== null && somme !== null)
-    kpis2.push({ cle: 'paiements', valeur: fcfa(somme), libelle: 'Paiements du mois', detail: `${paiements.length} ${pluriel(paiements.length, 'paiement confirmé', 'paiements confirmés')}, ${moisCourant}`, href: `${ADMIN}/payments` })
 
   const suivre: { n: number; t: string; where: string; href: string }[] = []
   if (commissions) suivre.push({ n: commissions, t: 'Demandes pour rejoindre une commission', where: 'Commissions', href: `${ADMIN}/commissionRequests` })
@@ -205,13 +178,6 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
           <KpiCarte key={k.cle} k={k} />
         ))}
       </div>
-      {kpis2.length > 0 && (
-        <div className={`kpis${kpis2.length === 3 ? ' kpis-dash' : ''}`}>
-          {kpis2.map((k) => (
-            <KpiCarte key={k.cle} k={k} />
-          ))}
-        </div>
-      )}
       {(evenements || msgs) && (
         <div className="grid2">
           {evenements && (
@@ -279,24 +245,6 @@ export const TableauDeBord = async ({ initPageResult }: AdminViewServerProps) =>
           </Link>
         ))}
       </section>
-      {journal && (
-        <section className="panel">
-          <div className="panel-h">
-            <h2 className="h2">Activité récente</h2>
-            <Link className="linkbtn" href={`${ADMIN}/auditLog`}>
-              Journal
-            </Link>
-          </div>
-          {journal.length === 0 && <p className="small muted">Aucune activité enregistrée.</p>}
-          {journal.map((j) => (
-            <div key={j.id} className="row">
-              <span className="pill">{AUDIT_CATEGORIES.find((c) => c.value === j.categorie)?.label ?? j.categorie}</span>
-              <span className="row-t">{j.action}</span>
-              <span className="small muted">{relatif(j.createdAt)}</span>
-            </div>
-          ))}
-        </section>
-      )}
       {raccourcis.length > 0 && (
         <section className="panel">
           <div className="panel-h">

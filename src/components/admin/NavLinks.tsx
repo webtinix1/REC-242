@@ -17,12 +17,15 @@ const REFRESH_MS = 60_000
 export const NavLinks = ({
   groups,
   adminRoute,
+  initialBadges = {},
 }: {
   groups: ResolvedGroup[]
   adminRoute: string
+  /** Compteurs calculés au rendu serveur, puis rafraîchis toutes les 60 secondes. */
+  initialBadges?: Record<string, number>
 }) => {
   const pathname = usePathname()
-  const [badges, setBadges] = useState<Record<string, number>>({})
+  const [badges, setBadges] = useState<Record<string, number>>(initialBadges)
   const { setNavOpen, hydrated } = useNav()
 
   // Payload replie le menu jusqu'à 1440 px ; la maquette le garde ouvert sur ordinateur (au-dessus de 1024 px).
@@ -42,8 +45,8 @@ export const NavLinks = ({
     let alive = true
     const load = () =>
       fetch('/api/admin-badges', { credentials: 'include' })
-        .then((r) => (r.ok ? r.json() : {}))
-        .then((b) => alive && setBadges(b as Record<string, number>))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((b) => alive && b && setBadges(b as Record<string, number>))
         .catch(() => {})
     load()
     const t = setInterval(load, REFRESH_MS)

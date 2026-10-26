@@ -23,7 +23,7 @@ test.describe('Admin Panel', () => {
   test('can navigate to dashboard', async () => {
     await page.goto('http://localhost:3000/admin')
     await expect(page).toHaveURL('http://localhost:3000/admin')
-    const dashboardArtifact = page.locator('span[title="Tableau de bord"]').first()
+    const dashboardArtifact = page.locator('.rec-topbar__title', { hasText: 'Tableau de bord' }).first()
     await expect(dashboardArtifact).toBeVisible()
   })
 

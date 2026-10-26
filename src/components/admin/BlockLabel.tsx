@@ -1,15 +1,26 @@
 'use client'
-import { useFormFields } from '@payloadcms/ui'
+import { useRowLabel } from '@payloadcms/ui'
 import React from 'react'
 
-/** Libellé d'un bloc dans l'éditeur : type, section et titre, pour s'y retrouver dans les longues pages. */
-export const BlockLabel = ({ path, blockType }: { path?: string; blockType?: string }) => {
-  const ancre = useFormFields(([f]) => f[`${path}.ancre`]?.value) as string | undefined
-  const titre = useFormFields(([f]) => f[`${path}.titre`]?.value) as string | undefined
+import { NEWS_BLOCKS, PAGE_BLOCKS } from '@/blocks'
+
+const LIBELLES: Record<string, string> = Object.fromEntries(
+  [...PAGE_BLOCKS, ...NEWS_BLOCKS].map((b) => [
+    b.slug,
+    typeof b.labels?.singular === 'string' ? b.labels.singular : b.slug,
+  ]),
+)
+
+/**
+ * Titre d'un bloc dans l'éditeur, comme la maquette (écran 22) : « Bloc · En-tête », suivi du titre du bloc
+ * pour s'y retrouver dans les longues pages.
+ */
+export const BlockLabel = () => {
+  const { data } = useRowLabel<{ blockType?: string; titre?: string; ancre?: string }>()
+  const titre = data?.titre?.trim()
   return (
-    <span>
-      {blockType}
-      {ancre ? ` · ${ancre}` : ''}
+    <span className="rec-bloc-titre">
+      Bloc · {LIBELLES[data?.blockType ?? ''] ?? data?.blockType}
       {titre ? ` · ${titre.length > 60 ? `${titre.slice(0, 60)}…` : titre}` : ''}
     </span>
   )

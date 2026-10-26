@@ -64,6 +64,13 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { fr },
     fallbackLanguage: 'fr',
+    // Libellés des boutons de la maquette du back-office (écrans 10, 15, 20, 22).
+    translations: {
+      fr: {
+        general: { save: 'Enregistrer' },
+        version: { preview: 'Prévisualiser', publishChanges: 'Publier' },
+      },
+    },
   },
   admin: {
     user: Users.slug,
@@ -75,6 +82,7 @@ export default buildConfig({
     avatar: 'default',
     components: {
       Nav: '@/components/admin/Nav#Nav',
+      header: ['@/components/admin/BarreHaut#BarreHaut'],
       views: {
         dashboard: { Component: '@/components/admin/tableau/TableauDeBord#TableauDeBord' },
         cotisations: { Component: '@/components/admin/cotisations/CotisationsView#CotisationsView', path: '/cotisations' },
@@ -162,7 +170,8 @@ export default buildConfig({
   plugins: [
     searchPlugin(searchConfig),
     seoPlugin({
-      collections: ['pages', 'news'],
+      // Les champs de référencement des pages et des actualités sont placés dans leurs formulaires (src/fields/seo.ts).
+      collections: [],
       uploadsCollection: 'media',
       tabbedUI: false,
       generateTitle: ({ doc }) =>

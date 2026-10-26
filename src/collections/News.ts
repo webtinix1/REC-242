@@ -2,6 +2,8 @@ import { APIError, type CollectionConfig, type Where } from 'payload'
 
 import { atLeast, hasRole, levelFor, reservedFieldRead } from '@/access/roles'
 import { NEWS_BLOCKS } from '@/blocks'
+import { colonne, colonneActions } from '@/fields/colonneActions'
+import { champsSeo } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
 import { logAction } from '@/lib/audit'
 
@@ -25,7 +27,19 @@ export const News: CollectionConfig = {
   admin: {
     group: 'Contenus',
     useAsTitle: 'titre',
-    defaultColumns: ['titre', 'type', 'auteur', 'datePublication', 'etat'],
+    defaultColumns: ['titre', 'type', 'auteurRole', 'publication', 'etat', 'actions'],
+    pagination: { defaultLimit: 25 },
+    components: {
+      beforeListTable: [
+        { path: '@/components/admin/liste/BarreListe#BarreListe', clientProps: { bouton: 'Rédiger une actualité' } },
+      ],
+      edit: {
+        beforeDocumentControls: [
+          { path: '@/components/admin/edition/BarreDocument#BarreDocument', clientProps: { retour: 'Actualités', programmer: true } },
+        ],
+        PreviewButton: '@/components/admin/edition/BarreDocument#SansBoutonApercu',
+      },
+    },
     description: 'Brouillon, relecture, programmation et archivage.',
     livePreview: { url: ({ data }) => `${server()}/apercu?type=news&slug=${data?.slug ?? ''}` },
     preview: (doc) => `${server()}/apercu?type=news&slug=${(doc as { slug?: string }).slug ?? ''}`,
@@ -112,48 +126,78 @@ export const News: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'titre', label: 'Titre', type: 'text', required: true },
-    slugField('titre'),
+    // Onglets de l'éditeur (écran 10) : Contenu, Référencement, Aperçu. Onglets sans nom : aucune colonne ajoutée en base.
     {
-      name: 'chapeau',
-      label: 'Chapeau',
-      type: 'textarea',
-      required: true,
-      admin: { description: 'Visible par tous, même quand l’actualité est réservée aux membres.' },
-    },
-    {
-      type: 'row',
-      fields: [
+      type: 'tabs',
+      tabs: [
         {
-          name: 'image',
-          label: 'Image principale',
-          type: 'upload',
-          relationTo: 'media',
-          admin: { description: 'Le texte alternatif de l’image est obligatoire.' },
+          label: 'Contenu',
+          fields: [
+            { name: 'titre', label: 'Titre', type: 'text', required: true },
+            {
+              name: 'chapeau',
+              label: 'Chapeau',
+              type: 'textarea',
+              required: true,
+              admin: { description: 'Visible par tous, même quand l’actualité est réservée aux membres.' },
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'image',
+                  label: 'Image principale',
+                  type: 'upload',
+                  relationTo: 'media',
+                  admin: { description: 'Le texte alternatif de l’image est obligatoire.' },
+                },
+              ],
+            },
+            // Réservé aux membres : le corps, les blocs et le PDF ne sont lus que par l'équipe et les membres actifs.,
+            {
+              name: 'corps',
+              label: 'Corps de l’article',
+              type: 'richText',
+              access: { read: reservedFieldRead },
+            },
+            {
+              name: 'blocs',
+              label: 'Blocs complémentaires',
+              type: 'blocks',
+              blocks: NEWS_BLOCKS,
+              access: { read: reservedFieldRead },
+            },
+            {
+              name: 'pdf',
+              label: 'PDF (communiqué)',
+              type: 'relationship',
+              relationTo: 'documents',
+              access: { read: reservedFieldRead },
+              admin: { condition: (d) => d?.type === 'communique' },
+            },
+            {
+              name: 'aLireAussi',
+              label: 'À lire aussi',
+              type: 'relationship',
+              relationTo: ['news', 'pages'],
+              admin: { description: 'Actualité ou page proposée en fin d’article.' },
+            },
+            {
+              name: 'aLireAussiTitre',
+              label: 'Intitulé affiché pour « À lire aussi »',
+              type: 'text',
+              admin: { description: 'Facultatif. Remplace le titre de la page ou de l’actualité liée dans le bloc de fin d’article.' },
+            },
+          ],
+        },
+        { label: 'Référencement', fields: [champsSeo()] },
+        {
+          label: 'Aperçu',
+          fields: [
+            { name: 'apercu', type: 'ui', admin: { components: { Field: '@/components/admin/edition/Apercu#Apercu' } } },
+          ],
         },
       ],
-    },
-    // Réservé aux membres : le corps, les blocs et le PDF ne sont lus que par l'équipe et les membres actifs.
-    {
-      name: 'corps',
-      label: 'Corps de l’article',
-      type: 'richText',
-      access: { read: reservedFieldRead },
-    },
-    {
-      name: 'blocs',
-      label: 'Blocs complémentaires',
-      type: 'blocks',
-      blocks: NEWS_BLOCKS,
-      access: { read: reservedFieldRead },
-    },
-    {
-      name: 'pdf',
-      label: 'PDF (communiqué)',
-      type: 'relationship',
-      relationTo: 'documents',
-      access: { read: reservedFieldRead },
-      admin: { condition: (d) => d?.type === 'communique' },
     },
     {
       name: 'type',
@@ -189,20 +233,6 @@ export const News: CollectionConfig = {
       },
     },
     {
-      name: 'rang',
-      label: 'Rang dans les listes du site',
-      type: 'number',
-      min: 1,
-      admin: { position: 'sidebar', description: 'Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.' },
-    },
-    {
-      name: 'aLaUne',
-      label: 'À la une de la page Actualités',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: { position: 'sidebar', description: 'Sans actualité à la une, la plus récente est mise en avant.' },
-    },
-    {
       name: 'reserveMembres',
       label: 'Réservé aux membres (le visiteur voit le chapeau)',
       type: 'checkbox',
@@ -228,13 +258,7 @@ export const News: CollectionConfig = {
         components: { Cell: '@/components/admin/NewsStatusCell#NewsStatusCell' },
       },
     },
-    {
-      name: 'auteur',
-      label: 'Auteur',
-      type: 'relationship',
-      relationTo: 'users',
-      admin: { position: 'sidebar', readOnly: true },
-    },
+    slugField('titre'),
     {
       name: 'signature',
       label: 'Signature affichée',
@@ -245,17 +269,33 @@ export const News: CollectionConfig = {
       },
     },
     {
-      name: 'aLireAussi',
-      label: 'À lire aussi',
-      type: 'relationship',
-      relationTo: ['news', 'pages'],
-      admin: { description: 'Actualité ou page proposée en fin d’article.' },
+      name: 'rang',
+      label: 'Rang dans les listes du site',
+      type: 'number',
+      min: 1,
+      admin: { position: 'sidebar', description: 'Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.' },
     },
     {
-      name: 'aLireAussiTitre',
-      label: 'Intitulé affiché pour « À lire aussi »',
-      type: 'text',
-      admin: { description: 'Facultatif. Remplace le titre de la page ou de l’actualité liée dans le bloc de fin d’article.' },
+      name: 'aLaUne',
+      label: 'À la une de la page Actualités',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar', description: 'Sans actualité à la une, la plus récente est mise en avant.' },
     },
+    {
+      name: 'auteur',
+      label: 'Auteur',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'historique',
+      type: 'ui',
+      admin: { position: 'sidebar', components: { Field: '@/components/admin/edition/Historique#Historique' } },
+    },
+    colonne('auteurRole', 'Auteur', 'AuteurCell'),
+    colonne('publication', 'Publication', 'PublicationCell'),
+    colonneActions(),
   ],
 }
