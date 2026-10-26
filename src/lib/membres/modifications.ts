@@ -40,6 +40,8 @@ export async function valeurActuelle(payload: Payload, membreId: number, champ: 
       return (e?.secteurs ?? []).map((s) => (typeof s === 'object' ? s.nom : '')).filter(Boolean).join(', ')
     case 'villeQuartier':
       return [typeof e?.localite === 'object' ? e?.localite?.nom : '', e?.quartier].filter(Boolean).join(', ')
+    case 'quartier':
+      return e?.quartier ?? ''
     case 'telephone':
       return telephoneAffiche(m.telephone)
     case 'email':
@@ -88,6 +90,9 @@ export async function appliquerModification(
       await majEntreprise({ localite: loc.docs[0].id, quartier: reste.join(', ') })
       return
     }
+    case 'quartier':
+      await majEntreprise({ quartier: v })
+      return
     case 'telephone': {
       const t = telephoneInternational(v)
       if (t.replace(/\D/g, '').length < 9) throw new APIError('Numéro de téléphone invalide.', 400, null, true)

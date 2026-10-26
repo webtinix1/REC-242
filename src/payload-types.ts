@@ -428,6 +428,10 @@ export interface Company {
    */
   slug?: string | null;
   logo?: (number | null) | Media;
+  /**
+   * Bandeau photo de la fiche (site et espace membre). Facultatif : sans photo, le bandeau n’est pas affiché.
+   */
+  photo?: (number | null) | Media;
   secteurs?: (number | Sector)[] | null;
   localite?: (number | null) | Locality;
   quartier?: string | null;
@@ -754,6 +758,14 @@ export interface ExpertiseTag {
   slug?: string | null;
   ordre?: number | null;
   filtreSite?: boolean | null;
+  /**
+   * Pastille de l’écran « Solliciter un expert ». Si aucune étiquette n’est cochée, toutes celles que porte une personne sont proposées.
+   */
+  domaineMembres?: boolean | null;
+  /**
+   * Ordre des domaines de l’écran « Solliciter un expert » (distinct de l’ordre des filtres de la page Gouvernance).
+   */
+  ordreMembres?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -764,7 +776,7 @@ export interface ExpertiseTag {
 export interface ModificationRequest {
   id: number;
   membre: number | Member;
-  champ: 'nom' | 'raisonSociale' | 'secteurs' | 'villeQuartier' | 'telephone' | 'email';
+  champ: 'nom' | 'raisonSociale' | 'secteurs' | 'villeQuartier' | 'telephone' | 'email' | 'quartier';
   valeurActuelle?: string | null;
   nouvelleValeur: string;
   motif?: string | null;
@@ -879,6 +891,10 @@ export interface Event {
   lienCarte?: string | null;
   indicationsAcces?: string | null;
   image?: (number | null) | Media;
+  /**
+   * Vide : l’image principale.
+   */
+  bandeau?: (number | null) | Media;
   acces?: ('tous' | 'membres' | 'invitation') | null;
   /**
    * Vide : places illimitées.
@@ -911,6 +927,10 @@ export interface Event {
     | {
         document: number | Document;
         visibilite?: ('tous' | 'inscrits') | null;
+        /**
+         * Remplace le titre du document sur la fiche de l’événement.
+         */
+        libelle?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -965,9 +985,17 @@ export interface EventType {
 export interface Document {
   id: number;
   titre: string;
-  rubrique: 'textes' | 'vie' | 'ateliers' | 'presse' | 'evenements';
-  visibilite: 'public' | 'membres' | 'inscrits' | 'comite';
+  rubrique: 'textes' | 'vie' | 'ateliers' | 'presse' | 'evenements' | 'adhesion';
+  visibilite: 'public' | 'membres' | 'inscrits' | 'comite' | 'personnel';
+  /**
+   * Seul ce membre voit le document dans son espace.
+   */
+  membre?: (number | null) | Member;
   typePresse?: ('communique' | 'kit') | null;
+  /**
+   * Facultatif. Affichée sous le titre dans le kit média de l’espace presse.
+   */
+  description?: string | null;
   dateDocument?: string | null;
   /**
    * Image de la première page, affichée dans les listes.
@@ -1121,6 +1149,10 @@ export interface News {
                   lien?: string | null;
                   libelleLien?: string | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Kit média : la carte affiche deux vignettes côte à côte.
+                   */
+                  image2?: (number | null) | Media;
                   id?: string | null;
                 }[]
               | null;
@@ -1166,6 +1198,10 @@ export interface News {
   etiquettes?: string[] | null;
   datePublication?: string | null;
   /**
+   * Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.
+   */
+  rang?: number | null;
+  /**
    * Sans actualité à la une, la plus récente est mise en avant.
    */
   aLaUne?: boolean | null;
@@ -1191,6 +1227,10 @@ export interface News {
         relationTo: 'pages';
         value: number | Page;
       } | null);
+  /**
+   * Facultatif. Remplace le titre de la page ou de l’actualité liée dans le bloc de fin d’article.
+   */
+  aLireAussiTitre?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -1389,6 +1429,10 @@ export interface Page {
                   lien?: string | null;
                   libelleLien?: string | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Kit média : la carte affiche deux vignettes côte à côte.
+                   */
+                  image2?: (number | null) | Media;
                   id?: string | null;
                 }[]
               | null;
@@ -1550,11 +1594,16 @@ export interface Opportunity {
     libelle?: string | null;
   };
   commentRepondre?: string | null;
+  image?: (number | null) | Media;
   pieceJointe?: (number | null) | Fichier;
   auteur?: ('rec242' | 'membre') | null;
   membre?: (number | null) | Member;
   prevenirSecteurs?: boolean | null;
   miseEnAvant?: boolean | null;
+  /**
+   * Facultatif. Les opportunités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.
+   */
+  rang?: number | null;
   reponses?: {
     docs?: (number | OpportunityReply)[];
     hasNextPage?: boolean;
@@ -2305,6 +2354,7 @@ export interface CompaniesSelect<T extends boolean = true> {
   titulaire?: T;
   slug?: T;
   logo?: T;
+  photo?: T;
   secteurs?: T;
   localite?: T;
   quartier?: T;
@@ -2432,6 +2482,7 @@ export interface EventsSelect<T extends boolean = true> {
   lienCarte?: T;
   indicationsAcces?: T;
   image?: T;
+  bandeau?: T;
   acces?: T;
   capacite?: T;
   cloture?: T;
@@ -2459,6 +2510,7 @@ export interface EventsSelect<T extends boolean = true> {
     | {
         document?: T;
         visibilite?: T;
+        libelle?: T;
         id?: T;
       };
   compteRendu?: T;
@@ -2519,11 +2571,13 @@ export interface OpportunitiesSelect<T extends boolean = true> {
         libelle?: T;
       };
   commentRepondre?: T;
+  image?: T;
   pieceJointe?: T;
   auteur?: T;
   membre?: T;
   prevenirSecteurs?: T;
   miseEnAvant?: T;
+  rang?: T;
   reponses?: T;
   statut?: T;
   messageModeration?: T;
@@ -2844,6 +2898,7 @@ export interface PagesSelect<T extends boolean = true> {
                     lien?: T;
                     libelleLien?: T;
                     image?: T;
+                    image2?: T;
                     id?: T;
                   };
               id?: T;
@@ -2991,6 +3046,7 @@ export interface NewsSelect<T extends boolean = true> {
                     lien?: T;
                     libelleLien?: T;
                     image?: T;
+                    image2?: T;
                     id?: T;
                   };
               id?: T;
@@ -3028,12 +3084,14 @@ export interface NewsSelect<T extends boolean = true> {
   secteurs?: T;
   etiquettes?: T;
   datePublication?: T;
+  rang?: T;
   aLaUne?: T;
   reserveMembres?: T;
   etat?: T;
   auteur?: T;
   signature?: T;
   aLireAussi?: T;
+  aLireAussiTitre?: T;
   meta?:
     | T
     | {
@@ -3053,7 +3111,9 @@ export interface DocumentsSelect<T extends boolean = true> {
   titre?: T;
   rubrique?: T;
   visibilite?: T;
+  membre?: T;
   typePresse?: T;
+  description?: T;
   dateDocument?: T;
   couverture?: T;
   version?: T;
@@ -3440,6 +3500,8 @@ export interface ExpertiseTagsSelect<T extends boolean = true> {
   slug?: T;
   ordre?: T;
   filtreSite?: T;
+  domaineMembres?: T;
+  ordreMembres?: T;
   updatedAt?: T;
   createdAt?: T;
 }

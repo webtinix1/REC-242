@@ -1,6 +1,8 @@
 import { randomBytes } from 'crypto'
+import { sql } from '@payloadcms/db-postgres'
 import type { Payload } from 'payload'
 
+import { numeroRecu } from '@/lib/compteurs'
 import { ajouterJoursOuvres } from '@/lib/experts/delais'
 import { readSeed } from './lib'
 
@@ -12,10 +14,14 @@ import { readSeed } from './lib'
 // Les lignes de tableau écrites directement en base ont besoin de leur identifiant.
 const ligne = <T extends object>(x: T) => ({ id: randomBytes(12).toString('hex'), ...x })
 const jours = (n: number) => new Date(Date.now() - n * 86400e3).toISOString()
+const heures = (n: number) => new Date(Date.now() - n * 3600e3).toISOString()
 const quand = (s: string) => (/Aujourd/.test(s) ? 0 : /Hier/.test(s) ? 1 : Number(/(\d+) jours?/.exec(s)?.[1] ?? 3))
 
 export async function seedEchanges(payload: Payload): Promise<void> {
-  if ((await payload.count({ collection: 'expertRequests', overrideAccess: true })).totalDocs) return
+  // Les échanges sont recréés à chaque lancement : l'état « non lu » de la maquette (3 éléments pour Christelle Malonga) est rétabli.
+  const db = (payload.db as unknown as { drizzle: { execute: (q: unknown) => Promise<unknown> } }).drizzle
+  for (const t of ['expert_requests', 'connection_requests', 'opportunity_replies', 'network_messages', 'commission_requests'])
+    await db.execute(sql.raw(`DELETE FROM "${t}"`))
   const { questions_experts, demandes_commissions } = readSeed<{
     questions_experts: { m: string; q: string; tag: string; to: string; d: string; st: string }[]
     demandes_commissions: { nom: string; com: string; motiv: string }[]
@@ -47,12 +53,18 @@ export async function seedEchanges(payload: Payload): Promise<void> {
     'Quel statut juridique pour vendre en ligne ?':
       'Votre établissement suffit pour démarrer. Indiquez vos mentions légales sur le site et conservez vos factures.',
   }
+  // Textes complets des questions (Mes échanges, onglet Experts de la maquette).
+  const DETAIL: Record<string, string> = {
+    'Préparer un dossier de financement pour un local':
+      'Je veux louer un local de 40 m² à Bacongo. La banque me demande un plan de financement. Que dois-je préparer ?',
+    'Quel statut juridique pour vendre en ligne ?': 'Je veux vendre mes sacs sur internet. Dois-je créer une société ?',
+  }
   for (const q of questions_experts) {
     const m = parNom(q.m)
     if (!m || !pid(q.to) || !tid(q.tag)) continue
     const date = /oct/.test(q.d) ? new Date(`2026-10-${q.d.split(' ')[0].padStart(2, '0')}T09:00:00Z`).toISOString() : jours(quand(q.d))
-    const fil = [{ auteurType: 'membre', auteurNom: q.m, texte: q.q, date }]
-    if (REPONSES[q.q]) fil.push({ auteurType: 'expert', auteurNom: q.to, texte: REPONSES[q.q], date: new Date(new Date(date).getTime() + 3 * 86400e3).toISOString() })
+    const fil = [{ auteurType: 'membre', auteurNom: q.m, texte: DETAIL[q.q] ?? q.q, date }]
+    if (REPONSES[q.q]) fil.push({ auteurType: 'expert', auteurNom: q.to, texte: REPONSES[q.q], date: new Date(new Date(date).getTime() + (q.q.startsWith('Préparer') ? 3 : 1) * 86400e3).toISOString() })
     await payload.db.create({
       collection: 'expertRequests',
       data: {
@@ -65,7 +77,7 @@ export async function seedEchanges(payload: Payload): Promise<void> {
         echeance: ajouterJoursOuvres(new Date(date), 5).toISOString(),
         fil: fil.map(ligne),
         relances: 0,
-        nonLuMembre: q.st === 'En cours',
+        nonLuMembre: q.q.startsWith('Préparer'),
         createdAt: date,
         updatedAt: date,
       },
@@ -85,10 +97,12 @@ export async function seedEchanges(payload: Payload): Promise<void> {
         message: 'Bonjour, j’envoie chaque semaine des colis vers Pointe-Noire. Pourriez-vous me faire une proposition pour des livraisons régulières ?',
         statut: 'acceptee',
         dateReponse: jours(2),
-        fil: [ligne({ auteur: herve.id, texte: 'Avec plaisir. Appelez-moi pour un tarif au mois.', date: jours(2) })],
+        // Maquette : le fil d'Hervé Ondongo (réponse il y a 2 jours) ouvre la liste, devant la demande de Léon Massamba reçue aujourd'hui :
+        // le tri suit la dernière activité du fil (updatedAt), ici une consultation récente.
+        fil: [ligne({ auteur: herve.id, texte: 'Avec plaisir. J’accepte la mise en relation. Mon numéro WhatsApp : +242 06 903 47 25. Appelez-moi pour un tarif au mois.', date: jours(2) })],
         nonLuPar: [],
         createdAt: jours(3),
-        updatedAt: jours(2),
+        updatedAt: heures(1),
       },
     })
   }
@@ -104,8 +118,8 @@ export async function seedEchanges(payload: Payload): Promise<void> {
           'Bonjour Christelle, j’ai vu votre boutique à Bacongo. Mes bretelles en wax iraient bien avec vos sacs. Seriez-vous d’accord pour un dépôt-vente de quelques pièces, pour essayer ?',
         statut: 'attente',
         nonLuPar: [christelle.id],
-        createdAt: jours(0),
-        updatedAt: jours(0),
+        createdAt: heures(5),
+        updatedAt: heures(5),
       },
     })
   }
@@ -135,8 +149,8 @@ export async function seedEchanges(payload: Payload): Promise<void> {
       data: {
         membre: christelle.id,
         tous: false,
-        titre: `Votre reçu ${recu?.numero ?? ''}`.trim(),
-        texte: `Merci pour votre paiement (cotisation, 1re tranche). Votre reçu ${recu?.numero ?? ''} est disponible dans Cotisation.`,
+        titre: `Votre reçu ${numeroRecu(Number(recu?.numero))}`.trim(),
+        texte: `Merci pour votre paiement de 37 500 FCFA (cotisation 2026, 1re tranche). Votre reçu ${numeroRecu(Number(recu?.numero))} est disponible dans Cotisation.`,
         luPar: [christelle.id],
         createdAt: jours(5),
         updatedAt: jours(5),

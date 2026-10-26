@@ -92,7 +92,7 @@ export const dataM = (m?: Record<string, string | boolean>) =>
   )
 
 const WIDTHS = { vignette: 400, carte: 800, grande: 1600 } as const
-const DEFAULT_SIZES = { vignette: '120px', carte: '(max-width: 768px) 100vw, 480px', grande: '100vw' }
+const DEFAULT_SIZES = { vignette: '120px', carte: '(max-width: 768px) 100vw, 480px', grande: '(max-width: 768px) 200vw, 100vw' }
 
 /** Tailles générées par la médiathèque (WebP), jusqu'à la taille demandée. */
 const srcSetOf = (m: Media, size: keyof typeof WIDTHS): string | undefined => {

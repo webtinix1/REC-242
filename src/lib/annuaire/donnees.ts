@@ -23,6 +23,7 @@ type Brut = {
   nom: string
   slug: string
   logo?: Media | number | null
+  photo?: (Media & { id?: number }) | number | null
   secteurs?: ({ id: number; nom: string; slug?: string } | number)[]
   localite?: { id: number; nom: string } | number | null
   quartier?: string | null
@@ -52,6 +53,8 @@ export type CartePublique = {
   slug: string
   nom: string
   logo?: string
+  /** Photo d'illustration de la fiche (bandeau), si la fiche en a une. */
+  illustration?: { url: string; alt: string }
   secteur: string
   secteurs: string[]
   ville: string
@@ -78,9 +81,11 @@ export type CarteMembre = CartePublique & {
   liens: { siteWeb?: string; linkedin?: string; facebook?: string }
 }
 
-export type Filtres = { q?: string; secteur?: string; ville?: string; commission?: string; taille?: string; page: number }
+export type Filtres = { q?: string; secteur?: string; ville?: string; commission?: string; taille?: string; page: number; /** Membre connecté : sa propre fiche n'est pas proposée dans l'annuaire de l'espace membre. */ sauf?: number }
 
 const img = (m?: Media | number | null) => (m && typeof m === 'object' ? m.sizes?.vignette?.url || m.url || undefined : undefined)
+const photoIllustration = (m?: (Media & { alt?: string | null }) | number | null) =>
+  m && typeof m === 'object' && m.url ? { url: m.url, alt: (m as { alt?: string | null }).alt ?? '' } : undefined
 const obj = <T,>(x: T | number | null | undefined): T | undefined => (x && typeof x === 'object' ? x : undefined)
 
 export const lireFiltres = (sp: Record<string, string | string[] | undefined>): Filtres => {
@@ -105,6 +110,7 @@ const versPublique = (c: Brut): CartePublique => {
     slug: c.slug,
     nom: c.nom,
     logo: img(c.logo),
+    illustration: photoIllustration(c.photo),
     secteur: secteurs[0] ?? '',
     secteurs,
     ville: obj<{ nom: string }>(c.localite)?.nom ?? '',
@@ -132,7 +138,7 @@ const versMembre = (c: Brut): CarteMembre => {
     taille: label(EFFECTIFS, c.effectif ?? undefined),
     commission: coms.join(', ') || 'Aucune',
     telephone: v.telephone && t?.telephone ? telephoneAffiche(t.telephone) : MASQUE,
-    whatsapp: v.whatsapp ? (t?.whatsapp || t?.telephone ? 'Oui' : 'Non') : MASQUE,
+    whatsapp: v.whatsapp ? (t?.whatsapp ? 'Oui' : 'Non') : MASQUE,
     email: v.email && t?.email ? t.email : MASQUE,
     liens: { siteWeb: c.siteWeb ?? undefined, linkedin: c.linkedin ?? undefined, facebook: c.facebook ?? undefined },
   }
@@ -143,6 +149,7 @@ const SELECT_PUBLIC = {
   nom: true,
   slug: true,
   logo: true,
+  photo: true,
   secteurs: true,
   localite: true,
   presentation: true,
@@ -152,9 +159,10 @@ const SELECT_PUBLIC = {
   titulaire: true,
 } as const
 
-async function whereFiltres(f: Filtres): Promise<Where> {
+async function whereFiltres(f: Filtres, pourMembre: boolean): Promise<Where> {
   const payload = await getPayloadClient()
   const et: Where[] = [conditionAnnuaire]
+  if (pourMembre && f.sauf) et.push({ titulaire: { not_equals: f.sauf } })
   if (f.secteur) {
     const s = await payload.find({ collection: 'sectors', where: { or: [{ slug: { equals: f.secteur } }, { nom: { equals: f.secteur } }] }, limit: 1, depth: 0, overrideAccess: true })
     et.push({ secteurs: { in: s.docs.map((d) => d.id) } })
@@ -163,11 +171,12 @@ async function whereFiltres(f: Filtres): Promise<Where> {
     const l = await payload.find({ collection: 'localities', where: { or: [{ slug: { equals: f.ville } }, { nom: { equals: f.ville } }] }, limit: 1, depth: 0, overrideAccess: true })
     et.push({ localite: { in: l.docs.map((d) => d.id) } })
   }
-  if (f.commission) {
+  // Commission et taille ne sont montrées qu'aux membres connectés (docs/05 §6) : le visiteur ne filtre pas dessus.
+  if (f.commission && pourMembre) {
     const c = await payload.find({ collection: 'commissions', where: { or: [{ slug: { equals: f.commission } }, { nom: { equals: f.commission } }] }, limit: 1, depth: 0, overrideAccess: true })
     et.push({ 'titulaire.commissions': { in: c.docs.map((d) => d.id) } })
   }
-  if (f.taille && EFFECTIFS.some((e) => e.value === f.taille)) et.push({ effectif: { equals: f.taille } })
+  if (pourMembre && f.taille && EFFECTIFS.some((e) => e.value === f.taille)) et.push({ effectif: { equals: f.taille } })
   if (f.q) et.push({ or: [{ nom: { like: f.q } }, { presentation: { like: f.q } }, { services: { like: f.q } }, { 'localite.nom': { like: f.q } }, { 'secteurs.nom': { like: f.q } }] })
   return { and: et }
 }
@@ -179,8 +188,8 @@ export async function listerAnnuaire(f: Filtres, pourMembre: boolean) {
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'companies',
-    where: await whereFiltres(f),
-    sort: 'nom',
+    where: await whereFiltres(f, pourMembre),
+    sort: 'createdAt',
     page: f.page,
     limit: PAR_PAGE,
     depth: 2,
@@ -246,4 +255,24 @@ export async function optionsFiltres() {
   ])
   const opt = (docs: unknown[]) => (docs as { nom: string; slug?: string }[]).map((d) => ({ value: d.slug || d.nom, label: d.nom }))
   return { secteurs: opt(s.docs), villes: opt(l.docs), commissions: opt(c.docs), tailles: EFFECTIFS.map((e) => ({ value: e.value, label: e.label })) }
+}
+
+/** Filtres de l'espace membre : seulement les secteurs et villes où l'annuaire compte au moins une fiche. */
+export async function optionsFiltresUtilisees(sauf?: number) {
+  const payload = await getPayloadClient()
+  const [opt, r] = await Promise.all([
+    optionsFiltres(),
+    payload.find({ collection: 'companies', where: sauf ? { and: [conditionAnnuaire, { titulaire: { not_equals: sauf } }] } : conditionAnnuaire, limit: 1000, depth: 0, pagination: false, overrideAccess: true, select: { secteurs: true, localite: true } }),
+  ])
+  const docs = r.docs as unknown as { secteurs?: (number | { id: number })[]; localite?: number | { id: number } | null }[]
+  const id = (x: number | { id: number } | null | undefined) => (typeof x === 'object' && x ? x.id : x)
+  const secteursUtilises = new Set(docs.flatMap((d) => (d.secteurs ?? []).map(id)))
+  const villesUtilisees = new Set(docs.map((d) => id(d.localite)))
+  const [s, l] = await Promise.all([
+    payload.find({ collection: 'sectors', limit: 100, depth: 0, sort: 'nom', overrideAccess: true }),
+    payload.find({ collection: 'localities', limit: 100, depth: 0, sort: 'ordre', overrideAccess: true }),
+  ])
+  const garde = (docs2: unknown[], utilises: Set<unknown>) =>
+    (docs2 as { id: number; nom: string; slug?: string }[]).filter((d) => utilises.has(d.id)).map((d) => ({ value: d.slug || d.nom, label: d.nom }))
+  return { ...opt, secteurs: garde(s.docs, secteursUtilises), villes: garde(l.docs, villesUtilisees) }
 }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import React from 'react'
 
+import { Img } from '@/components/site/Blocks'
 import { JsonLd } from '@/components/site/JsonLd'
 import { ficheAnnuaire } from '@/lib/annuaire/donnees'
 import { membreConnecte } from '@/lib/membres/espace'
@@ -89,12 +90,15 @@ export default async function FicheMembre({ params }: { params: P }) {
       </section>
 
       {m.presentation && (
-        <section className="band band-s">
-          <div className="wrap stack" style={{ gap: 10, maxWidth: 820 }} data-m="rise">
-            <span className="eyebrow">Présentation</span>
-            <p className="h-m" style={{ whiteSpace: 'pre-line' }}>
-              {m.presentation}
-            </p>
+        <section className="pband pband-short">
+          {m.illustration && <Img media={m.illustration} alt="" m={{ m: 'iris' }} style={{ objectPosition: '60% 35%' }} />}
+          <div className="wrap">
+            <div className="ptext" data-m="cascade" data-m-stagger="" data-m-d="3">
+              <span className="eyebrow">Présentation</span>
+              <p className="h-m" style={{ whiteSpace: 'pre-line' }}>
+                {m.presentation}
+              </p>
+            </div>
           </div>
         </section>
       )}

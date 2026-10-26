@@ -197,6 +197,7 @@ export async function seedPages(payload: Payload): Promise<void> {
           image: await img(
             'photos/groupe.webp',
             'Membres du réseau échangeant lors d’une rencontre',
+            [50, 30], // .v-groupe de la maquette
           ),
           boutons: [B('Tout l’agenda', '/agenda')],
         }),

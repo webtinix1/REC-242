@@ -8,7 +8,7 @@ export function CadreConnexion({ children }: { children: React.ReactNode }) {
       <div className="login-art">
         <Link className="plate" href="/" aria-label="Retour au site REC 242">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo-rec242-328.webp" alt="REC 242" width={137} height={40} />
+          <img src="/images/logo-site-327.webp" srcSet="/images/logo-site-327.webp 327w, /images/logo-site-490.webp 490w" sizes="164px" alt="REC 242" width={327} height={96} style={{ height: 40, width: 'auto' }} />
         </Link>
         <div className="orbit" aria-hidden="true">
           <span className="o o1" />

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { Visage } from '@/components/espace/AnnuaireVisage'
-import { lireFiltres, listerAnnuaire, MASQUE, optionsFiltres, type Filtres } from '@/lib/annuaire/donnees'
+import { lireFiltres, listerAnnuaire, optionsFiltresUtilisees, type Filtres } from '@/lib/annuaire/donnees'
 import { exigerMembre } from '@/lib/membres/espace'
 
 export const metadata: Metadata = { title: 'Annuaire' }
@@ -22,9 +22,9 @@ const lien = (f: Filtres, ch: Partial<Filtres>) => {
 
 /** Annuaire des membres (écran 07). */
 export default async function AnnuairePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await exigerMembre()
-  const f = lireFiltres(await searchParams)
-  const [{ cartes, total, pages }, opt] = await Promise.all([listerAnnuaire(f, true), optionsFiltres()])
+  const moi = await exigerMembre()
+  const f = { ...lireFiltres(await searchParams), sauf: moi.id }
+  const [{ cartes, total, pages }, opt] = await Promise.all([listerAnnuaire(f, true), optionsFiltresUtilisees(moi.id)])
   const chip = (actif: boolean) => `chip ${actif ? 'is-on' : ''}`
   return (
     <>
@@ -96,7 +96,7 @@ export default async function AnnuairePage({ searchParams }: { searchParams: Pro
               </div>
               <div className="contact">
                 <span className="muted">Téléphone</span>
-                <span className={m.telephone === MASQUE ? undefined : "mono"}>{m.telephone}</span>
+                <span className="mono">{m.telephone}</span>
               </div>
               <div className="contact">
                 <span className="muted">WhatsApp</span>

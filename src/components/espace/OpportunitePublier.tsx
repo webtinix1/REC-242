@@ -72,7 +72,7 @@ export function OpportunitePublier({ init, secteurs, aujourdhui }: { init: Valeu
         ))}
       </div>
 
-      <div className="stack" hidden={etape !== 1}>
+      <div className="stack" style={{ gap: 14 }} hidden={etape !== 1}>
         <h2 className="h2">Décrivez votre opportunité</h2>
         <div className="rec-field">
           <label htmlFor="mb-p-type">Type</label>
@@ -86,7 +86,7 @@ export function OpportunitePublier({ init, secteurs, aujourdhui }: { init: Valeu
         </div>
         <div className={champ('titre')}>
           <label htmlFor="mb-p-t">Titre</label>
-          <input id="mb-p-t" name="titre" className="rec-input" type="text" maxLength={160} placeholder="Recherche d’un partenaire de distribution" value={v.titre} onChange={(e) => maj('titre', e.target.value)} />
+          <input id="mb-p-t" name="titre" className="rec-input" type="text" maxLength={160} placeholder="Recherche d'un partenaire de distribution" value={v.titre} onChange={(e) => maj('titre', e.target.value)} />
           {err('titre')}
         </div>
         <div className={champ('description')}>
@@ -110,7 +110,7 @@ export function OpportunitePublier({ init, secteurs, aujourdhui }: { init: Valeu
         </button>
       </div>
 
-      <div className="stack" hidden={etape !== 2}>
+      <div className="stack" style={{ gap: 14 }} hidden={etape !== 2}>
         <h2 className="h2">Visibilité et date limite</h2>
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
           <legend style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Visibilité</legend>
@@ -165,7 +165,7 @@ export function OpportunitePublier({ init, secteurs, aujourdhui }: { init: Valeu
         </div>
       </div>
 
-      <div className="stack" hidden={etape !== 3}>
+      <div className="stack" style={{ gap: 14 }} hidden={etape !== 3}>
         <h2 className="h2">Relisez avant d&apos;envoyer</h2>
         <div className="card-soft">
           <span className="tag">{typeLabel(v.type)}</span>

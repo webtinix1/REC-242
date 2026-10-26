@@ -176,6 +176,7 @@ export const Cartes: Block = {
         { name: 'lien', label: 'Lien', type: 'text' },
         { name: 'libelleLien', label: 'Libellé du lien', type: 'text' },
         { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+        { name: 'image2', label: 'Seconde vignette (facultatif)', type: 'upload', relationTo: 'media', admin: { description: 'Kit média : la carte affiche deux vignettes côte à côte.' } },
       ],
     },
   ],

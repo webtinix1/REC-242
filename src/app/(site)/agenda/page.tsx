@@ -4,7 +4,6 @@ import React from 'react'
 
 import { Img } from '@/components/site/Blocks'
 import { JsonLd } from '@/components/site/JsonLd'
-import { Words } from '@/components/site/Words'
 import {
   accesLabel,
   disque,
@@ -60,19 +59,27 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
     const s = p.toString()
     return `/agenda${s ? `?${s}` : ''}`
   }
-  const image = block(accueil, 'agenda')?.image
+  const image = block(accueil, 'hero')?.image
 
   return (
     <>
       <section className="pband pband-b">
-        <Img media={image} alt="" m={{ m: 'iris' }} priority />
+        <Img media={image} alt="" m={{ m: 'iris' }} style={{ objectPosition: '50% 25%' }} priority />
         <div className="wrap" style={{ paddingBottom: 104 }}>
           <div className="ptext">
             <span className="eyebrow" data-m="rise" data-m-d="1">
               Agenda
             </span>
             <h1 className="h-xxl" data-m="words" data-m-stagger="" data-m-d="1">
-              <Words text="Nos rendez-vous" />
+              <span className="mw">
+                <span>Nos</span>
+              </span>{' '}
+              <span className="mw">
+                <span>rendez-</span>
+              </span>
+              <span className="mw">
+                <span>vous</span>
+              </span>
             </h1>
             <nav className="chips dark" aria-label="Période" data-m="pops" data-m-stagger="" data-m-d="4">
               <Link href="/agenda" className={`chip${passes ? '' : ' is-on'}`} aria-current={passes ? undefined : 'true'}>

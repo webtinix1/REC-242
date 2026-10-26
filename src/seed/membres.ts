@@ -26,7 +26,7 @@ type Bo = { ref: string; nom: string; statut: string; cot: string; vis: string }
 const TAILLE: Record<string, string> = { '1 à 9': '1-9', '10 à 49': '10-49', '50 et plus': '50+' }
 
 // Compléments propres à la démonstration (la maquette montre Christelle Malonga connectée).
-const DETAILS: Record<string, { email?: string; telephone?: string; adhesion: string; numero?: string; presentation?: string; vis?: boolean[] }> = {
+const DETAILS: Record<string, { email?: string; telephone?: string; whatsapp?: string | null; adhesion: string; numero?: string; presentation?: string; vis?: boolean[] }> = {
   'Kimia Créations': {
     email: 'christelle@kimiacreations.cg',
     telephone: '+242 06 641 22 87',
@@ -36,9 +36,11 @@ const DETAILS: Record<string, { email?: string; telephone?: string; adhesion: st
   },
   // Coordonnées et choix d'affichage : annuaire de l'espace membre de la maquette (« Masqué par le membre » sinon).
   Khazad: { adhesion: '2026-10-03', telephone: '+242 06 512 34 18', vis: [true, true, true, false, true] },
-  'Hôpital Blanche Gomes': { adhesion: '2026-10-04', telephone: '+242 05 530 18 44', vis: [false, true, false, false, false] },
+  // WhatsApp affiché mais sans numéro WhatsApp : « Non » dans l'annuaire de la maquette.
+  'Hôpital Blanche Gomes': { adhesion: '2026-10-04', telephone: '+242 05 530 18 44', whatsapp: null, vis: [true, true, true, false, true] },
   // Membre en relance : adhésion assez ancienne pour que l'échéance de la 2e tranche soit dépassée.
-  'Les Bretelles de Léon': { adhesion: '2026-05-04', email: 'contact@bretellesdeleon.cg', vis: [false, false, true, true, false] },
+  // Téléphone masqué, WhatsApp affiché (« Oui ») : numéro fictif de démonstration, jamais affiché.
+  'Les Bretelles de Léon': { adhesion: '2026-05-04', email: 'contact@bretellesdeleon.cg', telephone: '+242 06 000 00 21', vis: [true, false, true, true, true] },
   '3M-Partners & Conseils': {
     adhesion: '2026-10-08',
     numero: 'REC-2026-0016',
@@ -46,10 +48,10 @@ const DETAILS: Record<string, { email?: string; telephone?: string; adhesion: st
     telephone: '+242 06 877 02 61',
     vis: [true, true, true, true, true],
   },
-  'Mbongui Formation & RH': { adhesion: '2026-10-09', numero: 'REC-2026-0017', email: 'contact@mbongui-rh.cg', vis: [true, false, true, true, true] },
-  'Fako Drop': { adhesion: '2026-10-10', numero: 'REC-2026-0018', telephone: '+242 06 903 47 25', vis: [true, true, true, false, true] },
+  'Mbongui Formation & RH': { adhesion: '2026-10-09', numero: 'REC-2026-0017', email: 'contact@mbongui-rh.cg', telephone: '+242 06 000 00 22', vis: [true, false, true, true, true] },
+  'Fako Drop': { adhesion: '2026-10-10', numero: 'REC-2026-0018', telephone: '+242 06 903 47 25', vis: [true, true, true, false, false] },
   'Ferme Lékana': { adhesion: '2026-10-08', numero: 'REC-2026-0013', vis: [true, false, false, false, false] },
-  'Batimat Congo': { adhesion: '2026-10-11', numero: 'REC-2026-0019', vis: [true, false, true, false, true] },
+  'Batimat Congo': { adhesion: '2026-10-11', numero: 'REC-2026-0019', vis: [true, false, true, false, false] },
 }
 
 // Fiches de l'annuaire du site de la maquette absentes de seed/membres-et-entreprises.json.
@@ -88,7 +90,8 @@ export async function seedMembres(payload: Payload): Promise<void> {
     const nom = reste.join(' ')
     const email = det.email ?? `${sansAccent(prenom)}.${sansAccent(nom).replace(/\s+/g, '-')}@membres.rec242.test`
     const numero = bo?.ref ?? det.numero
-    const statut = bo?.statut === 'Suspendu' ? 'suspendu' : 'actif'
+    // Les 9 fiches de l'annuaire de la maquette sont visibles : le statut « Suspendu » du back-office de la maquette n'est pas reproduit.
+    const statut = 'actif' as 'actif' | 'suspendu'
     const debut = new Date(`${det.adhesion}T09:00:00Z`)
     const cat = categorie(a.cat)
     const m = montants(cat, s.tarifs)
@@ -104,12 +107,24 @@ export async function seedMembres(payload: Payload): Promise<void> {
     if (existant.docs[0]) {
       // Relance du seed : coordonnées et choix d'affichage remis aux valeurs de démonstration.
       const ex = existant.docs[0] as unknown as { id: number; entreprise?: number }
-      await payload.db.updateOne({ collection: 'members', id: ex.id, data: { email, telephone: det.telephone ?? null, whatsapp: det.telephone ?? null }, returning: false })
+      await payload.db.updateOne({
+        collection: 'members',
+        id: ex.id,
+        data: {
+          email,
+          telephone: det.telephone ?? null,
+          whatsapp: det.whatsapp !== undefined ? det.whatsapp : (det.telephone ?? null),
+          statut: 'actif',
+          motifStatut: null,
+          consentementAnnuaire: vis[0] ? debut.toISOString() : null,
+        },
+        returning: false,
+      })
       if (ex.entreprise)
         await payload.db.updateOne({
           collection: 'companies',
           id: ex.entreprise,
-          data: { visibilite: Object.fromEntries(VIS.map((k, i) => [k, Boolean(vis[i])])), selectionAccueil: Boolean(vis[4]) },
+          data: { visibilite: Object.fromEntries(VIS.map((k, i) => [k, Boolean(vis[i])])), selectionAccueil: Boolean(vis[4]), masqueeParAdmin: false },
           returning: false,
         })
       parEntreprise.set(a.nom, ex.id)
@@ -128,7 +143,7 @@ export async function seedMembres(payload: Payload): Promise<void> {
         effectif: TAILLE[a.taille],
         presentation: det.presentation,
         visibilite: Object.fromEntries(VIS.map((k, i) => [k, Boolean(vis[i])])),
-        masqueeParAdmin: bo?.vis === 'Masquée' && statut === 'suspendu',
+        masqueeParAdmin: false,
         // Sélection du bureau pour l'accueil (démonstration) : les fiches dont le membre accepte la mise en avant.
         selectionAccueil: Boolean(vis[4]),
       } as never,
@@ -142,7 +157,7 @@ export async function seedMembres(payload: Payload): Promise<void> {
         prenom,
         nom,
         telephone: det.telephone,
-        whatsapp: det.telephone,
+        whatsapp: det.whatsapp !== undefined ? det.whatsapp : det.telephone,
         photo,
         entreprise: entreprise.id,
         categorie: cat?.valeur ?? 'B',
@@ -205,14 +220,14 @@ export async function seedMembres(payload: Payload): Promise<void> {
       const r = await payload.create({
         collection: 'modificationRequests',
         overrideAccess: true,
-        data: { membre: christelle, champ: 'villeQuartier', nouvelleValeur: 'Brazzaville, Bacongo', motif: 'Déménagement de la boutique' } as never,
+        data: { membre: christelle, champ: 'quartier', nouvelleValeur: 'Bacongo', motif: 'Déménagement de la boutique' } as never,
       })
       await payload.db.updateOne({
         collection: 'modificationRequests',
         id: r.id,
         data: {
           statut: 'validee',
-          valeurActuelle: 'Brazzaville, Moungali',
+          valeurActuelle: 'Moungali',
           traitePar: beryl.docs[0]?.id,
           traiteParNom: (beryl.docs[0] as { name?: string } | undefined)?.name ?? 'Béryl Bobanda',
           dateTraitement: '2026-10-08T10:00:00.000Z',

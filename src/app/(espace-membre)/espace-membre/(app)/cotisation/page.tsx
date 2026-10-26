@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { CotisationHaut } from '@/components/espace/CotisationHaut'
-import { Icone } from '@/components/espace/Icones'
 import { categorie, fcfa, montants, telephoneAffiche, type Tarifs } from '@/lib/adhesion/categories'
 import { modeLabel, objetLabel } from '@/lib/adhesion/paiement'
 import { numeroRecu } from '@/lib/compteurs'
@@ -135,8 +134,9 @@ export default async function CotisationPage() {
         {recus.length ? (
           recus.map((r) => (
             <div className="item" key={r.id}>
-              <span className="doc-th" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-brand)' }}>
-                <Icone nom="file" className="ic" />
+              <span className="doc-th" aria-hidden="true">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/documents/couverture-recu.webp" alt="" />
               </span>
               <div className="grow">
                 <p style={{ fontWeight: 600 }}>{objetLabel(r.objet)}</p>

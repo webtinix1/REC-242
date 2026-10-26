@@ -85,6 +85,14 @@ export const Companies: CollectionConfig = {
     { ...slugField('nom'), access: { update: equipeSeulement } } as Field,
     { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
     {
+      name: 'photo',
+      label: 'Photo d’illustration',
+      type: 'upload',
+      relationTo: 'media',
+      access: { update: equipeSeulement },
+      admin: { description: 'Bandeau photo de la fiche (site et espace membre). Facultatif : sans photo, le bandeau n’est pas affiché.' },
+    },
+    {
       type: 'row',
       fields: [
         { name: 'secteurs', label: 'Secteurs', type: 'relationship', relationTo: 'sectors', hasMany: true, maxRows: 3, access: { update: equipeSeulement } },

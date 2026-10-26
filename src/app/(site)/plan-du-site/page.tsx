@@ -4,9 +4,12 @@ import React from 'react'
 
 import { JsonLd } from '@/components/site/JsonLd'
 import { Words } from '@/components/site/Words'
-import { getPayloadClient } from '@/lib/site/payload'
+import { listerAnnuaire } from '@/lib/annuaire/donnees'
+import { evenementsPublics, prochainsEvenements } from '@/lib/evenements/site'
+import { getNews } from '@/lib/site/data'
 import { breadcrumbLd, metadataFor } from '@/lib/site/seo'
-import { getNavigation, linkHref } from '@/lib/site/settings'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   return metadataFor('/plan-du-site', { title: 'Plan du site' })
@@ -14,33 +17,53 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type Item = { label: string; href: string }
 
-/** Écran 24 : plan du site, construit depuis le menu et les pages publiées. */
+/** Écran 24 : plan du site. Les fiches d'exemple (entreprise, événement, article) pointent vers de vraies fiches publiées. */
 export default async function PlanDuSite() {
-  const [nav, payload] = await Promise.all([getNavigation(), getPayloadClient()])
-  const pages = (
-    await payload.find({
-      collection: 'pages',
-      where: { _status: { equals: 'published' } },
-      limit: 200,
-      depth: 0,
-      sort: 'title',
-      overrideAccess: false,
-    })
-  ).docs as unknown as { title: string; chemin?: string; menu?: string }[]
-  const groups: { t: string; items: Item[] }[] = (nav.principal ?? []).map((n) => {
-    const items: Item[] = n.sousMenu?.length
-      ? n.sousMenu.map((s) => ({ label: s.libelle, href: linkHref(s) }))
-      : [{ label: n.libelle, href: linkHref(n) }]
-    for (const p of pages)
-      if (p.menu === n.libelle && p.chemin && !items.some((i) => i.href === p.chemin))
-        items.push({ label: p.title, href: p.chemin })
-    return { t: n.libelle, items }
-  })
-  const infos: Item[] = pages
-    .filter((p) => !p.menu && p.chemin && p.chemin !== '/')
-    .map((p) => ({ label: p.title, href: p.chemin! }))
-  infos.push({ label: 'Recherche', href: '/recherche' })
-  groups.push({ t: 'Informations', items: infos })
+  const [membres, prochains, passes, actus] = await Promise.all([
+    listerAnnuaire({ page: 1 }, false),
+    prochainsEvenements(1),
+    evenementsPublics({ statut: { equals: 'termine' } }, { sort: '-debut', limit: 1 }),
+    getNews({ limit: 1, publiques: true }),
+  ])
+  const fiche = membres.cartes[0] ? `/membres/${membres.cartes[0].slug}` : '/membres'
+  const evenement = prochains.evs[0] ? `/agenda/${prochains.evs[0].slug}` : '/agenda'
+  const passe = passes[0] ? `/agenda/${passes[0].slug}` : '/agenda?onglet=passes'
+  const article = actus.docs[0] ? `/actualites/${actus.docs[0].slug}` : '/actualites'
+  const l = (label: string, href: string): Item => ({ label, href })
+  const groups: { t: string; items: Item[] }[] = [
+    {
+      t: 'Le réseau',
+      items: [
+        l('Qui sommes-nous', '/le-reseau'),
+        l('Gouvernance', '/le-reseau/gouvernance'),
+        l('Commissions', '/le-reseau/commissions'),
+        l('Antennes', '/le-reseau/antennes'),
+        l('Notre écosystème', '/le-reseau/ecosysteme'),
+        l('Partenaires', '/le-reseau/partenaires'),
+        l('Formalisation', '/formalisation'),
+      ],
+    },
+    {
+      t: 'Adhérer',
+      items: [l('Pourquoi et comment', '/adherer'), l('Candidature', '/adherer/candidature'), l('Confirmation', '/adherer/merci')],
+    },
+    {
+      t: 'Membres et affaires',
+      items: [l('Annuaire', '/membres'), l('Fiche entreprise', fiche), l('Opportunités B2B', '/opportunites')],
+    },
+    { t: 'Agenda', items: [l('À venir', '/agenda'), l('Fiche événement', evenement), l('Événement passé', passe)] },
+    { t: 'Actualités', items: [l('Toutes les actualités', '/actualites'), l('Article', article), l('Presse', '/presse')] },
+    { t: 'Contact', items: [l('Contact', '/contact'), l('Devenir partenaire', '/devenir-partenaire')] },
+    {
+      t: 'Informations',
+      items: [
+        l('Mentions légales', '/mentions-legales'),
+        l('Confidentialité', '/confidentialite'),
+        l('Conditions d’utilisation', '/conditions-utilisation'),
+        l('Recherche', '/recherche'),
+      ],
+    },
+  ]
 
   return (
     <>
@@ -69,7 +92,7 @@ export default async function PlanDuSite() {
             ))}
             <div className="card">
               <h2 className="h-s">Espace membre</h2>
-              <Link className="linkbtn" href="/espace-membre">
+              <Link className="linkbtn" href="/espace-membre/connexion">
                 Connexion
               </Link>
               <Link className="linkbtn" href="/espace-membre">

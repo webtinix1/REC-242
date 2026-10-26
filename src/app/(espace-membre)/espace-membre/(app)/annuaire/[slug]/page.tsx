@@ -5,7 +5,7 @@ import React from 'react'
 
 import { AnnuaireRelation } from '@/components/espace/AnnuaireRelation'
 import { Visage } from '@/components/espace/AnnuaireVisage'
-import { ficheAnnuaire, MASQUE } from '@/lib/annuaire/donnees'
+import { ficheAnnuaire } from '@/lib/annuaire/donnees'
 import { exigerMembre } from '@/lib/membres/espace'
 import { demanderRelation, signalerFiche } from '../actions'
 
@@ -27,7 +27,9 @@ export default async function FichePage({ params }: Props) {
   const soiMeme = f.titulaireId === m.id
   return (
     <>
-      <h1 style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>{f.nom}</h1>
+      <div className="top">
+        <h1 className="h1">Fiche membre</h1>
+      </div>
       <Link className="linkbtn" href="/espace-membre/annuaire">
         ← Annuaire
       </Link>
@@ -48,6 +50,12 @@ export default async function FichePage({ params }: Props) {
           <div className="card">
             <h2 className="h3">Présentation</h2>
             <p>{f.presentation || 'Présentation à venir.'}</p>
+            {f.illustration && (
+              <figure className="photo" style={{ height: 240, borderRadius: 20, overflow: 'hidden', position: 'relative' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={f.illustration.url} alt={f.illustration.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </figure>
+            )}
           </div>
           <div className="card">
             <h2 className="h3">Informations réservées aux membres</h2>
@@ -69,7 +77,7 @@ export default async function FichePage({ params }: Props) {
             </div>
             <div className="contact">
               <span className="muted">Téléphone</span>
-              <span className={f.telephone === MASQUE ? undefined : "mono"}>{f.telephone}</span>
+              <span className="mono">{f.telephone}</span>
             </div>
             <div className="contact">
               <span className="muted">WhatsApp</span>

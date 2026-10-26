@@ -16,7 +16,7 @@ Tenu à jour à la fin de chaque lot.
 | 9 Opportunités | Fait | 25/10/2026 | Collections `opportunities` (règles dans les hooks : une annonce de membre repart toujours « À modérer », le membre ne publie jamais lui-même ; date limite obligatoire et future ; source obligatoire pour un appel d’offres ; motif obligatoire pour refuser, message pour demander une modification ; mise en avant réservée au public ; coordonnées détectées automatiquement pour la modération), `opportunityReplies` (réponse aux offres entre membres, jamais à sa propre annonce, lue par l’auteur et le répondant seulement) et `fichiers` (pièces jointes privées, servies selon leur visibilité). E-mails 16, 17 et 25 (alerte aux membres des secteurs concernés qui gardent la préférence, une seule fois). Tâche horaire d’expiration : « Expirée » le lendemain de la date limite (heure de Brazzaville). Site : écran 17 (les opportunités réservées ne montrent que leur type et leur date limite, lues sans leurs autres champs ; section Expirées) et mise en avant sur l’accueil. Espace membre : écrans 05 et 06 (publication en trois étapes, Mes publications, Répondre) et « Opportunités pour vous » du tableau de bord. Back-office : écran 11 (tableau, panneau « À modérer » avec vérifications et actions) ; écran 20 par le formulaire natif. Tests : 2 d’intégration (modération avant visibilité, expiration le lendemain), 2 E2E. |
 | 10 Experts, échanges, commissions | Fait | 25/10/2026 | Collections `expertRequests` (la personne sollicitée porte l’étiquette ; échéance à 5 jours ouvrés ; fil avec événements système ; le membre ne peut que clôturer) et `commissionRequests` (commissions « ouvertes » seulement, une demande en attente à la fois ; acceptation qui ajoute la commission à la fiche et prévient le membre par un message du réseau). Réponse de l’expert par un lien signé lié à la demande et à la personne (une réattribution invalide l’ancien lien), page publique `/experts/reponse/[jeton]`. Tâche horaire « Sans réponse » ; relance (e-mail 14 bis), réattribution (e-mail 14 à la nouvelle personne), réponse au nom de REC 242, clôture. « Mes échanges » : quatre sources, non-lus tenus par fil (`nonLuPar`, `nonLuMembre`, `luPar`), écriture seulement dans un fil ouvert (mise en relation acceptée, réponse à une annonce, demande à un expert non clôturée), coordonnées partagées après acceptation selon les choix du membre. Espace membre : écrans 09 et 10, pastille des non-lus, carte « Mes échanges » du tableau de bord, « Rejoindre une autre commission » dans Mon profil. Back-office : écrans 19 (demandes à accepter ou refuser, cartes des commissions) et 21 (questions aux experts avec actions ; mises en relation : suivi, signalements, membres suspendus pour dépassement du plafond). Tests : 2 d’intégration (suivi, relance, réattribution, clôture ; compteurs de non-lus), 2 E2E. |
 | 11 Cotisations et discipline | Fait | 25/10/2026 | Collection `dues` (une échéance par membre et par exercice, montants figés à l’émission, tranches dont la première inclut le droit d’adhésion la première année, date limite à 3 mois ; tranches recalculées à chaque paiement confirmé, rattaché par le champ `echeance` du paiement ; statut à jour, à venir, en relance, perte). Relances : trois au plus, la suivante refusée avant 15 jours, jamais avant la date limite (e-mail 11) ; constat de perte après la troisième relance et 15 jours, avec procès-verbal (e-mail 13, ancien membre, fiche retirée de l’annuaire). Renouvellement : rappels 30 et 7 jours avant la date anniversaire (e-mail 10), nouvelle échéance au début de l’exercice (tâche quotidienne). Paiement mobile des tranches depuis l’espace membre, paiement manuel du trésorier, reçu numéroté envoyé au membre, export comptable. Collection `disciplinaryCases` (dossier D-AAAA-NNN) : étapes de l’article 15 dans l’ordre imposé par le serveur (griefs notifiés avec courrier PDF et e-mail 19, défense ou délai de 15 jours écoulé, avis de la commission, décision motivée avec courrier PDF et e-mail 19 bis, recours sous 30 jours, clôture) ; suspension de 1 à 6 mois appliquée tout de suite et levée automatiquement à son terme ; exclusion avec suspension conservatoire, effective à la fin du délai de recours ou après la décision de l’assemblée. Espace membre : écrans 11 et 12. Back-office : écran 12, section Discipline de l’écran 06, tableau de bord (écran 02) avec ses compteurs. Tests : 2 d’intégration (la deuxième relance pas avant 15 jours ; pas de sanction sans les étapes de l’article 15 ; un membre suspendu ne se connecte plus). |
-| 12 Finitions et mise en production | À faire | | |
+| 12 Finitions et mise en production | En cours | 26/10/2026 | Alignement visuel du site et de l’espace membre fait (voir plus bas). |
 
 ## Écarts assumés avec la maquette
 
@@ -24,9 +24,7 @@ Tenu à jour à la fin de chaque lot.
 - Utilisateurs : le bouton natif « Créer » de Payload reste visible pour le super administrateur (création directe avec mot de passe), en plus de « Inviter un utilisateur ».
 - Actualités de démonstration : toutes publiées, comme sur le site de la maquette (l'écran 09 de la maquette en montrait trois en brouillon, programmé et relecture pour illustrer les statuts).
 - Journal : la ville n'est renseignée que si le frontal transmet un en-tête de géolocalisation (Nginx GeoIP, à configurer au lot 12) ; sinon la colonne reste vide. On n'invente pas de ville.
-- Site, sections qui dépendent des lots suivants : sur l’accueil, la carte « Prochain rendez-vous », l’agenda, « Le réseau en visages » et les opportunités (lots 7 à 9) ; sur Formalisation, le prochain atelier ; sur l’article, l’événement lié (lot 8). Elles n’apparaissent pas tant que leurs données n’existent pas (règle « une section sans contenu disparaît ») et seront branchées dans ces lots.
 - Commissions : la mention « sur désignation » d’Éthique et Vérification est portée par le bandeau photo en bas de page, comme dans la maquette, pas par la carte.
-- Presse, kit média : une seule vignette par carte (la maquette juxtapose deux images pour le logo et les photos).
 - Actualités : la maquette montrait chaque actualité deux fois (publique et réservée) ; ici une seule carte par actualité, et l’actualité « à la une » est choisie dans l’admin (case « À la une »), la plus récente à défaut.
 - Recherche : la maquette n’a pas de titre de niveau 1 sur cet écran ; un titre « Rechercher sur le site » est ajouté, masqué visuellement.
 - Pied de page : les titres de colonnes sont des `h2` (ordre des titres pour l’accessibilité) avec le style des `h4` de la maquette.
@@ -120,4 +118,117 @@ Pendant le lot 9, le dossier `media` du poste de développement (images téléve
 - QR de la carte : `REC242:M:<numéro>:<signature HMAC>` (aucune donnée personnelle) ; `verifierJetonCarte` servira au pointage (lot 8).
 - Cotisation : en attendant les échéances du lot 11 (`dues`), la situation est calculée à partir des montants copiés sur la fiche et des paiements rattachés au membre (`src/lib/membres/cotisation.ts`).
 - Import CSV : les comptes importés sont « en attente d’activation » et hors annuaire (pas de consentement connu) ; le lien d’activation se renvoie depuis la fiche. Colonnes du modèle : `numero_adherent;prenom;nom;email;telephone;categorie;entreprise;secteurs;ville;quartier;date_adhesion`.
-- Données de démonstration : six membres de l’annuaire de la maquette (mot de passe `SEED_PASSWORD`), dont Christelle Malonga (`christelle@kimiacreations.cg`, REC-2026-0137, 2e tranche due) et Léon Massamba suspendu ; compteur des numéros 2026 placé à 137.
+- Données de démonstration : six membres de l’annuaire de la maquette (mot de passe `SEED_PASSWORD`), dont Christelle Malonga (`christelle@kimiacreations.cg`, REC-2026-0137, 2e tranche due) ; Léon Massamba, d’abord suspendu, est actif depuis l’alignement sur la maquette (sa fiche figure dans l’annuaire) et les tests le suspendent le temps de leur vérification (`tests/helpers/temporaire.ts`) ; compteur des numéros 2026 placé à 137.
+
+## Alignement visuel du site et de l’espace membre (26/10/2026)
+
+Méthode (`scripts/audit-visuel`, compilation de production `next build` puis `next start`) :
+
+- `pnpm audit:visuel` capture les 82 écrans (1440 × 900 et 390 × 900 px, animations réduites comme dans les références) et les compare à `captures/`.
+- `pnpm audit:maquette` rend la maquette elle-même dans le même navigateur. Contre `captures/`, la maquette s’écarte déjà de 1,3 à 6,7 % au premier écran, à hauteur identique : c’est le bruit du moteur de rendu (lissage des polices, anticrénelage, images redimensionnées). La cible de 2 % ne peut donc pas être atteinte contre les webp.
+- La comparaison qui fait foi est donc faite contre la maquette rendue sans ses contrôles « Démo » (`SANS_DEMO=1`, puis `pnpm audit:reel`). Une différence y vient de l’intégration, pas du moteur.
+- Les références mobiles ont été prises dans une fenêtre de 900 px de haut (barre d’onglets fixe à 831 px). La capture utilise la même hauteur ; la comparaison porte sur les 844 premiers pixels.
+- Résultat : 68 écrans sur 82 dans la cible (≤ 2 % au premier écran, hauteur à ± 1 %). Au départ : 3 écrans sur 82.
+
+Écrans hors cible et cause :
+
+| Écran | Cause prouvée |
+|---|---|
+| espace 05 opportunités (M + 13 %, D − 2 %) | La maquette de l’espace membre montre 5 annonces et 5 types ; celle du site (écran 17) montre en plus « Salon professionnel : appel à exposants », public. Une annonce publique est lisible par les membres (docs/05 §8) : elle apparaît aussi dans l’espace (une carte et une pastille de plus). Les deux maquettes se contredisent sur la même donnée. |
+| espace 07 annuaire (M 11,5 %, + 4 % ; D + 5 %) | La maquette de l’espace code en dur 6 fiches et une liste de secteurs sans Artisanat (`maquette/espace-membre/index.html`, liste des secteurs), alors que Ferme Lékana et Batimat Congo ont consenti à l’annuaire et figurent sur l’écran 12 du site. Les consentements réels (docs/05 §6) imposent 8 fiches visibles pour Christelle (la sienne exclue), d’où « Page 1 sur 2 » et deux pastilles de plus. |
+| espace 08 fiche (M 21 %) | La présentation de Khazad est, dans la maquette du site (écran 13), « Texte rédigé par le membre… Relu par le secrétariat avant publication. » ; la maquette de l’espace l’affiche sans la dernière phrase. C’est la même donnée : une ligne de plus décale la photo de 25 px. |
+| site 12 membres (M 6,7 %) | La maquette ne montre que les 6 premiers secteurs (`SECTEURS.slice(0, 6)` dans `maquette/site/index.html`), alors que ses propres fiches ont les secteurs Transport et Artisanat. Le filtre liste les secteurs et villes réellement utilisés (docs/06 : filtre par secteur), soit 4 pastilles de plus (+ 48 px). |
+| site 13 membre (D − 3 %, M − 2 %) | La ligne « Commission » de la fiche visiteur n’est pas affichée : docs/05 §6 et docs/06 (écran 13) la réservent au membre connecté. |
+| site 14 agenda (M 2,1 %, + 1,3 %) | « Porteurs de projets et investisseurs » est « Sur invitation » sur le site et « Réservé aux membres » dans l’espace (même donnée, voir QUESTIONS n° 9), d’où une ligne de plus. Le reste de l’écart est le rééchantillonnage des photos : même cadrage, mais l’image servie fait 400 px de large contre 960 à 1000 px dans la maquette. |
+| site 09 adhérer (M 2,1 %) | Rééchantillonnage de la photo du commerçant, entre 560 et 731 px : même cadrage (`cover`, 70 % 30 %) et même boîte (358 × 220), mais l’image servie fait 390 px de large contre 960 dans la maquette. Il n’y a aucun écart de mise en page. |
+| site 16 événement passé (D − 11 %, M − 7 %) | La maquette montre la carte d’aide « Participants : affiché seulement s’il est renseigné » (docs/06 §16 : « seulement si renseigné », et aucun chiffre ne s’invente) et une ligne « Règlement intérieur » qui pointe vers un document réservé aux membres : un lien mort pour un visiteur. |
+| site 19 actualités (D − 24 %, M − 30 %) | La maquette montre chaque actualité deux fois, en version publique et réservée. docs/06 (écran 19) impose une seule carte par actualité en production. |
+
+Données de démonstration : textes, ordres, dates (relatives au jour de la maquette, le 21 octobre 2026), images et cadrages de la maquette (`src/seed/alignement.ts`, lancé par le seed). Les données des tests E2E sont retirées en fin de suite (`tests/e2e/nettoyage.ts`). Choix notés dans QUESTIONS (n° 7 à 9).
+
+Mesures écran par écran (compilation de production) :
+
+| Écran | 1er écran contre captures/ | 1er écran contre la maquette sans démo | Hauteur (maquette → intégration) | Cible |
+|---|---|---|---|---|
+| espace-membre/01-connexion-mobile | 27,9 % | 0,2 % | 900 → 900 (+0,0 %) | oui |
+| espace-membre/01-connexion-ordinateur | 10,2 % | 0,1 % | 900 → 900 (+0,0 %) | oui |
+| espace-membre/02-tableau-mobile | 4,4 % | 0,6 % | 3528 → 3553 (+0,7 %) | oui |
+| espace-membre/02-tableau-ordinateur | 3,6 % | 0,5 % | 1877 → 1877 (+0,0 %) | oui |
+| espace-membre/03-profil-mobile | 4,7 % | 0,6 % | 4236 → 4219 (−0,4 %) | oui |
+| espace-membre/03-profil-ordinateur | 3,3 % | 0,1 % | 2342 → 2342 (+0,0 %) | oui |
+| espace-membre/04-evenements-mobile | 5,2 % | 1,8 % | 2295 → 2295 (+0,0 %) | oui |
+| espace-membre/04-evenements-ordinateur | 3 % | 0,5 % | 1150 → 1150 (+0,0 %) | oui |
+| espace-membre/05-opportunites-mobile | 24,6 % | 21,9 % | 3348 → 3785 (+13,1 %) | non |
+| espace-membre/05-opportunites-ordinateur | 3,7 % | 0,8 % | 2018 → 1974 (−2,2 %) | non |
+| espace-membre/06-publier-mobile | 3,3 % | 0,1 % | 908 → 908 (+0,0 %) | oui |
+| espace-membre/06-publier-ordinateur | 1,6 % | 0 % | 1042 → 1042 (+0,0 %) | oui |
+| espace-membre/07-annuaire-mobile | 12,4 % | 11,5 % | 2564 → 2671 (+4,2 %) | non |
+| espace-membre/07-annuaire-ordinateur | 4 % | 0,5 % | 1114 → 1175 (+5,5 %) | non |
+| espace-membre/08-fiche-mobile | 23,6 % | 21,1 % | 1658 → 1676 (+1,1 %) | non |
+| espace-membre/08-fiche-ordinateur | 3,3 % | 1,5 % | 1236 → 1236 (+0,0 %) | oui |
+| espace-membre/09-experts-mobile | 6,9 % | 0,5 % | 2133 → 2116 (−0,8 %) | oui |
+| espace-membre/09-experts-ordinateur | 3,4 % | 0,2 % | 1276 → 1276 (+0,0 %) | oui |
+| espace-membre/10-messages-mobile | 5,6 % | 0,2 % | 1424 → 1424 (+0,0 %) | oui |
+| espace-membre/10-messages-ordinateur | 3,3 % | 0,7 % | 1042 → 1042 (+0,0 %) | oui |
+| espace-membre/11-cotisation-mobile | 3,6 % | 0,6 % | 2046 → 2046 (+0,0 %) | oui |
+| espace-membre/11-cotisation-ordinateur | 3,6 % | 0,5 % | 1112 → 1112 (+0,0 %) | oui |
+| espace-membre/12-documents-mobile | 5,1 % | 0,5 % | 1555 → 1555 (+0,0 %) | oui |
+| espace-membre/12-documents-ordinateur | 3 % | 0,2 % | 1042 → 1042 (+0,0 %) | oui |
+| espace-membre/13-carte-mobile | 5,6 % | 1,2 % | 1038 → 1038 (+0,0 %) | oui |
+| espace-membre/13-carte-ordinateur | 2,2 % | 0,3 % | 1042 → 1042 (+0,0 %) | oui |
+| site/01-accueil-mobile | 6,9 % | 1,9 % | 12763 → 12773 (+0,1 %) | oui |
+| site/01-accueil-ordinateur | 2,6 % | 0,1 % | 8021 → 8021 (+0,0 %) | oui |
+| site/02-reseau-mobile | 6,9 % | 1,2 % | 8076 → 8086 (+0,1 %) | oui |
+| site/02-reseau-ordinateur | 1,9 % | 0,1 % | 5307 → 5307 (+0,0 %) | oui |
+| site/03-gouvernance-mobile | 4,4 % | 0,2 % | 8563 → 8573 (+0,1 %) | oui |
+| site/03-gouvernance-ordinateur | 2 % | 0,1 % | 5096 → 5096 (+0,0 %) | oui |
+| site/04-commissions-mobile | 6,3 % | 1 % | 5429 → 5439 (+0,2 %) | oui |
+| site/04-commissions-ordinateur | 2,9 % | 0,8 % | 3543 → 3543 (+0,0 %) | oui |
+| site/05-antennes-mobile | 3,6 % | 0,2 % | 4483 → 4493 (+0,2 %) | oui |
+| site/05-antennes-ordinateur | 1,8 % | 0,1 % | 2373 → 2373 (+0,0 %) | oui |
+| site/06-ecosysteme-mobile | 5 % | 0,7 % | 3587 → 3597 (+0,3 %) | oui |
+| site/06-ecosysteme-ordinateur | 2,3 % | 0,4 % | 2615 → 2615 (+0,0 %) | oui |
+| site/07-partenaires-mobile | 4,1 % | 0,6 % | 4391 → 4401 (+0,2 %) | oui |
+| site/07-partenaires-ordinateur | 1,8 % | 0,2 % | 2752 → 2752 (+0,0 %) | oui |
+| site/08-partenariat-mobile | 2,9 % | 0,2 % | 2304 → 2314 (+0,4 %) | oui |
+| site/08-partenariat-ordinateur | 1,4 % | 0,1 % | 1505 → 1505 (+0,0 %) | oui |
+| site/09-adherer-mobile | 6,2 % | 2,1 % | 10793 → 10803 (+0,1 %) | non |
+| site/09-adherer-ordinateur | 2 % | 0,3 % | 5797 → 5797 (+0,0 %) | oui |
+| site/10-candidature-mobile | 2,4 % | 0,4 % | 2497 → 2507 (+0,4 %) | oui |
+| site/10-candidature-ordinateur | 1,6 % | 0,2 % | 1545 → 1545 (+0,0 %) | oui |
+| site/11-merci-mobile | 4,6 % | 0,9 % | 2859 → 2857 (−0,1 %) | oui |
+| site/11-merci-ordinateur | 2,3 % | 0,2 % | 1761 → 1749 (−0,7 %) | oui |
+| site/12-membres-mobile | 24,8 % | 6,7 % | 5325 → 5383 (+1,1 %) | non |
+| site/12-membres-ordinateur | 3,9 % | 1,1 % | 3042 → 3042 (+0,0 %) | oui |
+| site/13-membre-mobile | 47,9 % | 0,2 % | 3158 → 3109 (−1,6 %) | non |
+| site/13-membre-ordinateur | 10,8 % | 0,3 % | 1951 → 1892 (−3,0 %) | non |
+| site/14-agenda-mobile | 4,3 % | 2,1 % | 3635 → 3681 (+1,3 %) | non |
+| site/14-agenda-ordinateur | 1,4 % | 0,2 % | 1895 → 1895 (+0,0 %) | oui |
+| site/15-evenement-mobile | 47,4 % | 1 % | 4044 → 4054 (+0,2 %) | oui |
+| site/15-evenement-ordinateur | 4,5 % | 0,1 % | 2645 → 2645 (+0,0 %) | oui |
+| site/16-evenementpasse-mobile | 4,7 % | 1 % | 3203 → 2968 (−7,3 %) | non |
+| site/16-evenementpasse-ordinateur | 2 % | 0,1 % | 1990 → 1777 (−10,7 %) | non |
+| site/17-opportunites-mobile | 5,9 % | 1,1 % | 5064 → 5074 (+0,2 %) | oui |
+| site/17-opportunites-ordinateur | 3,2 % | 0,7 % | 3071 → 3071 (+0,0 %) | oui |
+| site/18-formalisation-mobile | 6,4 % | 1,5 % | 4631 → 4641 (+0,2 %) | oui |
+| site/18-formalisation-ordinateur | 1,8 % | 0,3 % | 2884 → 2884 (+0,0 %) | oui |
+| site/19-actualites-mobile | 5,2 % | 1,9 % | 7335 → 5144 (−29,9 %) | non |
+| site/19-actualites-ordinateur | 2,1 % | 1 % | 3675 → 2789 (−24,1 %) | non |
+| site/20-article-mobile | 5,4 % | 0,9 % | 3235 → 3245 (+0,3 %) | oui |
+| site/20-article-ordinateur | 1,5 % | 0,1 % | 2637 → 2637 (+0,0 %) | oui |
+| site/21-presse-mobile | 4 % | 0,2 % | 3646 → 3656 (+0,3 %) | oui |
+| site/21-presse-ordinateur | 1,8 % | 0,1 % | 2289 → 2289 (+0,0 %) | oui |
+| site/22-contact-mobile | 3,6 % | 0,2 % | 4095 → 4105 (+0,2 %) | oui |
+| site/22-contact-ordinateur | 2,2 % | 0,1 % | 2423 → 2423 (+0,0 %) | oui |
+| site/23-recherche-mobile | 3,5 % | 0,2 % | 2558 → 2546 (−0,5 %) | oui |
+| site/23-recherche-ordinateur | 1,8 % | 0,2 % | 1577 → 1577 (+0,0 %) | oui |
+| site/24-plan-mobile | 3,6 % | 0,2 % | 2794 → 2804 (+0,4 %) | oui |
+| site/24-plan-ordinateur | 1,8 % | 0,1 % | 1659 → 1659 (+0,0 %) | oui |
+| site/25-mentions-mobile | 5,9 % | 0,2 % | 2398 → 2408 (+0,4 %) | oui |
+| site/25-mentions-ordinateur | 2,3 % | 0,1 % | 1661 → 1661 (+0,0 %) | oui |
+| site/26-confidentialite-mobile | 6,8 % | 0,2 % | 2677 → 2687 (+0,4 %) | oui |
+| site/26-confidentialite-ordinateur | 2,9 % | 0,1 % | 1850 → 1850 (+0,0 %) | oui |
+| site/27-conditions-mobile | 6,6 % | 1,4 % | 2646 → 2656 (+0,4 %) | oui |
+| site/27-conditions-ordinateur | 3,2 % | 0,8 % | 1783 → 1783 (+0,0 %) | oui |
+| site/28-erreur404-mobile | 3,6 % | 0,3 % | 1925 → 1935 (+0,5 %) | oui |
+| site/28-erreur404-ordinateur | 2,3 % | 0,3 % | 1155 → 1155 (+0,0 %) | oui |

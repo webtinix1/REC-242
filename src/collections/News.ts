@@ -188,6 +188,13 @@ export const News: CollectionConfig = {
       },
     },
     {
+      name: 'rang',
+      label: 'Rang dans les listes du site',
+      type: 'number',
+      min: 1,
+      admin: { position: 'sidebar', description: 'Facultatif. Les actualités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.' },
+    },
+    {
       name: 'aLaUne',
       label: 'À la une de la page Actualités',
       type: 'checkbox',
@@ -242,6 +249,12 @@ export const News: CollectionConfig = {
       type: 'relationship',
       relationTo: ['news', 'pages'],
       admin: { description: 'Actualité ou page proposée en fin d’article.' },
+    },
+    {
+      name: 'aLireAussiTitre',
+      label: 'Intitulé affiché pour « À lire aussi »',
+      type: 'text',
+      admin: { description: 'Facultatif. Remplace le titre de la page ou de l’actualité liée dans le bloc de fin d’article.' },
     },
   ],
 }

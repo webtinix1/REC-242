@@ -6,15 +6,15 @@ import { EvenementsMes, type LigneInscription } from '@/components/espace/Evenem
 import { EvenementsSuggestions, type Suggestion } from '@/components/espace/EvenementsSuggestions'
 import { RichText } from '@/components/site/RichText'
 import { billetParId, placesParEvenement } from '@/lib/evenements/lecture'
-import { inscriptionsDe, jourMois, maintenantMs, statutInscription, type InscriptionMembre } from '@/lib/evenements/espace'
-import { heureFr, jourLong, lieuDe, type Evenement } from '@/lib/evenements/notifications'
+import { heureCourte, inscriptionsDe, jourMois, lieuEspace, maintenantMs, statutInscription, type InscriptionMembre } from '@/lib/evenements/espace'
+import { jourLong } from '@/lib/evenements/notifications'
 import { exigerMembre, urlMedia } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
 
 export const metadata: Metadata = { title: 'Mes événements' }
 
 const nomType = (t: unknown) => (t && typeof t === 'object' ? (t as { nom?: string }).nom : undefined)
-const lieuCourt = (e: InscriptionMembre['evenement']) => lieuDe(e as unknown as Evenement)
+const lieuCourt = (e: InscriptionMembre['evenement']) => lieuEspace(e)
 
 /** Mes événements (écran 04). */
 export default async function EvenementsPage({ searchParams }: { searchParams: Promise<{ onglet?: string }> }) {
@@ -44,7 +44,7 @@ export default async function EvenementsPage({ searchParams }: { searchParams: P
           titre: e.titre,
           type: nomType(e.type),
           lieu: lieuCourt(e),
-          heure: heureFr(e.debut),
+          heure: heureCourte(e.debut),
           statut: s.libelle,
           classe: s.classe,
           image: urlMedia(e.image as never, 'carte'),
@@ -75,7 +75,7 @@ export default async function EvenementsPage({ searchParams }: { searchParams: P
         type: nomType(e.type),
         acces: e.acces === 'membres' ? 'Réservé aux membres' : 'Ouvert à tous',
         lieu: lieuCourt(e),
-        heure: heureFr(e.debut),
+        heure: heureCourte(e.debut),
         places: p == null ? undefined : `${p} place${p > 1 ? 's' : ''} restante${p > 1 ? 's' : ''}`,
         image: urlMedia(e.image as never, 'carte'),
       }

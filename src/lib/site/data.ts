@@ -93,6 +93,7 @@ export type DocItem = {
   rubrique: string
   visibilite: string
   typePresse?: string
+  description?: string
   dateDocument?: string
   couverture?: Media | number | null
   filesize?: number
@@ -109,7 +110,7 @@ export const getDocs = cache(async (rubrique: string, typePresse?: string): Prom
     collection: 'documents',
     ...pub,
     where: { and },
-    sort: '-dateDocument',
+    sort: ['-dateDocument', 'id'],
     limit: 100,
   })
   return r.docs as unknown as DocItem[]
@@ -159,16 +160,17 @@ export const NEWS_TYPE_LABEL: Record<string, string> = {
 }
 
 export const getNews = cache(
-  async (opts: { type?: string; secteur?: string; page?: number; limit?: number } = {}) => {
+  async (opts: { type?: string; secteur?: string; page?: number; limit?: number; publiques?: boolean } = {}) => {
     const payload = await getPayloadClient()
     const and: Where[] = [{ _status: { equals: 'published' } }, { etat: { not_equals: 'archive' } }]
     if (opts.type) and.push({ type: { equals: opts.type } })
     if (opts.secteur) and.push({ 'secteurs.slug': { equals: opts.secteur } })
+    if (opts.publiques) and.push({ reserveMembres: { not_equals: true } })
     const r = await payload.find({
       collection: 'news',
       ...pub,
       where: { and },
-      sort: '-datePublication',
+      sort: ['rang', '-datePublication', 'id'],
       page: opts.page ?? 1,
       limit: opts.limit ?? 6,
     })

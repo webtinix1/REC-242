@@ -4,7 +4,7 @@ import { atLeast } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { logAction } from '@/lib/audit'
 import { appliquerModification, valeurActuelle } from '@/lib/membres/modifications'
-import { CHAMPS_VERIFIES, champLabel, type ChampVerifie } from '@/lib/membres/options'
+import { CHAMPS_DEMANDE, champLabel, type ChampVerifie } from '@/lib/membres/options'
 
 const estMembre = (u: unknown) => (u as { collection?: string } | null)?.collection === 'members'
 
@@ -27,7 +27,7 @@ export const ModificationRequests: CollectionConfig = {
         if (operation === 'create') {
           if (estMembre(req.user)) data.membre = req.user!.id
           if (!data.membre) throw new APIError('Membre manquant.', 400)
-          if (!CHAMPS_VERIFIES.some((c) => c.value === data.champ)) throw new APIError('Champ inconnu.', 400, null, true)
+          if (!CHAMPS_DEMANDE.some((c) => c.value === data.champ)) throw new APIError('Champ inconnu.', 400, null, true)
           if (!String(data.nouvelleValeur ?? '').trim()) throw new APIError('Indiquez la nouvelle valeur.', 400, null, true)
           // La valeur actuelle est relue sur la fiche, jamais prise de la demande.
           data.valeurActuelle = await valeurActuelle(req.payload, data.membre, data.champ as ChampVerifie, req)
@@ -80,7 +80,7 @@ export const ModificationRequests: CollectionConfig = {
   },
   fields: [
     { name: 'membre', label: 'Membre', type: 'relationship', relationTo: 'members', required: true, index: true },
-    { name: 'champ', label: 'Champ', type: 'select', required: true, options: [...CHAMPS_VERIFIES] },
+    { name: 'champ', label: 'Champ', type: 'select', required: true, options: [...CHAMPS_DEMANDE] },
     { name: 'valeurActuelle', label: 'Valeur actuelle', type: 'text', admin: { readOnly: true } },
     { name: 'nouvelleValeur', label: 'Nouvelle valeur', type: 'text', required: true },
     { name: 'motif', label: 'Motif', type: 'text' },

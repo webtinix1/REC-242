@@ -6,8 +6,7 @@ import React from 'react'
 import { CarteResume } from '@/components/espace/CarteMembre'
 import { Icone } from '@/components/espace/Icones'
 import { fcfa } from '@/lib/adhesion/categories'
-import { inscriptionsDe, jourMois, maintenantMs, statutInscription } from '@/lib/evenements/espace'
-import { heureFr, lieuDe, type Evenement } from '@/lib/evenements/notifications'
+import { heureCourte, inscriptionsDe, jourMois, lieuEspace, maintenantMs, statutInscription } from '@/lib/evenements/espace'
 import {
   completude,
   dateCourte,
@@ -23,6 +22,7 @@ import { statutMembreLabel } from '@/lib/membres/options'
 import { nonLus, type Onglet } from '@/lib/echanges/service'
 import { resteDu, type Echeance } from '@/lib/cotisations/regles'
 import { joursRestants, typeLabel } from '@/lib/opportunites/regles'
+import { NEWS_TYPES } from '@/collections/News'
 import { getPayloadClient } from '@/lib/site/payload'
 
 export const metadata: Metadata = { title: 'Accueil' }
@@ -42,7 +42,7 @@ export default async function TableauPage() {
       limit: 2,
       depth: 1,
       overrideAccess: true,
-      select: { titre: true, slug: true, datePublication: true },
+      select: { titre: true, slug: true, datePublication: true, type: true },
     }),
     payload.find({ collection: 'dues', where: { membre: { equals: m.id } }, sort: '-exercice.debut', limit: 1, depth: 0, overrideAccess: true }),
   ])
@@ -72,6 +72,17 @@ export default async function TableauPage() {
     .filter((x) => ['services', 'presentation', 'photo', 'logo'].includes(x.cle))
     .slice(0, 2)
     .map((x) => ({ t: x.libelle, d: `+${x.gain} % de complétude`, href: '/espace-membre/profil', cta: 'Compléter' }))
+  const prochaine = rdv.find((i) => i.statut === 'inscrit')
+  if (prochaine) {
+    const quand = new Date(prochaine.evenement.debut)
+    const typeNom = typeof prochaine.evenement.type === 'object' && prochaine.evenement.type ? (prochaine.evenement.type.nom ?? '') : ''
+    todo.push({
+      t: `Confirmer votre présence ${aEvenement(typeNom, prochaine.evenement.titre)} du ${dateJourMois(quand)}`,
+      d: 'Rappel envoyé la veille',
+      href: '/espace-membre/evenements',
+      cta: 'Voir',
+    })
+  }
   const resteCot = echeance ? resteDu(echeance) : cot.reste
   const connue = echeance ? true : cot.connue
   const tranchesDues = (echeance?.tranches ?? []).filter((t) => t.statut !== 'paye')
@@ -164,7 +175,7 @@ export default async function TableauPage() {
                     <div className="grow">
                       <p style={{ fontWeight: 600 }}>{i.evenement.titre}</p>
                       <p className="small muted">
-                        {lieuDe(i.evenement as unknown as Evenement)} · {heureFr(i.evenement.debut)}
+                        {lieuEspace(i.evenement)} · {heureCourte(i.evenement.debut)}
                       </p>
                     </div>
                     <span className={`rec-badge rec-badge--${st.classe}`}>{st.libelle}</span>
@@ -198,27 +209,6 @@ export default async function TableauPage() {
               ))
             ) : (
               <p className="small muted">Aucune opportunité pour le moment.</p>
-            )}
-          </div>
-          <div className="card">
-            <h2 className="h3">Actualités réservées</h2>
-            {news.docs.length ? (
-              news.docs.map((n) => {
-                const d = n as unknown as { id: number; titre: string; slug: string; datePublication?: string }
-                return (
-                  <div className="item" key={d.id}>
-                    <div className="grow">
-                      <span className="tag vis-m">Article réservé</span>
-                      <p style={{ fontWeight: 600, marginTop: 4 }}>
-                        <Link href={`/actualites/${d.slug}`}>{d.titre}</Link>
-                      </p>
-                      <p className="xs muted">{dateCourte(d.datePublication)}</p>
-                    </div>
-                  </div>
-                )
-              })
-            ) : (
-              <p className="small muted">Aucune actualité réservée pour le moment.</p>
             )}
           </div>
         </div>
@@ -269,11 +259,50 @@ export default async function TableauPage() {
               Ouvrir mes échanges
             </Link>
           </div>
+          <div className="card xhint">
+            <p className="lbl">Besoin d&apos;un avis ?</p>
+            <p className="h3">Un expert du réseau vous répond</p>
+            <p className="small muted">Juridique, fiscalité, financement, numérique : choisissez votre domaine, le réseau vous oriente vers la bonne personne.</p>
+            <Link className="rec-btn rec-btn--secondary" style={{ width: 'max-content' }} href="/espace-membre/experts">
+              Solliciter un expert
+            </Link>
+          </div>
+          <div className="card">
+            <h2 className="h3">Actualités réservées</h2>
+            {news.docs.length ? (
+              news.docs.map((n) => {
+                const d = n as unknown as { id: number; titre: string; slug: string; datePublication?: string; type?: string }
+                return (
+                  <div className="item" key={d.id}>
+                    <div className="grow">
+                      <span className="tag vis-m">{d.type && d.type !== 'article' ? (NEWS_TYPES.find((t) => t.value === d.type)?.label ?? 'Article réservé') : 'Article réservé'}</span>
+                      <p style={{ fontWeight: 600, marginTop: 4 }}>
+                        <Link href={`/actualites/${d.slug}`}>{d.titre}</Link>
+                      </p>
+                      <p className="xs muted">{dateCourte(d.datePublication)}</p>
+                    </div>
+                  </div>
+                )
+              })
+            ) : (
+              <p className="small muted">Aucune actualité réservée pour le moment.</p>
+            )}
+          </div>
         </div>
       </div>
     </>
   )
 }
+
+/** « à l'afterwork », « à la conférence » : l'article suit le type d'événement, à défaut le titre. */
+const FEMININS = /^(masterclass|rencontre|conférence|formation|assemblée)/i
+function aEvenement(type: string, titre: string): string {
+  const nom = (type || titre).trim()
+  const bas = nom.charAt(0).toLowerCase() + nom.slice(1)
+  if (/^[aeiouyhàâéèêîôû]/i.test(bas)) return `à l’${bas}`
+  return FEMININS.test(nom) ? `à la ${bas}` : `au ${bas}`
+}
+const dateJourMois = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Africa/Brazzaville' })
 
 const MOTS = ['zéro', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf']
 const nombre = (n: number) => MOTS[n] ?? String(n)

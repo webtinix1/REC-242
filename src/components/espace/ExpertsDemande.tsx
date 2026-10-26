@@ -89,7 +89,7 @@ export function ExpertsDemande({
       <div className="card">
         <h2 className="h3">3. Votre demande</h2>
         {sel && (
-          <form key={essai} className="stack-s" action={agir} noValidate>
+          <form key={essai} className="stack-s" style={{ gap: 14 }} action={agir} noValidate>
             <input type="hidden" name="etiquette" value={tag.id} />
             <input type="hidden" name="personne" value={sel.id} />
             <input type="hidden" name="preference" value={pref} />

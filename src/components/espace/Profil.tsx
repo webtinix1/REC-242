@@ -27,7 +27,7 @@ export type DonneesProfil = {
   demandes: { id: number; texte: string; date: string; statut: string; cls: string }[]
   visibilite: { name: string; label: string; on: boolean }[]
   commissions: { id: number; nom: string; detail: string }[]
-  commissionsEnAttente: { id: number; nom: string }[]
+  commissionsEnAttente: { id: number; nom: string; detail: string }[]
   commissionsOuvertes: { id: number; nom: string }[]
   notifications: { name: string; label: string; canal: string; on: boolean }[]
   derniereConnexion: string
@@ -58,8 +58,11 @@ function Interrupteurs({
   action,
   etat,
   toast,
+  espaces,
 }: {
   items: { name: string; label: string; sous: string; on: boolean }[]
+  /** Lignes séparées par l'espacement de la carte (notifications). */
+  espaces?: boolean
   action: Bascule
   etat?: (on: boolean) => string
   toast: (m: string) => void
@@ -67,7 +70,7 @@ function Interrupteurs({
   const [valeurs, setValeurs] = useState(() => Object.fromEntries(items.map((i) => [i.name, i.on])))
   const [, demarrer] = useTransition()
   return (
-    <div>
+    <div style={espaces ? { display: 'flex', flexDirection: 'column', gap: 14 } : undefined}>
       {items.map((i) => {
         const on = valeurs[i.name]
         return (
@@ -191,7 +194,7 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
           </p>
           <div className="row">
             <ChoixImage cible="photo" libelle="Changer la photo" action={a.changerImage} toast={toast} />
-            <ChoixImage cible="logo" libelle={d.logo ? 'Changer le logo' : 'Ajouter un logo'} action={a.changerImage} toast={toast} />
+            <ChoixImage cible="logo" libelle="Ajouter un logo" action={a.changerImage} toast={toast} />
           </div>
         </div>
         <div className="stack-s" style={{ minWidth: 180 }}>
@@ -209,13 +212,13 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
             <p className="small muted">Ces informations apparaissent sur votre fiche dans l&apos;annuaire.</p>
             <div className={`rec-field${fiche.erreurs?.presentation ? ' rec-field--error' : ''}`}>
               <label htmlFor="pf-pres">Présentation de l’activité</label>
-              <textarea id="pf-pres" name="presentation" className="rec-input" defaultValue={d.libres.presentation} placeholder="À compléter" />
+              <input id="pf-pres" name="presentation" className="rec-input" type="text" defaultValue={d.libres.presentation} placeholder="À compléter" />
               {d.libres.enRelecture && <span className="rec-help">En relecture par le secrétariat avant publication.</span>}
               <Erreur id="pf-pres-err" texte={fiche.erreurs?.presentation} />
             </div>
             <div className="rec-field">
               <label htmlFor="pf-serv">Services proposés</label>
-              <textarea id="pf-serv" name="services" className="rec-input" defaultValue={d.libres.services} placeholder="À compléter" />
+              <input id="pf-serv" name="services" className="rec-input" type="text" defaultValue={d.libres.services} placeholder="À compléter" />
             </div>
             {(
               [
@@ -382,7 +385,7 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
               <div className="item" key={`att-${c.id}`}>
                 <div className="grow">
                   <p style={{ fontWeight: 600 }}>Commission {c.nom}</p>
-                  <p className="xs muted">Demande envoyée, réponse après la prochaine réunion</p>
+                  <p className="xs muted">{c.detail}</p>
                 </div>
                 <span className="rec-badge rec-badge--pending">En attente</span>
               </div>
@@ -433,7 +436,7 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
 
           <div className="card">
             <h2 className="h3">Notifications</h2>
-            <Interrupteurs items={d.notifications.map((n) => ({ ...n, sous: n.canal }))} action={a.changerNotification} toast={toast} />
+            <Interrupteurs items={d.notifications.map((n) => ({ ...n, sous: n.canal }))} action={a.changerNotification} toast={toast} espaces />
           </div>
 
           <div className="card">
@@ -504,7 +507,7 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
             <h2 className="h3">Mes données</h2>
             <p className="small muted">
               Vous pouvez consulter, corriger ou faire supprimer vos données personnelles (
-              <Link className="linkbtn" href="/confidentialite" style={{ display: 'inline', padding: 0 }}>
+              <Link href="/confidentialite" style={{ color: 'var(--text-brand)' }}>
                 politique de confidentialité
               </Link>
               ).

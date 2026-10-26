@@ -120,7 +120,8 @@ export const Events: CollectionConfig = {
               ],
             },
             { name: 'indicationsAcces', label: 'Indications d’accès (rappel de la veille)', type: 'textarea' },
-            { name: 'image', label: 'Image principale', type: 'upload', relationTo: 'media' },
+            { name: 'image', label: 'Image principale (vignettes)', type: 'upload', relationTo: 'media' },
+            { name: 'bandeau', label: 'Photo du bandeau de la fiche', type: 'upload', relationTo: 'media', admin: { description: 'Vide : l’image principale.' } },
           ],
         },
         {
@@ -193,6 +194,7 @@ export const Events: CollectionConfig = {
                     },
                   ],
                 },
+                { name: 'libelle', label: 'Intitulé affiché (facultatif)', type: 'text', admin: { description: 'Remplace le titre du document sur la fiche de l’événement.' } },
               ],
             },
           ],

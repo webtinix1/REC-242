@@ -53,3 +53,17 @@ export function statutInscription(i: { statut: string; position?: number | null 
 
 /** Instant courant (hors rendu, pour les règles de pureté de React). */
 export const maintenantMs = () => Date.now()
+
+/** Heure affichée dans l'espace membre : « 18 h », « 9 h 30 » (sans zéro de tête, comme la maquette). */
+export const heureCourte = (iso: string) => {
+  const p = new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', minute: '2-digit', hourCycle: 'h23', timeZone: TZ }).formatToParts(new Date(iso))
+  const h = p.find((x) => x.type === 'hour')?.value ?? ''
+  const mn = p.find((x) => x.type === 'minute')?.value ?? '00'
+  return mn === '00' ? `${h} h` : `${h} h ${mn}`
+}
+
+/** Lieu affiché dans l'espace membre : le lieu et l'adresse saisis ; la ville seulement quand rien d'autre n'est renseigné. */
+export const lieuEspace = (e: { lieu?: string | null; adresse?: string | null; ville?: { nom?: string } | number | null }) => {
+  const texte = [e.lieu, e.adresse].filter(Boolean).join(', ')
+  return texte || (typeof e.ville === 'object' && e.ville ? (e.ville.nom ?? '') : '')
+}

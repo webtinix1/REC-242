@@ -7,7 +7,7 @@ import { OpportuniteCarte } from '@/components/site/OpportuniteCarte'
 import { opportunitesAccueil } from '@/components/site/OpportuniteDonnees'
 import { Words } from '@/components/site/Words'
 import { misEnAvant } from '@/lib/annuaire/donnees'
-import { disque, heureLieu, placesInfo, prochainsEvenements, tax } from '@/lib/evenements/site'
+import { disque, heure, heureLieu, placesInfo, prochainsEvenements, tax } from '@/lib/evenements/site'
 import { dateCourt } from '@/lib/site/format'
 import { getFaq, getNews, getPartners, NEWS_TYPE_LABEL } from '@/lib/site/data'
 import { block, getPage, type CartesBlock, type SectionBlock } from '@/lib/site/payload'
@@ -26,7 +26,7 @@ export default async function Accueil() {
     getKeyFigures(),
     getFaq('accueil'),
     getPartners(),
-    getNews({ limit: 3 }),
+    getNews({ limit: 3, publiques: true }),
     misEnAvant(6),
     prochainsEvenements(3),
     opportunitesAccueil(2),
@@ -42,6 +42,7 @@ export default async function Accueil() {
   const faqS = block(page, 'faq')
   const final = block<SectionBlock>(page, 'final')
   const [une, ...autres] = news.docs
+  const prochain = agendaEv.evs[0]
 
   return (
     <>
@@ -87,6 +88,26 @@ export default async function Accueil() {
             </div>
           </div>
         </section>
+      )}
+
+      {prochain && (
+        <div className="wrap hero-next">
+          <div className="next" data-m="lift" data-m-d="7">
+            <div className="datedisc" data-m="pop" data-m-d="10">
+              <b>{disque(prochain).d}</b>
+              <span>{disque(prochain).m}</span>
+            </div>
+            <div>
+              <p className="small muted">
+                {['Prochain rendez-vous', heure(prochain.debut), placesInfo(prochain, agendaEv.places.get(prochain.id))?.texte].filter(Boolean).join(' · ')}
+              </p>
+              <p className="h-s">{prochain.titre}</p>
+            </div>
+            <Link href={`/agenda/${prochain.slug}`} className="rec-btn rec-btn--primary">
+              Je m’inscris
+            </Link>
+          </div>
+        </div>
       )}
 
       {figs.length > 0 && (
@@ -231,24 +252,6 @@ export default async function Accueil() {
         </section>
       )}
 
-      {opps.length > 0 && (
-        <section className="band bg-mint band-s" style={{ paddingTop: 72 }}>
-          <div className="wrap">
-            <SecHead
-              surtitre="Opportunités"
-              titre="Opportunités ouvertes à tous"
-              bouton={{ libelle: 'Toutes les opportunités', lien: '/opportunites' }}
-              btnCls="rec-btn--secondary"
-            />
-            <div className="g2" data-m="deal" data-m-stagger="">
-              {opps.map((o) => (
-                <OpportuniteCarte key={o.id} o={o} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {visages && visagesMembres.length > 0 && (
         <>
           <section className="mosaic" aria-label={visages.surtitre} data-m="faces" data-m-stagger>
@@ -323,6 +326,24 @@ export default async function Accueil() {
               <h2 className="h-l">{formalisation.titre}</h2>
               <p className="muted">{formalisation.texte}</p>
               <Boutons boutons={formalisation.boutons} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {opps.length > 0 && (
+        <section className="band bg-mint band-s" style={{ paddingTop: 72 }}>
+          <div className="wrap">
+            <SecHead
+              surtitre="Opportunités"
+              titre="Opportunités ouvertes à tous"
+              bouton={{ libelle: 'Toutes les opportunités', lien: '/opportunites' }}
+              btnCls="rec-btn--secondary"
+            />
+            <div className="g2" data-m="deal" data-m-stagger="">
+              {opps.map((o) => (
+                <OpportuniteCarte key={o.id} o={o} accueil />
+              ))}
             </div>
           </div>
         </section>

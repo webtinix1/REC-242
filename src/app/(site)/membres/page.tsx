@@ -9,7 +9,7 @@ import {
   type Filtres,
   lireFiltres,
   listerAnnuaire,
-  optionsFiltres,
+  optionsFiltresUtilisees,
 } from '@/lib/annuaire/donnees'
 import { breadcrumbLd, metadataFor } from '@/lib/site/seo'
 import { getSettings } from '@/lib/site/settings'
@@ -64,7 +64,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
   const f = lireFiltres(await searchParams)
   const [{ cartes, total, pages }, opts, settings] = await Promise.all([
     listerAnnuaire(f, false),
-    optionsFiltres(),
+    optionsFiltresUtilisees(),
     getSettings(),
   ])
   const page = Math.min(f.page, Math.max(1, pages))

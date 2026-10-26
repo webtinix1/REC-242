@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { temporairement } from '../helpers/temporaire'
+
 const BASE = 'http://localhost:3000'
 const PWD = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
 // Coordonnées des membres de démonstration (seed) : aucune ne doit figurer dans le HTML public.
@@ -13,9 +15,13 @@ test.describe('Lot 7 : annuaire', () => {
       const html = await r.text()
       for (const c of COORDONNEES) expect(html, `${chemin} contient ${c}`).not.toContain(c)
     }
-    // Une fiche sans consentement ou d'un membre suspendu n'existe pas pour le public.
-    expect((await request.get(`${BASE}/membres/hopital-blanche-gomes`)).status()).toBe(404)
-    expect((await request.get(`${BASE}/membres/les-bretelles-de-leon`)).status()).toBe(404)
+    // Une fiche masquée par l'administration ou d'un membre suspendu n'existe pas pour le public (fiches de démonstration modifiées le temps du test).
+    await temporairement('companies', 'slug', 'hopital-blanche-gomes', { masqueeParAdmin: true }, async () => {
+      expect((await request.get(`${BASE}/membres/hopital-blanche-gomes`)).status()).toBe(404)
+    })
+    await temporairement('members', 'email', 'contact@bretellesdeleon.cg', { statut: 'suspendu' }, async () => {
+      expect((await request.get(`${BASE}/membres/les-bretelles-de-leon`)).status()).toBe(404)
+    })
   })
 
   test('filtres dans l’adresse et fiche publique', async ({ page }) => {

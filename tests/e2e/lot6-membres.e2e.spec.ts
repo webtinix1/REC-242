@@ -1,6 +1,7 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 import { waitForMail } from '../helpers/mailbox'
+import { temporairement } from '../helpers/temporaire'
 
 const BASE = 'http://localhost:3000'
 const PWD = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
@@ -96,11 +97,13 @@ test.describe.serial('Lot 6 : espace membre', () => {
   test('accès protégé, membre suspendu et page profil', async ({ page }) => {
     await page.goto(`${BASE}/espace-membre/profil`, { waitUntil: 'networkidle' })
     await expect(page).toHaveURL(/connexion\?retour=%2Fespace-membre%2Fprofil/)
-    // Membre suspendu de démonstration.
-    await page.fill('#mb-mail', 'contact@bretellesdeleon.cg')
-    await page.fill('#mb-pw', PWD)
-    await page.getByRole('button', { name: 'Se connecter' }).click()
-    await expect(page.locator('h1')).toHaveText('Votre accès est suspendu', { timeout: 60000 })
+    // Membre de démonstration suspendu le temps du test.
+    await temporairement('members', 'email', 'contact@bretellesdeleon.cg', { statut: 'suspendu' }, async () => {
+      await page.fill('#mb-mail', 'contact@bretellesdeleon.cg')
+      await page.fill('#mb-pw', PWD)
+      await page.getByRole('button', { name: 'Se connecter' }).click()
+      await expect(page.locator('h1')).toHaveText('Votre accès est suspendu', { timeout: 60000 })
+    })
 
     await page.goto(`${BASE}/espace-membre/connexion?retour=/espace-membre/profil`, { waitUntil: 'networkidle' })
     await page.fill('#mb-mail', 'christelle@kimiacreations.cg')

@@ -2,7 +2,7 @@ import type { Where } from 'payload'
 
 import { CATEGORIES } from '@/lib/adhesion/categories'
 import { joursRestants, typeLabel } from '@/lib/opportunites/regles'
-import { getPayloadClient } from '@/lib/site/payload'
+import { getPayloadClient, type Media } from '@/lib/site/payload'
 
 export type OppPublique = {
   id: number
@@ -15,8 +15,11 @@ export type OppPublique = {
   jours: number
   lien?: string
   commentRepondre?: string
+  image?: Media | null
+  miseEnAvant?: boolean
+  rang?: number
 }
-export type OppReservee = { id: number; reservee: true; type: string; dateLimite: string; jours: number }
+export type OppReservee = { id: number; reservee: true; type: string; dateLimite: string; jours: number; image?: Media | null; miseEnAvant?: boolean; rang?: number }
 export type OppCarte = OppPublique | OppReservee
 export type OppExpiree = { id: number; type: string; titre: string; dateLimite: string }
 
@@ -30,6 +33,9 @@ type Brut = {
   secteurs?: (number | { id: number })[] | null
   source?: { lien?: string | null; libelle?: string | null } | null
   commentRepondre?: string | null
+  image?: Media | number | null
+  miseEnAvant?: boolean | null
+  rang?: number | null
 }
 const idDe = (x: unknown) => (x && typeof x === 'object' ? (x as { id: number }).id : (x as number | undefined))
 const RELAYEES = ['evenement', 'appel-offres', 'financement']
@@ -45,7 +51,7 @@ async function publiques(type: string | undefined, accueil: boolean): Promise<Op
       ...(accueil ? [{ miseEnAvant: { equals: true } }] : []),
     ],
   }
-  const r = await payload.find({ collection: 'opportunities', where, sort: 'dateLimite', limit: 100, depth: 0, overrideAccess: false })
+  const r = await payload.find({ collection: 'opportunities', where, sort: 'dateLimite', limit: 100, depth: 1, overrideAccess: false })
   const docs = (r.docs as unknown as Brut[]).filter((o) => joursRestants(o.dateLimite) >= 0)
   const secteurIds = [...new Set(docs.flatMap((o) => (o.secteurs ?? []).map(idDe)).filter(Boolean))] as number[]
   const membreIds = [...new Set(docs.filter((o) => o.auteur === 'membre').map((o) => idDe(o.membre)).filter(Boolean))] as number[]
@@ -77,6 +83,9 @@ async function publiques(type: string | undefined, accueil: boolean): Promise<Op
       jours: joursRestants(o.dateLimite),
       lien: o.source?.lien?.trim() || undefined,
       commentRepondre: o.commentRepondre?.trim() || undefined,
+      image: o.image && typeof o.image === 'object' ? o.image : null,
+      miseEnAvant: Boolean(o.miseEnAvant),
+      rang: o.rang ?? undefined,
     }
   })
 }
@@ -93,10 +102,10 @@ export async function opportunitesSite(type?: string) {
     payload.find({
       collection: 'opportunities',
       where: { and: [{ statut: { equals: 'publiee' } }, { visibilite: { equals: 'membres' } }, ...filtreType] },
-      select: { type: true, dateLimite: true },
+      select: { type: true, dateLimite: true, image: true, miseEnAvant: true, rang: true },
       sort: 'dateLimite',
       limit: 100,
-      depth: 0,
+      depth: 1,
       overrideAccess: true,
     }),
     payload.find({
@@ -109,10 +118,10 @@ export async function opportunitesSite(type?: string) {
       overrideAccess: true,
     }),
   ])
-  const reservees: OppReservee[] = (res.docs as unknown as { id: number; type: string; dateLimite: string }[])
+  const reservees: OppReservee[] = (res.docs as unknown as { id: number; type: string; dateLimite: string; image?: Media | number | null; rang?: number | null }[])
     .filter((o) => joursRestants(o.dateLimite) >= 0)
-    .map((o) => ({ id: o.id, reservee: true as const, type: typeLabel(o.type), dateLimite: o.dateLimite, jours: joursRestants(o.dateLimite) }))
-  const cartes: OppCarte[] = [...ouvertes, ...reservees].sort((a, b) => a.dateLimite.localeCompare(b.dateLimite))
+    .map((o) => ({ id: o.id, reservee: true as const, type: typeLabel(o.type), dateLimite: o.dateLimite, jours: joursRestants(o.dateLimite), image: o.image && typeof o.image === 'object' ? o.image : null, rang: o.rang ?? undefined }))
+  const cartes: OppCarte[] = [...ouvertes, ...reservees].sort((a, b) => (a.rang ?? 1e9) - (b.rang ?? 1e9) || Number(b.miseEnAvant ?? false) - Number(a.miseEnAvant ?? false) || a.dateLimite.localeCompare(b.dateLimite))
   const expirees: OppExpiree[] = (exp.docs as unknown as { id: number; type: string; titre: string; dateLimite: string }[]).map((o) => ({
     id: o.id,
     type: typeLabel(o.type),

@@ -36,7 +36,8 @@ export default async function Presse({
     .sort()
     .reverse()
   const annee = annees.includes(sp.annee ?? '') ? sp.annee! : annees[0]
-  const liste = communiques.filter((c) => anneeDe(c.dateDocument) === annee)
+  // Dans l'année choisie, la maquette (écran 21) range les communiqués du plus ancien au plus récent.
+  const liste = communiques.filter((c) => anneeDe(c.dateDocument) === annee).reverse()
 
   return (
     <>
@@ -102,8 +103,9 @@ export default async function Presse({
                 {(kit?.cartes ?? []).map((c) => {
                   const inner = (
                     <>
-                      <div className="kit-thumbs">
+                      <div className={`kit-thumbs${(c.image as { illustration?: boolean } | null | undefined)?.illustration ? ' kit-photos' : ''}`}>
                         <Img media={c.image} size="carte" />
+                        {c.image2 && <Img media={c.image2} size="carte" />}
                       </div>
                       <p className="h-s">{c.titre}</p>
                       {c.texte && <p className="small muted">{c.texte}</p>}
@@ -131,6 +133,7 @@ export default async function Presse({
                       />
                     </div>
                     <p className="h-s">{d.titre}</p>
+                    {d.description && <p className="small muted">{d.description}</p>}
                     <span className="pill-type">PDF</span>
                   </a>
                 ))}

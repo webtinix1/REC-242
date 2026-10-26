@@ -207,6 +207,7 @@ function Conversation({ onglet, base, f, explicite }: { onglet: OngletEchange; b
                 Clôturer la demande
               </button>
             )}
+            <span className="xs muted">{"L'autre membre est prévenu par e-mail et WhatsApp, sans voir votre numéro."}</span>
           </div>
           {envoye && !erreur && (
             <div className="okbox" role="status">

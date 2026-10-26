@@ -19,7 +19,10 @@
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/run.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "audit:visuel": "node scripts/audit-visuel/capture.cjs . .audit-visuel && node scripts/audit-visuel/compare.cjs . .audit-visuel",
+    "audit:maquette": "node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette && node scripts/audit-visuel/compare.cjs . .audit-visuel/maquette && cross-env SANS_DEMO=1 node scripts/audit-visuel/plancher.cjs . .audit-visuel/maquette-sans-demo",
+    "audit:reel": "cross-env REF=.audit-visuel/maquette-sans-demo node scripts/audit-visuel/compare.cjs . .audit-visuel"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.92.0",

@@ -13,10 +13,10 @@ export const badgeMembre = (v?: string | null) => (v === 'actif' ? 'active' : v 
 
 /** Préférences de notification (écran 03), avec le canal affiché. */
 export const NOTIFICATIONS = [
-  { name: 'rappels', label: 'Rappels de mes événements', canal: 'La veille, par e-mail' },
-  { name: 'opportunites', label: 'Opportunités de mes secteurs', canal: 'Dès leur publication, par e-mail' },
-  { name: 'echanges', label: 'Réponses et mises en relation', canal: 'Immédiatement, par e-mail' },
-  { name: 'cotisation', label: 'Échéances de cotisation', canal: '30 jours et 7 jours avant, par e-mail' },
+  { name: 'rappels', label: 'Rappels de mes événements', canal: 'La veille, par e-mail et WhatsApp' },
+  { name: 'opportunites', label: 'Opportunités de mes secteurs', canal: 'Dès leur publication' },
+  { name: 'echanges', label: 'Réponses et mises en relation', canal: 'Immédiatement, par WhatsApp' },
+  { name: 'cotisation', label: 'Échéances de cotisation', canal: '30 jours et 7 jours avant' },
   { name: 'lettre', label: 'Lettre d’information du réseau', canal: 'Une fois par mois, par e-mail' },
 ] as const
 
@@ -39,9 +39,12 @@ export const CHAMPS_VERIFIES = [
   { value: 'email', label: 'E-mail' },
 ] as const
 
-export type ChampVerifie = (typeof CHAMPS_VERIFIES)[number]['value']
+/** Champs qu'une demande peut viser : ceux du formulaire du membre, plus le quartier seul (demande saisie par l'équipe). */
+export const CHAMPS_DEMANDE = [...CHAMPS_VERIFIES, { value: 'quartier', label: 'Quartier' }] as const
 
-export const champLabel = (v?: string | null) => CHAMPS_VERIFIES.find((c) => c.value === v)?.label ?? ''
+export type ChampVerifie = (typeof CHAMPS_DEMANDE)[number]['value']
+
+export const champLabel = (v?: string | null) => CHAMPS_DEMANDE.find((c) => c.value === v)?.label ?? ''
 
 /** Numéro d'adhérent : REC-AAAA-NNNN. */
 export const numeroAdherent = (annee: number, n: number) => `REC-${annee}-${String(n).padStart(4, '0')}`

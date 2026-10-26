@@ -82,7 +82,8 @@ export const searchConfig: SearchPluginConfig = {
         extrait: court(
           originalDoc.meta?.description || hero?.texte || textes.find((t) => t.length > 40) || '',
         ),
-        contenu: textes.join(' \n'),
+        // Une page se trouve par son titre, sa description et son accroche : un mot cité en passant dans le corps ne suffit pas.
+        contenu: [originalDoc.title, originalDoc.meta?.description, hero?.texte].filter(Boolean).join(' \n'),
       }
     }
     if (collectionSlug === 'news') {

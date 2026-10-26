@@ -11,6 +11,7 @@ export const RUBRIQUES = [
   { value: 'ateliers', label: 'Ateliers et formations' },
   { value: 'presse', label: 'Presse' },
   { value: 'evenements', label: 'Événements' },
+  { value: 'adhesion', label: 'Formulaires d’adhésion' },
 ]
 
 export const VISIBILITES = [
@@ -18,6 +19,7 @@ export const VISIBILITES = [
   { value: 'membres', label: 'Membres actifs' },
   { value: 'inscrits', label: 'Inscrits à un événement' },
   { value: 'comite', label: 'Comité de direction' },
+  { value: 'personnel', label: 'Personnel (un membre)' },
 ]
 
 const COMITE: Parameters<typeof hasRole>[1][] = ['superadmin', 'admin']
@@ -49,9 +51,10 @@ const readFilter = async (req: PayloadRequest): Promise<boolean | Where> => {
           await req.payload.find({ collection: 'events', where: { id: { in: evs } }, depth: 0, limit: 500, overrideAccess: true, req, select: { documents: true } })
         ).docs.flatMap((e) => ((e as unknown as { documents?: { document: number }[] }).documents ?? []).map((d) => d.document))
       : []
-    return ids.length
-      ? { or: [{ visibilite: { in: ['public', 'membres'] } }, { and: [{ visibilite: { equals: 'inscrits' } }, { id: { in: ids } }] }] }
-      : { visibilite: { in: ['public', 'membres'] } }
+    // « Personnel » : document propre à un membre (par exemple sa charte signée).
+    const ou: Where[] = [{ visibilite: { in: ['public', 'membres'] } }, { and: [{ visibilite: { equals: 'personnel' } }, { membre: { equals: u.id } }] }]
+    if (ids.length) ou.push({ and: [{ visibilite: { equals: 'inscrits' } }, { id: { in: ids } }] })
+    return { or: ou }
   }
   return { visibilite: { equals: 'public' } }
 }
@@ -156,6 +159,13 @@ export const Documents: CollectionConfig = {
       ],
     },
     {
+      name: 'membre',
+      label: 'Membre concerné',
+      type: 'relationship',
+      relationTo: 'members',
+      admin: { condition: (d) => d?.visibilite === 'personnel', description: 'Seul ce membre voit le document dans son espace.' },
+    },
+    {
       name: 'typePresse',
       label: 'Dans l’espace presse',
       type: 'select',
@@ -164,6 +174,12 @@ export const Documents: CollectionConfig = {
         { value: 'kit', label: 'Kit média' },
       ],
       admin: { condition: (d) => d?.rubrique === 'presse' },
+    },
+    {
+      name: 'description',
+      label: 'Description courte',
+      type: 'text',
+      admin: { description: 'Facultatif. Affichée sous le titre dans le kit média de l’espace presse.' },
     },
     {
       name: 'dateDocument',

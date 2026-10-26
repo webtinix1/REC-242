@@ -16,7 +16,13 @@ const eslintConfig = [
     },
   },
   {
+    // Scripts Node en CommonJS (outils d'audit, hors application).
+    files: ['scripts/**/*.cjs'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
+  {
     ignores: [
+      '.audit-visuel/',
       '.next/',
       'src/payload-types.ts',
       'src/app/(payload)/admin/importMap.js',

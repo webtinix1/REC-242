@@ -5,7 +5,6 @@ import React from 'react'
 
 import { Icone } from '@/components/espace/Icones'
 import { telephoneAffiche } from '@/lib/adhesion/categories'
-import { RUBRIQUES } from '@/collections/Documents'
 import { dateLongue, exigerMembre, urlMedia, type Media } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
 
@@ -13,7 +12,9 @@ export const metadata: Metadata = { title: 'Documents du réseau' }
 
 type Doc = { id: number; titre: string; rubrique: string; visibilite: string; dateDocument?: string | null; createdAt: string; couverture?: Media | number | null }
 
-const VISIBILITE: Record<string, string> = { public: 'Public', membres: 'Membres' }
+const VISIBILITE: Record<string, string> = { public: 'Public', membres: 'Membres', inscrits: 'Inscrits', personnel: 'Personnel' }
+/** Rubriques en libellé court, comme la maquette. Presse, événements et formulaires d'adhésion ont leur place ailleurs (site, fiche de l'événement). */
+const RUBRIQUE: Record<string, string> = { textes: 'Textes', vie: 'Vie du réseau', ateliers: 'Ateliers' }
 
 /** Documents du réseau (écran 12) : ceux que le membre a le droit de lire (la collection filtre), ses reçus, le groupe WhatsApp, le secrétariat. */
 export default async function DocumentsPage() {
@@ -21,16 +22,18 @@ export default async function DocumentsPage() {
   const payload = await getPayloadClient()
   const { user } = await payload.auth({ headers: await headers() })
   const [docs, recus, s] = await Promise.all([
-    payload.find({ collection: 'documents', sort: '-dateDocument', limit: 100, depth: 1, user, overrideAccess: false }),
+    payload.find({ collection: 'documents', where: { rubrique: { not_in: ['presse', 'evenements', 'adhesion'] } }, sort: ['dateDocument', 'id'], limit: 100, depth: 1, user, overrideAccess: false }),
     payload.count({ collection: 'payments', where: { and: [{ membre: { equals: m.id } }, { statut: { equals: 'paye' } }] }, overrideAccess: true }),
     payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ email?: string; whatsapp?: { numero?: string; lienGroupe?: string } }>,
   ])
-  const liste = docs.docs as unknown as Doc[]
+  const tous = docs.docs as unknown as Doc[]
+  // Le modèle vierge cède la place à l'exemplaire signé du membre (« Charte de l'adhérent » puis « Charte de l'adhérent signée »).
+  const liste = tous.filter((d) => !tous.some((x) => x.visibilite === 'personnel' && x.id !== d.id && x.titre.startsWith(d.titre)))
   const wa = s.whatsapp?.numero ? telephoneAffiche(s.whatsapp.numero) : ''
   const contact = [wa && `sur WhatsApp au ${wa}`, s.email && `à ${s.email}`].filter(Boolean)
 
   const vignette = (url?: string) => (
-    <span className="doc-th pick" aria-hidden="true" style={url ? undefined : { display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-brand)' }}>
+    <span className="doc-th" aria-hidden="true" style={url ? undefined : { display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-brand)' }}>
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={url} alt="" />
@@ -54,7 +57,7 @@ export default async function DocumentsPage() {
               <div className="grow">
                 <p style={{ fontWeight: 600 }}>{d.titre}</p>
                 <p className="xs muted">
-                  {RUBRIQUES.find((r) => r.value === d.rubrique)?.label ?? ''} · PDF · {dateLongue(d.dateDocument ?? d.createdAt)}
+                  {d.visibilite === 'personnel' ? 'Personnel' : (RUBRIQUE[d.rubrique] ?? '')} · PDF · {d.visibilite === 'personnel' ? 'votre exemplaire' : dateLongue(d.dateDocument ?? d.createdAt)}
                 </p>
               </div>
               <span className="tag vis-m">{VISIBILITE[d.visibilite] ?? 'Membres'}</span>
@@ -65,7 +68,7 @@ export default async function DocumentsPage() {
           ))}
           {recus.totalDocs > 0 && (
             <div className="item">
-              {vignette()}
+              {vignette('/images/documents/couverture-recu.webp')}
               <div className="grow">
                 <p style={{ fontWeight: 600 }}>Reçus de paiement</p>
                 <p className="xs muted">

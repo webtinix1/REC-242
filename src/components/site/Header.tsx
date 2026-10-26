@@ -18,12 +18,12 @@ export const Header = async () => {
         <Link prefetch={false} href="/" className="logo" aria-label="REC 242, retour à l'accueil">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/logo-rec242-328.webp"
-            srcSet="/images/logo-rec242-328.webp 328w, /images/logo-rec242-492.webp 492w"
+            src="/images/logo-site-327.webp"
+            srcSet="/images/logo-site-327.webp 327w, /images/logo-site-490.webp 490w"
             sizes="164px"
             alt="REC 242, Réseau des Entrepreneurs Congolais"
-            width={164}
-            height={48}
+            width={327}
+            height={96}
           />
         </Link>
         <NavPills items={items} />

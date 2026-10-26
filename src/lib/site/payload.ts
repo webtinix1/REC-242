@@ -43,6 +43,7 @@ export type Carte = {
   lien?: string
   libelleLien?: string
   image?: Media | number | null
+  image2?: Media | number | null
 }
 
 export type CartesBlock = {
@@ -126,3 +127,4 @@ export const mediaPos = (m: Media | number | null | undefined): string | undefin
   m && typeof m !== 'number' && m.focalX != null && m.focalY != null
     ? `${m.focalX}% ${m.focalY}%`
     : undefined
+

@@ -26,7 +26,7 @@ const NAV = [
   { href: '/espace-membre/evenements', label: 'Mes événements', icon: 'calendar', pret: true },
   { href: '/espace-membre/opportunites', label: 'Opportunités', icon: 'briefcase', pret: true },
   { href: '/espace-membre/annuaire', label: 'Annuaire', icon: 'users', pret: true },
-  { href: '/espace-membre/experts', label: 'Experts', icon: 'spark', pret: false },
+  { href: '/espace-membre/experts', label: 'Experts', icon: 'spark', pret: true },
   { href: '/espace-membre/echanges', label: 'Mes échanges', icon: 'chat', pret: true },
   { href: '/espace-membre/cotisation', label: 'Cotisation', icon: 'wallet', pret: true },
   { href: '/espace-membre/documents', label: 'Documents', icon: 'file', pret: true },
@@ -69,7 +69,7 @@ export function Coque({ moi, deconnexion, nonLus = 0, children }: { moi: Moi; de
       <div className="topbar">
         <Link className="plate" href="/" aria-label="Retour au site REC 242">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo-rec242-328.webp" alt="REC 242" width={103} height={30} />
+          <img src="/images/logo-site-327.webp" srcSet="/images/logo-site-327.webp 327w, /images/logo-site-490.webp 490w" sizes="164px" alt="REC 242" width={327} height={96} style={{ height: 30, width: 'auto' }} />
         </Link>
         <button type="button" className="me-btn" onClick={() => setMenu((v) => !v)} aria-expanded={menu} aria-label="Ouvrir le menu de mon espace">
           <Avatar moi={moi} />
@@ -81,7 +81,7 @@ export function Coque({ moi, deconnexion, nonLus = 0, children }: { moi: Moi; de
           <div className="side-in">
             <div className="plate">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo-rec242-328.webp" alt="REC 242" width={116} height={34} />
+              <img src="/images/logo-site-327.webp" srcSet="/images/logo-site-327.webp 327w, /images/logo-site-490.webp 490w" sizes="164px" alt="REC 242" width={327} height={96} style={{ height: 34, width: 'auto' }} />
             </div>
             <div className="me">
               <div className="av-wrap">

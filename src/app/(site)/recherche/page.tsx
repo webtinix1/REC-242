@@ -3,6 +3,9 @@ import Link from 'next/link'
 import type { Where } from 'payload'
 import React from 'react'
 
+import { listerAnnuaire } from '@/lib/annuaire/donnees'
+import { evenementsPublics, tax } from '@/lib/evenements/site'
+import { jourLong } from '@/lib/evenements/notifications'
 import { getPayloadClient } from '@/lib/site/payload'
 import { metadataFor } from '@/lib/site/seo'
 
@@ -10,9 +13,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return { ...(await metadataFor('/recherche', { title: 'Recherche' })), robots: { index: false } }
 }
 
+/** Radical d'un mot (« formalisation » trouve « formaliser »). */
+const radical = (m: string) => (m.length > 8 ? m.slice(0, 8) : m)
+const ORDRE = ['Page', 'Événement', 'Actualité', 'Membre']
+
 const TYPES = ['Tout', 'Page', 'Événement', 'Actualité', 'Membre']
 
-type Result = { id: number; title: string; type?: string; lien?: string; extrait?: string }
+type Result = { id: number | string; title: string; type?: string; lien?: string; extrait?: string }
 
 /** Écran 23 : recherche sur le contenu public (index du plugin search). */
 export default async function Recherche({
@@ -39,7 +46,46 @@ export default async function Recherche({
       depth: 0,
       overrideAccess: false,
     })
-    results = r.docs as unknown as Result[]
+    const index = r.docs as unknown as Result[]
+    const radicaux = mots.map(radical)
+    const hors = type && type !== 'Événement' && type !== 'Membre'
+    // Événements et fiches publiques des membres : lus en direct (le public ne voit que les contenus publiés et consentis).
+    // La commission d'un membre n'est pas publique (docs/05 §6) : les fiches ne sont cherchées que sur leurs champs publics.
+    const [evs, parRadical] = await Promise.all([
+      !type || type === 'Événement'
+        ? evenementsPublics({
+            and: radicaux.map((m): Where => ({
+              or: [{ titre: { like: m } }, { chapeau: { like: m } }, { 'commission.nom': { like: m } }],
+            })),
+          })
+        : [],
+      !type || type === 'Membre' ? listerAnnuaire({ q: radicaux[0], page: 1 }, false) : { cartes: [] },
+    ])
+    const fiches = new Map<string, { slug: string; nom: string; secteur: string; ville: string }>()
+    for (const c of parRadical.cartes) fiches.set(c.slug, c)
+    const directs: Result[] = [
+      ...evs.map((e) => ({
+        id: `e${e.id}`,
+        title: e.titre,
+        type: 'Événement',
+        lien: `/agenda/${e.slug}`,
+        extrait: [jourLong(e.debut), tax(e.type)?.nom, e.lieu].filter(Boolean).join(' · '),
+      })),
+      ...[...fiches.values()].map((c) => ({
+        id: `m${c.slug}`,
+        title: c.nom,
+        type: 'Membre',
+        lien: `/membres/${c.slug}`,
+        extrait: [c.secteur, c.ville].filter(Boolean).join(' · '),
+      })),
+    ]
+    const dansTitre = (x: Result) => (radicaux.some((m) => x.title.toLowerCase().includes(m.toLowerCase())) ? 0 : 1)
+    // Hors titre, une page ne vient qu'après les événements, actualités et fiches qui correspondent.
+    const pageSeule = (x: Result) => (dansTitre(x) === 1 && x.type === 'Page' ? 1 : 0)
+    results = [...(hors || !type || type === 'Page' || type === 'Actualité' ? index : []), ...directs]
+      .map((x, i) => ({ x, i }))
+      .sort((a, b) => dansTitre(a.x) - dansTitre(b.x) || pageSeule(a.x) - pageSeule(b.x) || ORDRE.indexOf(a.x.type ?? '') - ORDRE.indexOf(b.x.type ?? '') || a.i - b.i)
+      .map(({ x }) => x)
   }
   const href = (t: string) =>
     `/recherche?${new URLSearchParams({ q, ...(t !== 'Tout' ? { type: t } : {}) })}`

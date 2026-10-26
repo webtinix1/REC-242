@@ -54,7 +54,7 @@ const initiales = (nom: string) =>
 const docsVisibles = (e: EvenementSite) =>
   (e.documents ?? [])
     .filter((d) => d.visibilite !== 'inscrits' && d.document && typeof d.document !== 'number')
-    .map((d) => d.document as { id: number; titre?: string })
+    .map((d) => ({ ...(d.document as { id: number; titre?: string }), titre: d.libelle || (d.document as { titre?: string }).titre }))
 
 export default async function Evenement({ params }: { params: Params }) {
   const { slug } = await params
@@ -102,7 +102,8 @@ function EvenementPasse({ e }: { e: EvenementSite }) {
         <section className="gal-x" aria-label="Galerie" data-m="faces" data-m-stagger="">
           {galerie.map((g, i) => (
             <figure key={g.id ?? i}>
-              <Img media={g.image} size="carte" />
+              <Img media={g.image} style={{ objectPosition: '50% 50%' }} />
+              <figcaption>{`${e.titre}, ${jourLong(e.debut)}`}</figcaption>
             </figure>
           ))}
         </section>
@@ -173,7 +174,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
   const clos = estPasse(e) || Boolean(e.cloture && new Date(e.cloture) < new Date())
   const type = tax(e.type)
   const ville = tax(e.ville)
-  const image = e.image ?? block(accueil, 'agenda')?.image
+  const image = e.bandeau ?? e.image ?? block(accueil, 'agenda')?.image
   const docs = docsVisibles(e)
   const url = `${siteUrl()}/agenda/${e.slug}`
   const lieuTexte = [e.lieu, e.adresse].filter(Boolean).join(', ')
@@ -279,7 +280,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
         </div>
       </div>
       <section className="pband pband-b pband-tall">
-        <Img media={image} alt="" m={{ m: 'iris' }} priority />
+        <Img media={image} alt="" m={{ m: 'iris' }} style={{ objectPosition: '50% 45%' }} priority />
         <div className="wrap">
           <div className="ptext" style={{ maxWidth: 760 }}>
             <div className="rec-row dark" data-m="pops" data-m-stagger="" data-m-d="2">

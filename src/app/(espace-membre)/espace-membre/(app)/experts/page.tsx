@@ -10,7 +10,7 @@ import { getPayloadClient } from '@/lib/site/payload'
 
 export const metadata: Metadata = { title: 'Solliciter un expert' }
 
-type Tag = { id: number; nom: string }
+type Tag = { id: number; nom: string; domaineMembres?: boolean | null; ordreMembres?: number | null }
 type Personne = {
   id: number
   nom: string
@@ -64,9 +64,12 @@ export default async function ExpertsPage({ searchParams }: { searchParams: Prom
     tags: (p.etiquettes ?? []).filter((t): t is Tag => typeof t !== 'number'),
   }))
 
-  // Étiquettes portées par au moins une personne visible, dans l'ordre des étiquettes.
+  // Pastilles : étiquettes portées par au moins une personne visible, dans l'ordre des étiquettes ; seulement celles que l'administration propose aux membres, si elle en a coché.
   const porteuses = new Set(gens.flatMap((p) => p.tags.map((t) => t.id)))
-  const tags = (rang.docs as unknown as Tag[]).filter((t) => porteuses.has(t.id))
+  const portees = (rang.docs as unknown as Tag[]).filter((t) => porteuses.has(t.id))
+  const tags = portees.some((t) => t.domaineMembres)
+    ? portees.filter((t) => t.domaineMembres).sort((a, b) => (a.ordreMembres ?? 0) - (b.ordreMembres ?? 0))
+    : portees
   const demandeTag = typeof q.tag === 'string' ? q.tag : ''
   const tag = tags.find((t) => t.nom === demandeTag) ?? tags[0]
 

@@ -5,6 +5,7 @@
  */
 import type { Payload } from 'payload'
 
+import { alignerSurMaquette, renumeroterRecus } from './alignement'
 import { seedContenus } from './contenus'
 import { seedEmailTemplates } from './emailTemplates'
 import { seedCandidatures } from './candidatures'
@@ -14,9 +15,11 @@ import { seedEvenements } from './evenements'
 import { seedMembres } from './membres'
 import { seedMessages } from './messages'
 import { seedOpportunites } from './opportunites'
+import { purgerTests } from './purge'
 import { seedUsers } from './users'
 
 export async function seed(payload: Payload): Promise<void> {
+  await purgerTests(payload)
   await seedUsers(payload)
   await seedEmailTemplates(payload)
   const editeur = await payload.find({
@@ -30,7 +33,9 @@ export async function seed(payload: Payload): Promise<void> {
   await seedCandidatures(payload)
   await seedMembres(payload)
   await seedCotisations(payload)
+  await renumeroterRecus(payload)
   await seedEvenements(payload)
   await seedOpportunites(payload)
   await seedEchanges(payload)
+  await alignerSurMaquette(payload)
 }

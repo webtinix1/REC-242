@@ -2,7 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
-import { EchangesBoite, type Bulle, type Fil, type OngletEchange } from '@/components/espace/EchangesBoite'
+import {
+  EchangesBoite,
+  type Bulle,
+  type Fil,
+  type OngletEchange,
+} from '@/components/espace/EchangesBoite'
 import { coordonneesPartagees } from '@/lib/annuaire/relations'
 import { nonLus } from '@/lib/echanges/service'
 import { dateCourte, exigerMembre, initialesDe, urlMedia, type Media } from '@/lib/membres/espace'
@@ -13,27 +18,50 @@ export const dynamic = 'force-dynamic'
 
 const BASE = '/espace-membre/echanges'
 const ONGLETS: { cle: OngletEchange; label: string; aide: string }[] = [
-  { cle: 'relations', label: 'Mises en relation', aide: 'Les coordonnées ne sont échangées que si le membre contacté accepte.' },
-  { cle: 'annonces', label: 'Réponses à mes annonces', aide: 'Les réponses des membres à vos annonces d’opportunités.' },
+  {
+    cle: 'relations',
+    label: 'Mises en relation',
+    aide: 'Les coordonnées ne sont échangées que si le membre contacté accepte.',
+  },
+  {
+    cle: 'annonces',
+    label: 'Réponses à mes annonces',
+    aide: 'Les réponses des membres à vos annonces d’opportunités.',
+  },
   { cle: 'experts', label: 'Experts', aide: 'Les réponses des experts à vos questions.' },
-  { cle: 'reseau', label: 'Messages du réseau', aide: 'Les messages envoyés par l’équipe de REC 242.' },
+  {
+    cle: 'reseau',
+    label: 'Messages du réseau',
+    aide: 'Les messages envoyés par l’équipe de REC 242.',
+  },
 ]
 
 type Ref<T> = T | number | null | undefined
-const idDe = (x: unknown) => (x && typeof x === 'object' ? (x as { id: number }).id : (x as number | undefined))
+const idDe = (x: unknown) =>
+  x && typeof x === 'object' ? (x as { id: number }).id : (x as number | undefined)
 type MembreLu = {
   id: number
   prenom?: string
   nom?: string
   photo?: Media | number
-  entreprise?: { nom?: string; localite?: { nom?: string } | number | null; secteurs?: ({ nom?: string } | number)[] } | number | null
+  entreprise?:
+    | {
+        nom?: string
+        localite?: { nom?: string } | number | null
+        secteurs?: ({ nom?: string } | number)[]
+      }
+    | number
+    | null
 }
 
-const nomDe = (m?: Ref<MembreLu>) => (m && typeof m === 'object' ? `${m.prenom ?? ''} ${m.nom ?? ''}`.trim() : '')
+const nomDe = (m?: Ref<MembreLu>) =>
+  m && typeof m === 'object' ? `${m.prenom ?? ''} ${m.nom ?? ''}`.trim() : ''
 const orgDe = (m?: Ref<MembreLu>) => {
   if (!m || typeof m !== 'object' || !m.entreprise || typeof m.entreprise !== 'object') return ''
   const e = m.entreprise
-  const secteur = (e.secteurs ?? []).map((s) => (typeof s === 'object' ? s.nom : '')).filter(Boolean)[0]
+  const secteur = (e.secteurs ?? [])
+    .map((s) => (typeof s === 'object' ? s.nom : ''))
+    .filter(Boolean)[0]
   const ville = e.localite && typeof e.localite === 'object' ? e.localite.nom : ''
   return [e.nom, secteur, ville].filter(Boolean).join(' · ')
 }
@@ -42,20 +70,27 @@ const orgDe = (m?: Ref<MembreLu>) => {
 function relative(iso?: string | null): string {
   if (!iso) return ''
   const fuseau = (d: Date) => d.toLocaleDateString('fr-CA', { timeZone: 'Africa/Brazzaville' })
-  const jours = Math.round((new Date(fuseau(new Date())).getTime() - new Date(fuseau(new Date(iso))).getTime()) / 86400e3)
+  const jours = Math.round(
+    (new Date(fuseau(new Date())).getTime() - new Date(fuseau(new Date(iso))).getTime()) / 86400e3,
+  )
   if (jours <= 0) return 'Aujourd’hui'
   if (jours === 1) return 'Hier'
   if (jours < 7) return `Il y a ${jours} jours`
   return dateCourte(iso)
 }
 const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
-const etiquetteBulle = (qui: string, iso?: string | null) => (iso ? `${qui} · ${minuscule(relative(iso))}` : qui)
+const etiquetteBulle = (qui: string, iso?: string | null) =>
+  iso ? `${qui} · ${minuscule(relative(iso))}` : qui
 const tri = (a: Fil & { _t: number }, b: Fil & { _t: number }) => b._t - a._t
 
 type Brut = Fil & { _t: number }
 
 /** Mes échanges (écran 10). Chaque membre ne lit que les fils auxquels il participe. */
-export default async function EchangesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function EchangesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const m = await exigerMembre()
   const payload = await getPayloadClient()
   const sp = await searchParams
@@ -75,21 +110,51 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
       depth: 3,
       overrideAccess: true,
     })
-    type R = { id: number; createdAt: string; demandeur: Ref<MembreLu>; destinataire: Ref<MembreLu>; objet?: string; message: string; statut: string; fil?: { auteur?: Ref<MembreLu>; texte?: string; date?: string }[]; nonLuPar?: Ref<MembreLu>[] }
+    type R = {
+      id: number
+      createdAt: string
+      updatedAt: string
+      demandeur: Ref<MembreLu>
+      destinataire: Ref<MembreLu>
+      objet?: string
+      message: string
+      statut: string
+      fil?: { auteur?: Ref<MembreLu>; texte?: string; date?: string }[]
+      nonLuPar?: Ref<MembreLu>[]
+    }
     fils = (r.docs as unknown as R[]).map((x) => {
       const recu = toi(x.destinataire)
       const autre = (recu ? x.demandeur : x.destinataire) as MembreLu
       const nom = nomDe(autre)
       const attente = x.statut === 'attente'
       const [statut, cls] =
-        attente && recu ? ['À votre décision', 'pending'] : attente ? ['En attente', 'pending'] : x.statut === 'acceptee' ? ['Acceptée', 'active'] : x.statut === 'refusee' ? ['Refusée', 'suspended'] : x.statut === 'annulee' ? ['Annulée', 'suspended'] : ['Signalée', 'suspended']
+        attente && recu
+          ? ['À votre décision', 'pending']
+          : attente
+            ? ['En attente', 'pending']
+            : x.statut === 'acceptee'
+              ? ['Acceptée', 'active']
+              : x.statut === 'refusee'
+                ? ['Refusée', 'suspended']
+                : x.statut === 'annulee'
+                  ? ['Annulée', 'suspended']
+                  : ['Signalée', 'suspended']
       const dernier = x.fil?.length ? x.fil[x.fil.length - 1].date : x.createdAt
       const bulles: Bulle[] = [
-        { sens: recu ? 'in' : 'out', qui: etiquetteBulle(recu ? nom : 'Vous', x.createdAt), texte: x.message },
-        ...(x.fil ?? []).map((b) => ({ sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out', qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date), texte: b.texte ?? '' })),
+        {
+          sens: recu ? 'in' : 'out',
+          qui: etiquetteBulle(recu ? nom : 'Vous', x.createdAt),
+          texte: x.message,
+        },
+        ...(x.fil ?? []).map((b) => ({
+          sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out',
+          qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date),
+          texte: b.texte ?? '',
+        })),
       ]
       return {
-        _t: new Date(dernier ?? x.createdAt).getTime(),
+        // Tri sur la dernière activité du fil (réponse, lecture, décision), pas seulement sur la date du dernier message.
+        _t: new Date(x.updatedAt ?? dernier ?? x.createdAt).getTime(),
         id: x.id,
         qui: nom,
         ini: initialesDe(autre),
@@ -100,9 +165,17 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
         statut,
         cls,
         nonLu: (x.nonLuPar ?? []).map(idDe).includes(m.id),
-        contexte: recu ? 'Demande de mise en relation reçue' : 'Mise en relation envoyée par vous depuis l’annuaire',
+        contexte: recu
+          ? 'Demande de mise en relation reçue'
+          : 'Mise en relation envoyée par vous depuis l’annuaire',
         bulles,
-        decision: attente && recu ? { question: `${nom} souhaite vous contacter. Acceptez-vous de lui transmettre vos coordonnées ?`, prenom: autre.prenom ?? '' } : undefined,
+        decision:
+          attente && recu
+            ? {
+                question: `${nom} souhaite vous contacter. Acceptez-vous de lui transmettre vos coordonnées ?`,
+                prenom: autre.prenom ?? '',
+              }
+            : undefined,
         peutEcrire: x.statut === 'acceptee',
         peutCloturer: false,
       }
@@ -116,37 +189,64 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
       depth: 3,
       overrideAccess: true,
     })
-    type R = { id: number; createdAt: string; membre: Ref<MembreLu>; opportunite?: { titre?: string; membre?: Ref<MembreLu> } | null; message: string; fil?: { auteur?: Ref<MembreLu>; texte?: string; date?: string }[]; nonLuPar?: Ref<MembreLu>[] }
-    fils = (r.docs as unknown as R[]).map((x) => {
-      const auteurAnnonce = toi(x.opportunite?.membre)
-      const autre = (auteurAnnonce ? x.membre : x.opportunite?.membre) as MembreLu
-      const nom = nomDe(autre)
-      const nonLu = (x.nonLuPar ?? []).map(idDe).includes(m.id)
-      const dernier = x.fil?.length ? x.fil[x.fil.length - 1].date : x.createdAt
-      const bulles: Bulle[] = [
-        { sens: auteurAnnonce ? 'in' : 'out', qui: etiquetteBulle(auteurAnnonce ? nom : 'Vous', x.createdAt), texte: x.message },
-        ...(x.fil ?? []).map((b) => ({ sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out', qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date), texte: b.texte ?? '' })),
-      ]
-      return {
-        _t: new Date(dernier ?? x.createdAt).getTime(),
-        id: x.id,
-        qui: nom,
-        ini: initialesDe(autre ?? {}),
-        photo: urlMedia(autre?.photo, 'vignette'),
-        org: orgDe(autre),
-        date: relative(dernier),
-        objet: `Réponse à « ${x.opportunite?.titre ?? ''} »`,
-        statut: auteurAnnonce ? (nonLu ? 'Nouveau' : 'Lu') : 'Envoyée',
-        cls: auteurAnnonce && nonLu ? 'pending' : 'active',
-        nonLu,
-        contexte: auteurAnnonce ? 'Réponse à votre annonce' : 'Votre réponse à une annonce',
-        bulles,
-        peutEcrire: true,
-        peutCloturer: false,
-      }
-    })
+    type R = {
+      id: number
+      createdAt: string
+      membre: Ref<MembreLu>
+      opportunite?: { titre?: string; statut?: string; membre?: Ref<MembreLu> } | null
+      message: string
+      lue?: boolean
+      fil?: { auteur?: Ref<MembreLu>; texte?: string; date?: string }[]
+      nonLuPar?: Ref<MembreLu>[]
+    }
+    // Les réponses déjà traitées d'une annonce expirée sont archivées : elles ne figurent plus dans la boîte de réception.
+    fils = (r.docs as unknown as R[])
+      .filter((x) => !(x.lue && x.opportunite?.statut === 'expiree'))
+      .map((x) => {
+        const auteurAnnonce = toi(x.opportunite?.membre)
+        const autre = (auteurAnnonce ? x.membre : x.opportunite?.membre) as MembreLu
+        const nom = nomDe(autre)
+        const nonLu = (x.nonLuPar ?? []).map(idDe).includes(m.id)
+        const dernier = x.fil?.length ? x.fil[x.fil.length - 1].date : x.createdAt
+        const bulles: Bulle[] = [
+          {
+            sens: auteurAnnonce ? 'in' : 'out',
+            qui: etiquetteBulle(auteurAnnonce ? nom : 'Vous', x.createdAt),
+            texte: x.message,
+          },
+          ...(x.fil ?? []).map((b) => ({
+            sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out',
+            qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date),
+            texte: b.texte ?? '',
+          })),
+        ]
+        return {
+          _t: new Date(dernier ?? x.createdAt).getTime(),
+          id: x.id,
+          qui: nom,
+          ini: initialesDe(autre ?? {}),
+          photo: urlMedia(autre?.photo, 'vignette'),
+          org: orgDe(autre),
+          date: relative(dernier),
+          objet: `Réponse à « ${x.opportunite?.titre ?? ''} »`,
+          statut: auteurAnnonce ? (nonLu ? 'Nouveau' : 'Lu') : 'Envoyée',
+          cls: auteurAnnonce && nonLu ? 'pending' : 'active',
+          nonLu,
+          contexte: auteurAnnonce ? 'Réponse à votre annonce' : 'Votre réponse à une annonce',
+          bulles,
+          peutEcrire: true,
+          peutCloturer: false,
+        }
+      })
   } else if (onglet === 'experts') {
-    const r = await payload.find({ collection: 'expertRequests', where: { membre: { equals: m.id } }, sort: '-createdAt', limit: 100, depth: 2, overrideAccess: true })
+    const r = await payload.find({
+      collection: 'expertRequests',
+      where: { membre: { equals: m.id } },
+      sort: '-createdAt',
+      limit: 100,
+      depth: 2,
+      overrideAccess: true,
+    })
     type R = {
       id: number
       createdAt: string
@@ -154,7 +254,10 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
       question: string
       nonLuMembre?: boolean
       etiquette?: { nom?: string } | number | null
-      personne?: { nom?: string; fonction?: string; initiales?: string; photo?: Media | number } | number | null
+      personne?:
+        | { nom?: string; fonction?: string; initiales?: string; photo?: Media | number }
+        | number
+        | null
       fil?: { auteurType?: string; auteurNom?: string; texte?: string; date?: string }[]
     }
     fils = (r.docs as unknown as R[]).map((x) => {
@@ -174,9 +277,18 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
                 : x.statut === 'en-cours'
                   ? ['En cours', 'pending']
                   : ['Envoyée', 'pending']
-      const fil = x.fil?.length ? x.fil : [{ auteurType: 'membre', texte: x.question, date: x.createdAt }]
+      const fil = x.fil?.length
+        ? x.fil
+        : [{ auteurType: 'membre', texte: x.question, date: x.createdAt }]
       const dernier = fil[fil.length - 1].date ?? x.createdAt
-      const initiales = p?.initiales || nom.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+      const initiales =
+        p?.initiales ||
+        nom
+          .split(' ')
+          .map((w) => w[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase()
       return {
         _t: new Date(dernier).getTime(),
         id: x.id,
@@ -190,7 +302,11 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
         cls,
         nonLu: Boolean(x.nonLuMembre),
         contexte: 'Question envoyée depuis « Solliciter un expert »',
-        bulles: fil.map((b) => ({ sens: (b.auteurType === 'membre' ? 'out' : 'in') as 'in' | 'out', qui: etiquetteBulle(b.auteurType === 'membre' ? 'Vous' : b.auteurNom || nom, b.date), texte: b.texte ?? '' })),
+        bulles: fil.map((b) => ({
+          sens: (b.auteurType === 'membre' ? 'out' : 'in') as 'in' | 'out',
+          qui: etiquetteBulle(b.auteurType === 'membre' ? 'Vous' : b.auteurNom || nom, b.date),
+          texte: b.texte ?? '',
+        })),
         peutEcrire: x.statut !== 'cloturee',
         peutCloturer: x.statut !== 'cloturee',
       }
@@ -204,7 +320,14 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
       depth: 0,
       overrideAccess: true,
     })
-    type R = { id: number; createdAt: string; titre: string; texte: string; lien?: string | null; luPar?: Ref<MembreLu>[] }
+    type R = {
+      id: number
+      createdAt: string
+      titre: string
+      texte: string
+      lien?: string | null
+      luPar?: Ref<MembreLu>[]
+    }
     fils = (r.docs as unknown as R[]).map((x) => {
       const nonLu = !(x.luPar ?? []).map(idDe).includes(m.id)
       return {
@@ -233,7 +356,25 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
   const courant = choisi ?? fils[0] ?? null
   if (courant && onglet === 'relations' && courant.peutEcrire) {
     const c = await coordonneesPartagees(payload, courant.id, m.id)
-    if (c) courant.coordonnees = { nom: c.nom, telephone: c.telephone, whatsapp: c.whatsapp, email: c.email }
+    if (c) {
+      // Une coordonnée que l'autre membre a déjà écrite dans le fil n'est pas répétée dans l'encart.
+      const chiffres = (t?: string) => (t ?? '').replace(/D/g, '')
+      const dejaDit = (v?: string) =>
+        !!chiffres(v) &&
+        courant.bulles.some((b) => b.sens === 'in' && chiffres(b.texte).includes(chiffres(v)))
+      const reste = {
+        nom: c.nom,
+        telephone: dejaDit(c.telephone) ? undefined : c.telephone,
+        whatsapp: dejaDit(c.whatsapp) ? undefined : c.whatsapp,
+        email:
+          c.email && courant.bulles.some((b) => b.sens === 'in' && b.texte.includes(c.email!))
+            ? undefined
+            : c.email,
+      }
+      const tout = [c.telephone, c.whatsapp, c.email].filter(Boolean)
+      const restants = [reste.telephone, reste.whatsapp, reste.email].filter(Boolean)
+      if (!tout.length || restants.length) courant.coordonnees = reste
+    }
   }
   const aide = ONGLETS.find((o) => o.cle === onglet)!.aide
   const sortie: Fil[] = fils.map(({ _t, ...f }) => {
@@ -252,7 +393,11 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
             key={o.cle}
             href={`${BASE}?onglet=${o.cle}`}
             aria-current={o.cle === onglet ? 'page' : undefined}
-            aria-label={compteurs[o.cle] > 0 ? `${o.label}, ${compteurs[o.cle]} non lu${compteurs[o.cle] > 1 ? 's' : ''}` : undefined}
+            aria-label={
+              compteurs[o.cle] > 0
+                ? `${o.label}, ${compteurs[o.cle]} non lu${compteurs[o.cle] > 1 ? 's' : ''}`
+                : undefined
+            }
           >
             {o.label}
             {compteurs[o.cle] > 0 && <span className="nbadge">{compteurs[o.cle]}</span>}
@@ -260,7 +405,14 @@ export default async function EchangesPage({ searchParams }: { searchParams: Pro
         ))}
       </nav>
       <p className="small muted">{aide}</p>
-      <EchangesBoite onglet={onglet} base={BASE} fils={sortie} courant={courant?.id ?? null} ouvert={Boolean(choisi)} vide="Aucun échange pour le moment." />
+      <EchangesBoite
+        onglet={onglet}
+        base={BASE}
+        fils={sortie}
+        courant={courant?.id ?? null}
+        ouvert={Boolean(choisi)}
+        vide="Aucun échange pour le moment."
+      />
     </>
   )
 }

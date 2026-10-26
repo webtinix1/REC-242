@@ -68,5 +68,22 @@ export const ExpertiseTags = taxonomy(
       defaultValue: false,
       admin: { position: 'sidebar' },
     },
+    {
+      name: 'domaineMembres',
+      label: 'Proposée comme domaine aux membres',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Pastille de l’écran « Solliciter un expert ». Si aucune étiquette n’est cochée, toutes celles que porte une personne sont proposées.',
+      },
+    },
+    {
+      name: 'ordreMembres',
+      label: 'Ordre des pastilles pour les membres',
+      type: 'number',
+      defaultValue: 0,
+      admin: { position: 'sidebar', description: 'Ordre des domaines de l’écran « Solliciter un expert » (distinct de l’ordre des filtres de la page Gouvernance).' },
+    },
   ],
 )

@@ -20,11 +20,16 @@ export default async function PublierPage({ searchParams }: { searchParams: Prom
   const { user } = await payload.auth({ headers: await headers() })
   const secteurs = (await payload.find({ collection: 'sectors', sort: 'ordre', limit: 100, depth: 0, overrideAccess: true, select: { nom: true } })).docs as unknown as { id: number; nom: string }[]
 
+  // Secteur proposé par défaut : celui de l'entreprise du membre.
+  const sa = (await payload.find({ collection: 'companies', where: { titulaire: { equals: m.id } }, limit: 1, depth: 0, overrideAccess: true, select: { secteurs: true } })).docs[0] as unknown as { secteurs?: (number | { id: number })[] } | undefined
+  const secteurMembre = sa?.secteurs?.[0]
+  const secteurDefaut = secteurMembre ? (typeof secteurMembre === 'object' ? secteurMembre.id : secteurMembre) : secteurs[0]?.id
+
   let init: ValeursPublier = {
     type: 'offre-membre',
     titre: '',
     description: '',
-    secteur: secteurs[0] ? String(secteurs[0].id) : '',
+    secteur: secteurDefaut ? String(secteurDefaut) : '',
     visibilite: 'membres',
     dateLimite: '',
     commentRepondre: 'Par le formulaire de réponse de l’espace membre',

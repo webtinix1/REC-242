@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import React from 'react'
 
 import { Boutons, Ex, Img } from '@/components/site/Blocks'
 import { JsonLd } from '@/components/site/JsonLd'
 import { SubNav } from '@/components/site/SubNav'
 import { Words } from '@/components/site/Words'
+import { estPasse, evenementsPublics } from '@/lib/evenements/site'
+import { jourLong } from '@/lib/evenements/notifications'
 import { block, getPage, type CartesBlock } from '@/lib/site/payload'
 import { breadcrumbLd, pageMetadata } from '@/lib/site/seo'
 
@@ -12,12 +15,15 @@ export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata('/formalisation', { fallbackTitle: 'Formalisation' })
 }
 
-/** Écran 18 : formalisation. Le prochain atelier (événement de la commission) s'ajoute avec les événements (lot 8). */
+/** Écran 18 : formalisation. Le prochain atelier est le prochain événement de la commission Formalisation. */
 export default async function Formalisation() {
   const page = await getPage('/formalisation')
   const hero = block(page, 'hero')
   const pourqui = block<CartesBlock>(page, 'pourqui')
   const offre = block<CartesBlock>(page, 'offre')
+  // Intitulé du bandeau : celui du bloc « atelier » de la page s'il est renseigné, sinon le titre de l'événement.
+  const bandeau = block(page, 'atelier')
+  const [atelier] = (await evenementsPublics({ 'commission.slug': { equals: 'formalisation' } })).filter((e) => !estPasse(e) && e.statut !== 'annule')
 
   return (
     <>
@@ -28,7 +34,7 @@ export default async function Formalisation() {
       </div>
       {hero && (
         <section className="pband pband-b pband-tall">
-          <Img media={hero.image} m={{ m: 'iris' }} priority />
+          <Img media={hero.image} m={{ m: 'iris' }} style={{ objectPosition: '60% 25%' }} priority />
           <div className="wrap">
             <div className="ptext">
               <span className="eyebrow" data-m="rise" data-m-d="1">
@@ -95,6 +101,31 @@ export default async function Formalisation() {
           </div>
         </section>
       ) : null}
+      {atelier && (
+        <section className="band bg-gold rings band-end" data-m="ripple" data-m-scrub="">
+          <div className="wrap">
+            <div className="stack" style={{ gap: 18 }}>
+              <span className="eyebrow" data-m="rise">
+                Prochain atelier
+              </span>
+              <h2 className="h-xl" data-m="words" data-m-stagger="" data-m-d="1">
+                <Words text={bandeau?.titre || atelier.titre} />
+              </h2>
+              <p className="lead" data-m="rise" data-m-d="4">
+                {[jourLong(atelier.debut), atelier.lieu].filter(Boolean).join(' · ')}
+              </p>
+              <div className="rec-row" data-m="pops" data-m-stagger="" data-m-d="5">
+                <Link href={`/agenda/${atelier.slug}`} className="rec-btn rec-btn--primary">
+                  Voir l’atelier
+                </Link>
+                <Link href="/adherer/candidature?categorie=A" className="rec-btn rec-btn--secondary">
+                  Adhérer en catégorie A
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       <JsonLd data={breadcrumbLd([{ nom: 'Formalisation', chemin: '/formalisation' }])} />
     </>
   )

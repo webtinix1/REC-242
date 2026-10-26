@@ -54,3 +54,4 @@ node_modules/
 /playwright-report/
 /media/
 /private/
+.audit-visuel/

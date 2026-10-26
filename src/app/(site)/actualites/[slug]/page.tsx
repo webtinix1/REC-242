@@ -10,6 +10,7 @@ import { RichText } from '@/components/site/RichText'
 import { Share } from '@/components/site/Share'
 import { Words } from '@/components/site/Words'
 import { isActiveMember, isStaff } from '@/access/roles'
+import { evenementsPublics } from '@/lib/evenements/site'
 import { dateLong } from '@/lib/site/format'
 import { docHref, NEWS_TYPE_LABEL, type NewsItem } from '@/lib/site/data'
 import { getPayloadClient, isPreview, mediaUrl } from '@/lib/site/payload'
@@ -19,6 +20,7 @@ type Params = Promise<{ slug: string }>
 
 type Article = NewsItem & {
   signature?: string
+  aLireAussiTitre?: string | null
   aLireAussi?: {
     relationTo: 'news' | 'pages'
     value: { titre?: string; title?: string; slug?: string; chemin?: string } | number
@@ -70,8 +72,9 @@ export default async function Article({ params }: { params: Params }) {
       : ((suite.value as { chemin?: string }).chemin ?? '/')
     : null
   const suiteTitre = suite
-    ? ((suite.value as { titre?: string }).titre ?? (suite.value as { title?: string }).title)
+    ? n.aLireAussiTitre || ((suite.value as { titre?: string }).titre ?? (suite.value as { title?: string }).title)
     : null
+  const [lie] = await evenementsPublics({ actualite: { equals: n.id } }, { limit: 1 })
   const pdf = n.pdf && typeof n.pdf !== 'number' ? n.pdf : null
 
   return (
@@ -145,14 +148,22 @@ export default async function Article({ params }: { params: Params }) {
         </>
       )}
 
-      {suite && suiteHref && (
+      {((suite && suiteHref) || lie) && (
         <section className="band bg-night dark net net-soft band-s" data-m="bloom" data-m-scrub="">
           <div className="wrap" style={{ maxWidth: 900 }}>
             <div className="g2" data-m="deal" data-m-stagger="" data-m-d="3">
-              <Link href={suiteHref} className="card">
-                <span className="small muted">À lire aussi</span>
-                <p className="h-s">{suiteTitre}</p>
-              </Link>
+              {lie && (
+                <Link href={`/agenda/${lie.slug}`} className="card">
+                  <span className="small muted">Événement lié</span>
+                  <p className="h-s">{lie.titre}</p>
+                </Link>
+              )}
+              {suite && suiteHref && (
+                <Link href={suiteHref} className="card">
+                  <span className="small muted">À lire aussi</span>
+                  <p className="h-s">{suiteTitre}</p>
+                </Link>
+              )}
             </div>
           </div>
         </section>

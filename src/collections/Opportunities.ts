@@ -140,6 +140,7 @@ export const Opportunities: CollectionConfig = {
       ],
     },
     { name: 'commentRepondre', label: 'Comment répondre', type: 'textarea' },
+    { name: 'image', label: 'Photo de la carte', type: 'upload', relationTo: 'media' },
     { name: 'pieceJointe', label: 'Pièce jointe', type: 'upload', relationTo: 'fichiers' },
     {
       type: 'row',
@@ -163,6 +164,13 @@ export const Opportunities: CollectionConfig = {
         { name: 'prevenirSecteurs', label: 'Prévenir les membres des secteurs concernés', type: 'checkbox', defaultValue: false },
         { name: 'miseEnAvant', label: 'Mettre en avant sur l’accueil (public seulement)', type: 'checkbox', defaultValue: false },
       ],
+    },
+    {
+      name: 'rang',
+      label: 'Rang dans les listes du site',
+      type: 'number',
+      min: 1,
+      admin: { position: 'sidebar', description: 'Facultatif. Les opportunités avec un rang passent en premier, dans l’ordre croissant ; les autres suivent par date.' },
     },
     { name: 'reponses', label: 'Réponses', type: 'join', collection: 'opportunityReplies', on: 'opportunite' },
     { name: 'statut', label: 'Statut', type: 'select', defaultValue: 'brouillon', index: true, options: [...STATUTS_OPPORTUNITE], admin: { position: 'sidebar' } },

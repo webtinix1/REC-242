@@ -9,6 +9,7 @@ import { Words } from '@/components/site/Words'
 import { NEWS_TYPES } from '@/collections/News'
 import { dateCourt, dateLong } from '@/lib/site/format'
 import { getNews, isMemberViewer, NEWS_TYPE_LABEL, type Tag } from '@/lib/site/data'
+import { mediaUrl } from '@/lib/site/payload'
 import { breadcrumbLd, metadataFor } from '@/lib/site/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -82,7 +83,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
 
       {une && (
         <section className="pband pband-b">
-          <Img media={une.image} alt="" m={{ m: 'iris', d: '2' }} priority />
+          <Img media={une.image} alt="" m={{ m: 'iris', d: '2' }} style={{ objectPosition: '50% 40%' }} priority />
           <div className="wrap">
             <div className="ptext" style={{ maxWidth: 720 }}>
               <div className="rec-row dark" data-m="pops" data-m-stagger="" data-m-d="4">
@@ -175,7 +176,11 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
                 </Link>
               ) : (
                 <Link key={n.id} className="card" href={`/actualites/${n.slug}`}>
-                  <Img media={n.image} size="carte" className="ncover" alt="" />
+                  {mediaUrl(n.image, 'carte') ? (
+                    <Img media={n.image} size="carte" className="ncover" alt="" />
+                  ) : (
+                    <div className="ncover-dot" aria-hidden="true" />
+                  )}
                   <div className="rec-row">
                     <span className="pill-type">{NEWS_TYPE_LABEL[n.type]}</span>
                   </div>

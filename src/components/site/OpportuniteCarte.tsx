@@ -1,14 +1,23 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { Img } from '@/components/site/Blocks'
 import type { OppCarte } from '@/components/site/OpportuniteDonnees'
 import { dateLong } from '@/lib/site/format'
 
+const Photo = ({ o }: { o: OppCarte }) =>
+  o.image ? (
+    <span className="pick oppimg">
+      <Img media={o.image} size="carte" alt="" style={{ display: 'block' }} />
+    </span>
+  ) : null
+
 /** Carte d'opportunité : complète si publique, réduite (type et date limite) si réservée aux membres. */
-export function OpportuniteCarte({ o }: { o: OppCarte }) {
+export function OpportuniteCarte({ o, accueil }: { o: OppCarte; accueil?: boolean }) {
   if (o.reservee) {
     return (
       <div className="card opp">
+        <Photo o={o} />
         <div className="rec-row" style={{ justifyContent: 'space-between' }}>
           <span className="rec-tag">{o.type}</span>
           <span className="vis mem">Membres</span>
@@ -31,8 +40,21 @@ export function OpportuniteCarte({ o }: { o: OppCarte }) {
       </div>
     )
   }
+  if (accueil)
+    return (
+      <div className="card">
+        <Photo o={o} />
+        <div className="rec-row">
+          <span className="rec-tag">{o.type}</span>
+          <span className="vis pub">Public</span>
+        </div>
+        <p className="h-s">{o.titre}</p>
+        <p className="small muted">Date limite : {dateLong(o.dateLimite)}</p>
+      </div>
+    )
   return (
     <div className="card opp">
+      <Photo o={o} />
       <div className="rec-row" style={{ justifyContent: 'space-between' }}>
         <span className="rec-tag">{o.type}</span>
         <span className="vis pub">Public</span>
@@ -60,7 +82,11 @@ export function OpportuniteCarte({ o }: { o: OppCarte }) {
             {o.commentRepondre}
           </p>
         </details>
-      ) : null}
+      ) : (
+        <Link className="rec-btn rec-btn--secondary" style={{ width: 'max-content' }} href="/contact">
+          Répondre
+        </Link>
+      )}
     </div>
   )
 }

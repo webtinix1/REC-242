@@ -17,7 +17,8 @@
   .mb .side,.mb .topbar,.mb .tabbar,.mb .sheet-wrap,.mb .top{display:none !important}
 }
 .mb a.chip{display:inline-flex;align-items:center;text-decoration:none}
-.mb .seg a{display:inline-flex;align-items:center;min-height:44px;border-radius:var(--radius-full);padding:0 18px;font-weight:600;font-size:14px;color:var(--text-muted);text-decoration:none}
+.mb .seg a{position:relative;display:inline-flex;align-items:center;min-height:40px;border-radius:var(--radius-full);padding:0 18px;font-weight:600;font-size:14px;color:var(--text-muted);text-decoration:none}
+.mb .seg a::after{content:'';position:absolute;inset:-2px 0}
 .mb .seg a[aria-current="page"]{background:var(--bg-surface);color:var(--text-brand);box-shadow:0 0 0 1px var(--border)}
 .mb .evthumb > img,.mb .evband > img{display:block;width:100%;height:100%;object-fit:cover}
 .mb [hidden]{display:none !important}
@@ -34,7 +35,28 @@
 .mb .nav-i .nbadge{margin-left:auto}
 @container app (max-width: 760px){
   .mb .inbox[data-ouvert="true"] .inbox-list{display:none}
-  .mb .inbox[data-ouvert="false"] .conv{display:none}
-  .mb .conv-back{display:inline-flex}
+  .mb .inbox[data-ouvert="true"] .conv-back{display:inline-flex}
   .mb .seg{border-radius:var(--radius-lg)}
 }
+
+/* Liens stylés comme les boutons de la maquette : « .mb a » (0,1,1) ne doit pas écraser la couleur des classes de bouton. */
+.mb a.rec-btn--secondary,.mb a.rec-btn--ghost,.mb a.linkbtn{color:var(--text-brand)}
+.mb a.rec-btn--accent{color:var(--on-accent)}
+.mb a.linkbtn.danger{color:var(--text-danger)}
+.mb .toast a.linkbtn{color:#fdd06a}
+.mb .doc-th > img{object-position:50% 0}
+/* « Signaler cette fiche » : discret, sous la carte de mise en relation (docs/07, écran 08). */
+.mb .signaler{background:none;border:0;padding:0 4px;min-height:44px;width:max-content;font-size:13px;line-height:18px;color:var(--text-muted);text-decoration:underline;cursor:pointer;display:inline-flex;align-items:center}
+.mb .signaler:hover{color:var(--text-brand)}
+.mb .oppimg > img{display:block}
+
+/* Connexion sur mobile : la feuille blanche remplit la hauteur de l'écran, le formulaire en haut. */
+@container app (max-width: 760px){
+  .mb .login{min-height:100vh;min-height:100dvh;grid-template-rows:auto 1fr}
+  .mb .login-main{justify-content:flex-start}
+}
+
+/* Les boutons de la maquette sont des <button> : « .mb button{font:inherit} » leur donne la graisse et la taille du texte parent. Les liens et libellés qui en ont l'aspect font de même. */
+.mb a.rec-btn,.mb label.rec-btn{font:inherit}
+/* Les onglets de la barre du bas sont des boutons dans la maquette : on reprend leur marge intérieure par défaut (1 px 6 px). */
+.mb a.tab{padding:1px 6px}

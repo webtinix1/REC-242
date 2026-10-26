@@ -7,6 +7,8 @@ import { repondreOpportunite } from '@/lib/opportunites/actions'
 
 export type CarteOpportunite = {
   id: number
+  image?: string
+  imageAlt?: string
   type: string
   visibilite: string
   bientot: boolean
@@ -29,6 +31,12 @@ export function OpportuniteCarte({ o }: { o: CarteOpportunite }) {
   const [etat, envoyer, enCours] = useActionState(repondreOpportunite, {})
   return (
     <div className="card">
+      {o.image && (
+        <span className="pick oppimg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={o.image} alt={o.imageAlt ?? ''} />
+        </span>
+      )}
       <div className="row between">
         <span className="tag">{o.type}</span>
         <span className="row" style={{ gap: 6 }}>

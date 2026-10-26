@@ -30,6 +30,7 @@ export type EvenementSite = {
   lieu?: string | null
   adresse?: string | null
   image?: Media | number | null
+  bandeau?: Media | number | null
   acces: string
   capacite?: number | null
   cloture?: string | null
@@ -37,7 +38,7 @@ export type EvenementSite = {
   tarif?: string | null
   programme?: { id?: string; heure?: string | null; intitule: string }[] | null
   intervenants?: { id?: string; nom: string; fonction?: string | null; photo?: Media | number | null }[] | null
-  documents?: { id?: string; visibilite?: string | null; document: { id: number; titre?: string } | number }[] | null
+  documents?: { id?: string; visibilite?: string | null; libelle?: string | null; document: { id: number; titre?: string } | number }[] | null
   compteRendu?: RichData
   participants?: number | null
   galerie?: { id?: string; image: Media | number }[] | null

@@ -11,6 +11,8 @@ import 'dotenv/config'
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  // Retire les données créées par les tests (adresses @e2e.test) pour garder la démonstration intacte.
+  globalTeardown: './tests/e2e/nettoyage.ts',
   // Serveur de développement : la première compilation d'une route peut dépasser 30 s.
   timeout: 120000,
   expect: { timeout: 15000 },

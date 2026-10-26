@@ -33,8 +33,24 @@ type Demande = {
   createdAt: string
 }
 
-const heure = (iso: string) =>
-  new Date(iso).toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Brazzaville' })
+const TZ = 'Africa/Brazzaville'
+const jourCle = (d: Date) => d.toLocaleDateString('fr-CA', { timeZone: TZ })
+const hhmm = (d: Date) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: TZ })
+/** « aujourd'hui à 08:42 », « hier à 18:05 » ou « le 24 oct. 2026 à 08:42 ». */
+const heure = (iso: string) => {
+  const d = new Date(iso)
+  const maintenant = new Date()
+  if (jourCle(d) === jourCle(maintenant)) return `aujourd’hui à ${hhmm(d)}`
+  if (jourCle(d) === jourCle(new Date(maintenant.getTime() - 86400e3))) return `hier à ${hhmm(d)}`
+  return `le ${dateCourte(iso)} à ${hhmm(d)}`
+}
+/** « il y a 3 jours » (« aujourd'hui », « hier » au plus près). */
+const ilYA = (iso: string) => {
+  const n = Math.round((new Date(jourCle(new Date())).getTime() - new Date(jourCle(new Date(iso))).getTime()) / 86400e3)
+  return n <= 0 ? 'aujourd’hui' : n === 1 ? 'hier' : `il y a ${n} jours`
+}
+const jourMoisCourt = (iso?: string | null) =>
+  iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', timeZone: TZ }) : ''
 
 /** Mon profil et mon entreprise (écran 03). */
 export default async function ProfilPage() {
@@ -71,11 +87,13 @@ export default async function ProfilPage() {
   }
   const commissions = (m.commissions ?? []) as { id: number; nom?: string; prochaineReunion?: string }[]
   const dejaMembre = new Set(commissions.map((c) => c.id))
-  const enAttente = (attente.docs as unknown as { id: number; commission: number | { id: number; nom?: string } }[]).map((r) => ({
+  const enAttente = (attente.docs as unknown as { id: number; createdAt: string; commission: number | { id: number; nom?: string } }[]).map((r) => ({
+    detail: `Demande envoyée ${ilYA(r.createdAt)}`,
     id: typeof r.commission === 'object' ? r.commission.id : r.commission,
     nom: typeof r.commission === 'object' ? (r.commission.nom ?? '') : '',
   }))
   const idsAttente = new Set(enAttente.map((c) => c.id))
+  const secteursMembre = (e?.secteurs ?? []).map((x) => x.nom).join(', ')
   return (
     <>
       <div className="top">
@@ -107,7 +125,7 @@ export default async function ProfilPage() {
                 ? `Validée le ${dateCourte(r.dateTraitement)}${r.traiteParNom ? ` par ${r.traiteParNom}` : ''}`
                 : r.statut === 'refusee'
                   ? `Refusée le ${dateCourte(r.dateTraitement)} : ${r.motifRefus ?? ''}`
-                  : `Envoyée le ${dateCourte(r.createdAt)}`,
+                  : `Envoyée ${ilYA(r.createdAt)}`,
             statut: r.statut === 'validee' ? 'Validée' : r.statut === 'refusee' ? 'Refusée' : 'En attente',
             cls: r.statut === 'validee' ? 'active' : r.statut === 'refusee' ? 'suspended' : 'pending',
           })),
@@ -115,13 +133,19 @@ export default async function ProfilPage() {
           commissions: commissions.map((c) => ({
             id: c.id,
             nom: c.nom ?? '',
-            detail: c.prochaineReunion ? `Prochaine réunion le ${dateCourte(c.prochaineReunion)}` : '',
+            // Les commissions se choisissent à l'adhésion : « membre depuis » reprend le mois d'adhésion.
+            detail: [
+              m.dateAdhesion ? `Membre depuis ${new Date(m.dateAdhesion).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric', timeZone: 'Africa/Brazzaville' })}` : '',
+              c.prochaineReunion ? `${m.dateAdhesion ? 'prochaine' : 'Prochaine'} réunion le ${jourMoisCourt(c.prochaineReunion)}` : '',
+            ]
+              .filter(Boolean)
+              .join(' · '),
           })),
           commissionsEnAttente: enAttente,
           commissionsOuvertes: (ouvertes.docs as unknown as { id: number; nom: string }[])
             .filter((c) => !dejaMembre.has(c.id) && !idsAttente.has(c.id))
             .map((c) => ({ id: c.id, nom: c.nom })),
-          notifications: NOTIFICATIONS.map((n) => ({ name: n.name, label: n.label, canal: n.canal, on: Boolean(m.notifications?.[n.name]) })),
+          notifications: NOTIFICATIONS.map((n) => ({ name: n.name, label: n.label, canal: n.name === 'opportunites' && secteursMembre ? `${secteursMembre}, ${n.canal.charAt(0).toLowerCase()}${n.canal.slice(1)}` : n.canal, on: Boolean(m.notifications?.[n.name]) })),
           derniereConnexion: m.derniereConnexion ? heure(m.derniereConnexion) : '',
         }}
         a={{

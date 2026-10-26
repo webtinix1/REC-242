@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { OpportuniteCarte, type CarteOpportunite } from '@/components/espace/OpportuniteCarte'
-import { dateLongue, exigerMembre } from '@/lib/membres/espace'
+import { dateLongue, exigerMembre, urlMedia, type Media } from '@/lib/membres/espace'
 import { joursRestants, statutLabel, TYPES_OPPORTUNITE, typeLabel } from '@/lib/opportunites/regles'
 import { getPayloadClient } from '@/lib/site/payload'
 
@@ -28,6 +28,7 @@ type Doc = {
   auteur: string
   membre?: number | { id: number } | null
   statut: string
+  image?: Media | number | null
   messageModeration?: string | null
   motifRefus?: string | null
 }
@@ -41,18 +42,21 @@ export default async function OpportunitesPage({ searchParams }: { searchParams:
   const payload = await getPayloadClient()
   const { user } = await payload.auth({ headers: await headers() })
 
-  const [pub, miennes] = await Promise.all([
+  const [pub, miennes, tousTypes] = await Promise.all([
     payload.find({
       collection: 'opportunities',
       where: { and: [{ statut: { equals: 'publiee' } }, ...(type ? [{ type: { equals: type } }] : [])] },
-      sort: 'dateLimite',
+      sort: ['createdAt', 'id'],
       limit: 60,
       depth: 1,
       user,
       overrideAccess: false,
     }),
     payload.find({ collection: 'opportunities', where: { membre: { equals: m.id } }, sort: '-createdAt', limit: 50, depth: 0, user, overrideAccess: false }),
+    payload.find({ collection: 'opportunities', where: { statut: { equals: 'publiee' } }, sort: ['createdAt', 'id'], limit: 200, depth: 0, user, overrideAccess: false, select: { type: true } }),
   ])
+  // Filtres : seulement les types qui ont du contenu, dans l'ordre où ils apparaissent dans la liste.
+  const typesPresents = [...new Set((tousTypes.docs as unknown as { type: string }[]).map((d) => d.type))].filter((t) => TYPES_OPPORTUNITE.some((x) => x.value === t))
   const docs = pub.docs as unknown as Doc[]
   const mes = miennes.docs as unknown as Doc[]
 
@@ -84,6 +88,8 @@ export default async function OpportunitesPage({ searchParams }: { searchParams:
     const pj = d.pieceJointe && typeof d.pieceJointe === 'object' && d.pieceJointe.filename ? d.pieceJointe.filename : undefined
     return {
       id: d.id,
+      image: urlMedia(d.image as Media, 'carte'),
+      imageAlt: d.image && typeof d.image === 'object' ? (d.image.alt ?? '') : '',
       type: typeLabel(d.type),
       visibilite: d.visibilite === 'public' ? 'Public' : 'Membres',
       bientot: joursRestants(d.dateLimite) <= 7,
@@ -119,9 +125,9 @@ export default async function OpportunitesPage({ searchParams }: { searchParams:
         <Link className={chip(!type)} href={BASE} aria-current={!type ? 'true' : undefined}>
           Toutes
         </Link>
-        {TYPES_OPPORTUNITE.map((t) => (
-          <Link key={t.value} className={chip(type === t.value)} href={`${BASE}?type=${t.value}`} aria-current={type === t.value ? 'true' : undefined}>
-            {t.label}
+        {typesPresents.map((v) => (
+          <Link key={v} className={chip(type === v)} href={`${BASE}?type=${v}`} aria-current={type === v ? 'true' : undefined}>
+            {typeLabel(v)}
           </Link>
         ))}
       </div>

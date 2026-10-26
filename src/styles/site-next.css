@@ -8,7 +8,9 @@
 .sb .foot a{display:block;padding:5px 0;color:#ffffff;font-size:15px}
 .sb .foot-links a{display:inline;padding:0;font-size:13px;color:#cfe5d8}
 .sb .foot a:hover{text-decoration:underline}
-.sb a.tab{color:inherit}
+/* Les onglets de la maquette sont des boutons (gris, vert si actif) : le lien reprend ces couleurs au lieu d’en hériter. */
+.sb a.tab{color:var(--text-muted)}
+.sb a.tab.is-on{color:var(--text-brand)}
 .sb .logo{display:inline-flex}
 .sb .skip{position:absolute;left:-9999px;top:8px;z-index:20;background:var(--bg-surface);padding:10px 16px;border-radius:var(--radius-full)}
 .sb .skip:focus{left:16px}
@@ -33,3 +35,19 @@
 .sb details.opp-rep summary::-webkit-details-marker{display:none}
 .sb details.opp-rep summary::after{display:none}
 .sb details.opp-rep p{padding:0;color:var(--text)}
+
+/* Les cartes sont des liens (a.card) : la grille mobile de la ligne d’événement doit l’emporter sur display:flex de a.card. */
+@container site (max-width: 760px){.sb a.ev-row{display:grid}}
+/* Pagination : les pastilles sont des liens (a.pg) et non des boutons. */
+.sb a.pg{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;flex:none}
+.sb details.opp-rep summary.rec-btn{display:inline-flex;align-items:center;justify-content:center;padding:0 24px;font-weight:400;height:44px}
+/* « La vie du réseau » : les actualités latérales sont des liens (a) ; mêmes règles que les boutons de la maquette. */
+.sb .newsx-side a{display:grid;grid-template-columns:minmax(0,1fr) 92px;column-gap:18px;row-gap:6px;align-items:start;text-align:left;background:none;border:0;border-top:1px solid var(--sand-200);padding:20px 0;cursor:pointer;color:var(--text)}
+.sb .newsx-side a:last-child{border-bottom:1px solid var(--sand-200)}
+.sb .newsx-side a > *{grid-column:1;justify-self:start}
+.sb .newsx-side a:focus-visible{outline:3px solid var(--focus-ring);outline-offset:4px}
+.sb .newsx-side a:hover .h-s{text-decoration:underline}
+@container site (max-width: 760px){.sb .newsx-side a{grid-template-columns:minmax(0,1fr) 72px}}
+.sb .newsx-side a .nthumb{grid-column:2;grid-row:1 / span 3;justify-self:end}
+/* Boutons : la maquette utilise des <button> dont la police est héritée (graisse 400, interligne du texte) ; seuls ses liens vers l'espace membre gardent la graisse 600 de .rec-btn. */
+:where(.sb) a.rec-btn:where(:not([href^="/espace-membre"])){font:inherit}

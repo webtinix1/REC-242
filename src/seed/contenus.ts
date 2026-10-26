@@ -318,7 +318,7 @@ const DOCS = [
     dl: 41,
   },
   {
-    titre: 'Biographies du comité de direction',
+    titre: 'Biographies',
     rubrique: 'presse',
     visibilite: 'public',
     fichier: 'biographies-comite.pdf',
@@ -513,7 +513,7 @@ async function navigation(payload: Payload) {
   })
 }
 
-const ARTICLE_AG = [
+export const ARTICLE_AG = [
   'Le 3 octobre 2026, à Brazzaville, l’assemblée générale constitutive de REC 242 a adopté les statuts et le règlement intérieur de l’association.',
   'REC 242, Réseau des Entrepreneurs Congolais, est une association à but non lucratif, apolitique et non confessionnelle. Son but : structurer, connecter et valoriser l’écosystème entrepreneurial congolais en facilitant l’entraide et les affaires entre ses membres.',
   '## Quatre organes',
@@ -558,7 +558,7 @@ async function actualites(
         chapeau: n.chapo,
         type: TYPE[n.type] ?? 'article',
         image: await media(payload, n.src, n.titre),
-        corps: n.titre.startsWith('REC 242 tient') ? rich(ARTICLE_AG) : undefined,
+        corps: n.titre.startsWith('REC 242 tient') ? rich(ARTICLE_AG.slice(1)) : undefined,
         secteurs: sectors[n.sect] ? [sectors[n.sect]] : [],
         datePublication: dateFr(n.date),
         reserveMembres: n.res,
