@@ -377,3 +377,7 @@ Résultat : dernier passage complet de `accessibilite.e2e.spec.ts`, 13 tests sur
 ## Lot 12 : recette interne (27/10/2026)
 
 Déroulé et résultats dans `docs/RECETTE-INTERNE.md`. Nouveau fichier `tests/int/recette.int.spec.ts` (13 tests) pour les points de `docs/12` sans test. Anomalies corrigées : délai de défense de 15 jours contournable par le corps de la requête (`src/collections/DisciplinaryCases.ts`, les dates et délais du dossier ne viennent plus que du serveur) ; boutons de discipline affichés au responsable membres alors que le serveur les lui refuse (question 10 de `docs/QUESTIONS.md`). Paiements joués en mode « simulation » (question 11).
+
+## Lot 12 : guide du back-office (27/10/2026)
+
+`docs/guide/guide-back-office.pdf` (36 pages A4), produit depuis `docs/guide/guide-back-office.html` par `node docs/guide/generer-pdf.cjs`. Partie commune, puis un chapitre par rôle (super administrateur, administrateur, responsable membres, trésorier, éditeur, responsable événements) avec droits, limites et tâches pas à pas, captures des données de démonstration. Aucun montant de cotisation n'y est écrit (décision en attente sur la catégorie B) : le guide renvoie à Paramètres, onglet Tarifs. Écarts relevés entre les documents et le code, le guide suivant le code : un éditeur publie lui-même les actualités (matrice de `docs/04`, alors que `docs/08` parle d'envoi en relecture) ; seul le super administrateur invite et gère les comptes ; l'enregistrement manuel d'un paiement propose espèces et virement.

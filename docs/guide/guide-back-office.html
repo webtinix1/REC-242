@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide d'utilisation du back-office REC 242</title>
+<style>
+@font-face{font-family:"Inter";font-weight:400;src:url("fonts/inter-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-weight:500;src:url("fonts/inter-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-weight:600;src:url("fonts/inter-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Montserrat";font-weight:700;src:url("fonts/montserrat-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Montserrat";font-weight:800;src:url("fonts/montserrat-latin-800-normal.woff2") format("woff2")}
+:root{
+  --green-50:#e9f3ee;--green-100:#cfe5d8;--green-500:#1c7a47;--green-700:#0b5e32;--green-900:#063a1f;
+  --gold-100:#fef1cf;--gold-500:#fbb517;--gold-800:#7a5400;
+  --red-100:#fce3e4;--red-700:#a80f18;
+  --sand-0:#fff;--sand-25:#faf8f3;--sand-50:#f3f1ea;--sand-100:#e7e4da;
+  --ink-500:#62675f;--ink-900:#171a17;
+  --font-display:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
+}
+@page{size:A4;margin:18mm 16mm 20mm 16mm;
+  @bottom-left{content:"Guide du back-office REC 242";font:400 8pt "Inter",sans-serif;color:#62675f}
+  @bottom-right{content:"Page " counter(page);font:400 8pt "Inter",sans-serif;color:#62675f}}
+@page:first{margin:0;@bottom-left{content:none}@bottom-right{content:none}}
+*{box-sizing:border-box}
+html{font-size:10.5pt}
+body{margin:0;font-family:var(--font-sans);color:var(--ink-900);background:#fff;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3,h4{font-family:var(--font-display);color:var(--green-900);line-height:1.25;margin:0}
+p{margin:0 0 .6em}
+ul,ol{margin:0 0 .8em;padding-left:1.3em}
+li{margin:0 0 .25em}
+a{color:var(--green-700)}
+b,strong{font-weight:600}
+
+/* Couverture */
+.cover{height:297mm;page-break-after:always;background:var(--green-900);color:#fff;padding:30mm 22mm;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.cover .bar{position:absolute;left:0;right:0;bottom:0;height:10mm;background:linear-gradient(90deg,var(--green-700) 33%,var(--gold-500) 33% 66%,#df1521 66%)}
+.cover .marque{font:800 26pt var(--font-display);letter-spacing:.01em}
+.cover .marque small{display:block;font:500 10pt var(--font-sans);color:var(--green-100);letter-spacing:.04em;margin-top:2mm}
+.cover h1{color:#fff;font-size:34pt;font-weight:800;margin-bottom:6mm}
+.cover .sous{font-size:13pt;color:var(--green-100);max-width:130mm}
+.cover .bas{font-size:9.5pt;color:var(--green-100);padding-bottom:12mm}
+
+/* Titres */
+.role{page-break-before:always}
+h2.titre-role{font-size:22pt;font-weight:800;color:var(--green-700);padding-bottom:4mm;border-bottom:3px solid var(--gold-500);margin-bottom:5mm}
+h2.titre-partie{font-size:20pt;font-weight:800;color:var(--green-700);padding-bottom:3mm;border-bottom:3px solid var(--gold-500);margin-bottom:5mm}
+h3{font-size:13pt;font-weight:700;margin:6mm 0 2.5mm;break-after:avoid}
+h4{font-size:11pt;font-weight:700;margin:4mm 0 1.5mm;break-after:avoid;color:var(--green-700)}
+.chapeau{font-size:11.5pt;color:var(--ink-500);margin-bottom:5mm}
+
+/* Sommaire */
+.sommaire{page-break-after:always;padding-top:2mm}
+.sommaire h2{font-size:20pt;font-weight:800;color:var(--green-700);margin-bottom:6mm}
+.sommaire ol{list-style:none;padding:0;margin:0}
+.sommaire li{border-bottom:1px solid var(--sand-100);padding:2.2mm 0}
+.sommaire li a{text-decoration:none;color:var(--ink-900);font-weight:600}
+.sommaire li span{display:block;font-weight:400;color:var(--ink-500);font-size:9.5pt}
+.sommaire .lire{background:var(--green-50);border-left:4px solid var(--green-700);padding:3mm 4mm;margin-top:8mm;border-radius:0 6px 6px 0}
+
+/* Encadrés */
+.savoir{background:var(--gold-100);border-left:4px solid var(--gold-500);border-radius:0 8px 8px 0;padding:3mm 4mm;margin:4mm 0;break-inside:avoid}
+.savoir .t{font:700 9.5pt var(--font-display);color:var(--gold-800);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:1mm}
+.savoir p:last-child,.savoir ul:last-child{margin-bottom:0}
+.attention{background:var(--red-100);border-left:4px solid var(--red-700)}
+.attention .t{color:var(--red-700)}
+
+/* Tableaux de droits */
+table{border-collapse:collapse;width:100%;margin:2mm 0 4mm;font-size:9.5pt;break-inside:auto}
+th,td{border-bottom:1px solid var(--sand-100);padding:1.8mm 2.2mm;text-align:left;vertical-align:top}
+th{background:var(--sand-50);font-weight:600;color:var(--green-900)}
+tr{break-inside:avoid}
+.n{display:inline-block;border-radius:99px;padding:.3mm 2.6mm;font-size:8.5pt;font-weight:600;white-space:nowrap}
+.n-tous{background:var(--green-100);color:var(--green-900)}
+.n-part{background:var(--gold-100);color:var(--gold-800)}
+.n-lect{background:var(--sand-50);color:var(--ink-500);border:1px solid var(--sand-100)}
+.n-non{background:var(--red-100);color:var(--red-700)}
+
+/* Étapes numérotées */
+ol.etapes{list-style:none;counter-reset:e;padding:0;margin:2mm 0 4mm}
+ol.etapes>li{counter-increment:e;position:relative;padding-left:9mm;margin-bottom:2.2mm;break-inside:avoid}
+ol.etapes>li::before{content:counter(e);position:absolute;left:0;top:.1mm;width:6mm;height:6mm;border-radius:50%;background:var(--green-700);color:#fff;font:700 8.5pt var(--font-display);text-align:center;line-height:6mm}
+.btn{display:inline-block;background:var(--green-50);color:var(--green-900);border:1px solid var(--green-100);border-radius:99px;padding:0 2.4mm;font-weight:600;font-size:9.5pt;white-space:nowrap}
+.btn-p{background:var(--green-700);color:#fff;border-color:var(--green-700)}
+.menu{font-weight:600;color:var(--green-700)}
+.tache{break-inside:auto}
+
+/* Captures */
+figure{margin:4mm 0;break-inside:avoid;border:1px solid var(--sand-100);border-radius:8px;overflow:hidden;background:var(--sand-25)}
+figure .cadre{width:100%;overflow:hidden;line-height:0}
+figure img{width:100%;display:block}
+figure.haut .cadre{height:108mm}
+figure.haut img{height:100%;object-fit:cover;object-position:top}
+figure.moyen .cadre{height:92mm}
+figure.moyen img{height:100%;object-fit:cover;object-position:top}
+figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#fff;border-top:1px solid var(--sand-100)}
+.duo{display:block}
+.vide{color:var(--ink-500)}
+</style>
+</head>
+<body>
+
+<!-- COUVERTURE -->
+<section class="cover">
+  <div class="marque">REC 242<small>Réseau des Entrepreneurs Congolais</small></div>
+  <div>
+    <h1>Guide d'utilisation du back-office</h1>
+    <p class="sous">Pour l'équipe de REC 242 : se connecter, retrouver ses écrans et effectuer ses tâches courantes, rôle par rôle.</p>
+  </div>
+  <div class="bas">Maître d'œuvre : Webtinix, contact@webtinix.com<br>Les captures montrent des données de démonstration fictives.</div>
+  <div class="bar"></div>
+</section>
+
+<!-- SOMMAIRE -->
+<section class="sommaire">
+  <h2>Sommaire</h2>
+  <ol>
+    <li><a href="#commun">Partie commune : bien démarrer</a><span>Se connecter, le menu, le tableau de bord, la recherche, la sécurité du compte</span></li>
+    <li><a href="#superadmin">Super administrateur</a><span>Utilisateurs et rôles, invitations, déblocage, journal</span></li>
+    <li><a href="#admin">Administrateur</a><span>Publier, programmer, Paramètres et onglet Tarifs, discipline et ses délais, journal</span></li>
+    <li><a href="#membres">Responsable membres</a><span>Candidatures, fiches membres, demandes de modification, messages, commissions</span></li>
+    <li><a href="#tresorier">Trésorier</a><span>Paiements en espèces, suivi des cotisations, relances, reçus</span></li>
+    <li><a href="#editeur">Éditeur</a><span>Actualités, accès réservé aux membres, ce qui ne se publie pas seul</span></li>
+    <li><a href="#evenements">Responsable événements</a><span>Créer un événement, capacité et liste d'attente, pointage par scan</span></li>
+    <li><a href="#probleme">En cas de problème</a><span>Que faire, qui contacter</span></li>
+  </ol>
+  <div class="lire">
+    <b>Comment lire ce guide.</b> Allez à la partie commune, puis directement à votre rôle. Une personne peut avoir plusieurs rôles : ses droits s'additionnent. Les mots entre guillemets sont ceux que vous voyez à l'écran. Les montants des cotisations ne sont pas écrits ici : ils se règlent dans <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>.
+  </div>
+</section>
+
+<!-- PARTIE COMMUNE -->
+<section id="commun">
+  <h2 class="titre-partie">Partie commune : bien démarrer</h2>
+  <p class="chapeau">Ce qui est identique pour tous les rôles.</p>
+
+  <h3>Se connecter</h3>
+  <ol class="etapes">
+    <li>Ouvrez l'adresse du back-office de REC 242 (elle se termine par <b>/admin</b>).</li>
+    <li>Écrivez votre e-mail et votre mot de passe.</li>
+    <li>Cliquez sur <span class="btn btn-p">Se connecter</span>.</li>
+  </ol>
+  <p>Mot de passe oublié ? Cliquez sur <span class="btn">Mot de passe oublié ?</span> : vous recevez un lien par e-mail, valable 1 heure. Il n'y a pas de deuxième étape de confirmation.</p>
+  <figure class="moyen"><div class="cadre"><img src="captures/01-connexion-ordinateur.png" alt="Écran de connexion au back-office"></div><figcaption>La page de connexion. Le texte sous le bouton rappelle les règles de sécurité.</figcaption></figure>
+
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Votre mot de passe est personnel : 12 caractères au minimum. Ne le partagez jamais, même avec un collègue ou avec Webtinix. Chaque connexion, réussie ou ratée, est inscrite au journal des actions.</p>
+  </div>
+
+  <h3>Le menu de gauche</h3>
+  <p>Le menu est rangé en cinq groupes. Vous ne voyez que les écrans que votre rôle permet d'ouvrir : un écran absent du menu n'est pas pour vous.</p>
+  <table>
+    <tr><th style="width:26%">Groupe</th><th>Écrans</th></tr>
+    <tr><td><b>Pilotage</b></td><td>Tableau de bord</td></tr>
+    <tr><td><b>Adhésions</b></td><td>Candidatures, Membres et entreprises, Cotisations</td></tr>
+    <tr><td><b>Activité</b></td><td>Événements, Commissions, Opportunités, Demandes des membres, Messages</td></tr>
+    <tr><td><b>Contenus</b></td><td>Actualités, Pages, menus, médias, Documents</td></tr>
+    <tr><td><b>Administration</b></td><td>Paramètres, Utilisateurs et rôles, Journal</td></tr>
+  </table>
+  <p>Les pastilles rouges à côté d'un écran indiquent le nombre d'éléments qui attendent une action (par exemple des candidatures à traiter). Elles se mettent à jour toutes les minutes environ.</p>
+
+  <h3>Le tableau de bord</h3>
+  <p>C'est la première page après la connexion. Elle répond à la question « qu'est-ce qui attend une action aujourd'hui ? ».</p>
+  <ul>
+    <li><b>Quatre compteurs cliquables</b> : candidatures en attente (avec l'ancienneté de la plus ancienne), demandes de modification, messages non traités, opportunités qui expirent cette semaine. Un clic mène à l'écran concerné.</li>
+    <li><b>Prochains événements</b> : inscrits sur capacité et statut.</li>
+    <li><b>Messages par motif</b> : les derniers messages reçus du site.</li>
+    <li><b>À suivre</b> : demandes pour rejoindre une commission, questions d'experts sans réponse, membres à trois relances, encarts de l'annuaire imprimé à régler.</li>
+    <li><b>Raccourcis</b> : rédiger une actualité, créer un événement, publier une opportunité, relancer les cotisations.</li>
+  </ul>
+  <figure class="haut"><div class="cadre"><img src="captures/02-tableau-ordinateur.png" alt="Tableau de bord du back-office"></div><figcaption>Le tableau de bord vu par un super administrateur.</figcaption></figure>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Chaque bloc ne montre que ce que votre rôle permet de voir. Un bloc qui n'apparaît pas n'est pas une erreur : vous n'y avez pas accès.</p>
+  </div>
+
+  <h3>La recherche</h3>
+  <p>La barre en haut de l'écran cherche un <b>membre</b> (nom, numéro d'adhérent ou e-mail) ou une <b>candidature</b> (nom, prénom, entreprise ou e-mail).</p>
+  <ol class="etapes">
+    <li>Cliquez dans la barre « Rechercher un membre, une candidature… ».</li>
+    <li>Tapez au moins 2 lettres. Une courte liste de résultats s'affiche.</li>
+    <li>Cliquez sur le résultat : la fiche s'ouvre. « Aucun résultat » veut dire qu'aucune fiche ne correspond ou que votre rôle ne permet pas de la voir.</li>
+  </ol>
+
+  <h3>La sécurité de votre compte</h3>
+  <ul>
+    <li><b>Blocage après cinq essais.</b> Après 5 mots de passe faux de suite, le compte est bloqué 15 minutes. Attendez, puis réessayez. Si vous êtes pressé, le super administrateur peut débloquer le compte.</li>
+    <li><b>Déconnexion après inactivité.</b> Sans action pendant 30 minutes, vous êtes déconnecté. Ce que vous aviez écrit sans l'enregistrer peut être perdu : enregistrez avant de vous absenter.</li>
+    <li><b>Alerte nouvel appareil.</b> Si vous vous connectez depuis un appareil inconnu, un e-mail d'alerte vous est envoyé. Si ce n'était pas vous, changez votre mot de passe et prévenez le super administrateur.</li>
+    <li><b>Se déconnecter.</b> Cliquez sur l'icône de sortie, en haut à droite, à côté de votre nom. Faites-le toujours sur un ordinateur partagé.</li>
+  </ul>
+</section>
+
+<!-- SUPER ADMINISTRATEUR -->
+<section id="superadmin" class="role">
+  <h2 class="titre-role">Super administrateur</h2>
+  <p class="chapeau">Le rôle qui gère aussi les personnes et leurs droits. Il est confié à très peu de personnes (la maintenance Webtinix et la direction de REC 242).</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td>Pages et menus</td><td><span class="n n-tous">Tous droits</span></td><td>Publie et supprime.</td></tr>
+    <tr><td>Actualités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Événements et inscrits</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Candidatures et fiches membres</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Exports de données personnelles</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Opportunités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Cotisations et paiements</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td><b>Utilisateurs et rôles</b></td><td><span class="n n-tous">Tous droits</span></td><td>Seul rôle qui invite, change les rôles, désactive et débloque.</td></tr>
+    <tr><td>Paramètres et référencement</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td><b>Journal des actions</b></td><td><span class="n n-tous">Tous droits</span></td><td>Lecture et export. Aucune entrée ne se modifie ni ne se supprime.</td></tr>
+    <tr><td>Commissions, gouvernance et experts, demandes des membres, messages, documents, discipline, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td>Reçoit tous les messages des formulaires.</td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas faire</h3>
+  <ul>
+    <li>Modifier ou effacer une entrée du journal.</li>
+    <li>Supprimer un compte d'utilisateur : on le <b>désactive</b>, l'historique reste.</li>
+    <li>Publier la fiche d'un membre qui n'a pas donné son accord pour l'annuaire.</li>
+  </ul>
+
+  <h3>Vos tâches courantes</h3>
+
+  <div class="tache">
+  <h4>Inviter une nouvelle personne dans l'équipe</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Administration, Utilisateurs et rôles</span>.</li>
+    <li>Cliquez sur <span class="btn btn-p">Inviter un utilisateur</span>.</li>
+    <li>Écrivez le nom et l'e-mail de la personne.</li>
+    <li>Cochez son ou ses rôles : Super administrateur, Administrateur, Éditeur, Responsable événements, Responsable membres, Trésorier. Si elle en a plusieurs, ses droits s'additionnent.</li>
+    <li>Cliquez sur <span class="btn btn-p">Envoyer l'invitation</span>.</li>
+  </ol>
+  <p>La personne reçoit un e-mail avec un lien pour créer son mot de passe (12 caractères minimum). <b>Le lien est valable 72 heures.</b> Dans la liste, son statut est « Invitation envoyée », puis « Actif » dès sa première connexion.</p>
+  </div>
+  <figure class="haut"><div class="cadre"><img src="captures/16-utilisateurs-ordinateur.png" alt="Écran Utilisateurs et rôles"></div><figcaption>Utilisateurs et rôles : le tableau de l'équipe et, plus bas, la matrice des permissions.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Changer les rôles d'une personne</h4>
+  <ol class="etapes">
+    <li>Dans <span class="menu">Utilisateurs et rôles</span>, ouvrez la ligne de la personne.</li>
+    <li>Dans le champ « Rôles », cochez ou décochez.</li>
+    <li>Enregistrez. Les nouveaux droits s'appliquent à sa prochaine action.</li>
+  </ol>
+  </div>
+
+  <div class="tache">
+  <h4>Désactiver un compte</h4>
+  <p>Quand une personne quitte l'équipe : sur sa ligne, cliquez sur <span class="btn">Désactiver</span> et confirmez. Elle ne peut plus se connecter. Son nom reste dans le journal.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Lire la matrice des permissions</h4>
+  <p>Sous le tableau, la matrice montre, pour chaque domaine, ce que chaque rôle peut faire : tous droits, droits partiels, lecture seule ou aucun accès. Elle est en lecture : elle reflète les règles en place et ne se modifie pas à la main.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Débloquer un compte</h4>
+  <p>Après 5 essais ratés, un compte se bloque tout seul 15 minutes. Le super administrateur peut le débloquer plus tôt depuis la fiche de l'utilisateur.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Consulter le journal des actions</h4>
+  <p>Voir la section « Administrateur » : le journal fonctionne de la même façon. Vous seul et l'administrateur y avez accès ; l'administrateur y est en lecture seule.</p>
+  </div>
+
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Toutes vos actions sur les comptes sont inscrites au journal. Une personne désactivée n'est jamais supprimée : si elle revient, on la réactive en changeant son statut.</p>
+  </div>
+</section>
+
+<!-- ADMINISTRATEUR -->
+<section id="admin" class="role">
+  <h2 class="titre-role">Administrateur</h2>
+  <p class="chapeau">Le rôle qui fait vivre le site au quotidien : il publie, règle les paramètres, suit la discipline et surveille le journal.</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td>Pages et menus</td><td><span class="n n-tous">Tous droits</span></td><td>Publie les pages préparées par l'éditeur.</td></tr>
+    <tr><td>Actualités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Événements et inscrits</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Candidatures, fiches membres</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Exports de données personnelles</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Opportunités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Cotisations et paiements</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Paramètres et référencement</td><td><span class="n n-tous">Tous droits</span></td><td>Seul avec le super administrateur à modifier les Tarifs.</td></tr>
+    <tr><td>Commissions, gouvernance et experts, demandes des membres, documents, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td><b>Discipline</b></td><td><span class="n n-tous">Tous droits</span></td><td>Ouvre et conduit les procédures.</td></tr>
+    <tr><td>Messages des formulaires</td><td><span class="n n-tous">Tous droits</span></td><td>Reçoit les messages « Partenariat » et « Autre ».</td></tr>
+    <tr><td>Utilisateurs et rôles</td><td><span class="n n-lect">Lecture seule</span></td><td>Voit la liste et la matrice, ne modifie rien.</td></tr>
+    <tr><td>Journal des actions</td><td><span class="n n-lect">Lecture seule</span></td><td>Consulte et exporte.</td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas faire</h3>
+  <ul>
+    <li>Inviter quelqu'un, changer des rôles ou désactiver un compte : demandez au super administrateur.</li>
+    <li>Modifier ou effacer une entrée du journal.</li>
+    <li>Publier la fiche d'un membre sans son accord : il peut seulement la masquer.</li>
+  </ul>
+
+  <h3>Vos tâches courantes</h3>
+
+  <div class="tache">
+  <h4>Publier une page préparée par l'éditeur</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Contenus, Pages, menus, médias</span>, onglet « Pages ».</li>
+    <li>Cliquez sur <span class="btn">Prévisualiser</span> pour relire la page telle que les visiteurs la verront.</li>
+    <li>Cliquez sur <span class="btn">Modifier</span>, corrigez si besoin.</li>
+    <li>Cliquez sur <span class="btn btn-p">Publier</span>. La page est en ligne.</li>
+  </ol>
+  <p>Les pages se construisent avec des blocs (texte, image, chiffres clés, cartes, questions, témoignages, logos, appel à l'action, antennes) que l'on déplace à la souris. Chaque enregistrement crée une version : vous pouvez en <span class="btn">Restaurer</span> une ancienne depuis l'historique.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/14-contenus-ordinateur.png" alt="Écran Pages, menus et médias"></div><figcaption>Pages, menus et médias : les onglets mènent aux listes de pages, menus, gouvernance, questions, partenaires, médias et listes de choix.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Publier ou programmer une actualité</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Contenus, Actualités</span> et ouvrez l'actualité (ou cliquez sur <span class="btn btn-p">Rédiger une actualité</span>).</li>
+    <li>Relisez l'onglet « Aperçu ».</li>
+    <li><b>Pour publier tout de suite</b> : cliquez sur <span class="btn btn-p">Publier</span>.</li>
+    <li><b>Pour publier plus tard</b> : choisissez une « Date de publication » à venir, puis cliquez sur <span class="btn">Programmer</span> et enregistrez. Le statut devient « Programmé » et l'actualité paraît toute seule à la date choisie.</li>
+  </ol>
+  <p>Si la date n'est pas dans le futur, le système refuse de programmer et vous le dit. Pour retirer une actualité du site sans la supprimer, choisissez le statut « Archivé ».</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/09-actualites-ordinateur.png" alt="Liste des actualités"></div><figcaption>La liste des actualités, avec le statut de chacune.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Régler les menus du site</h4>
+  <p>Dans <span class="menu">Pages, menus, médias</span>, onglet « Menus » : glissez les entrées pour changer l'ordre. Sept entrées au maximum. L'éditeur ne peut pas toucher aux menus.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Régler les Paramètres</h4>
+  <p>Ouvrez <span class="menu">Administration, Paramètres</span>. Chaque onglet règle une partie du site :</p>
+  <table>
+    <tr><th style="width:26%">Onglet</th><th>À quoi il sert</th></tr>
+    <tr><td><b>Coordonnées</b></td><td>Adresse du siège, e-mail de contact, horaires, réseaux sociaux, plan d'accès.</td></tr>
+    <tr><td><b>WhatsApp</b></td><td>Numéro WhatsApp, lien de la chaîne publique, lien du groupe des membres (réservé). Changer le lien du groupe est inscrit au journal.</td></tr>
+    <tr><td><b>Chiffres clés</b></td><td>Quatre chiffres au plus affichés sur le site. Chacun est saisi à la main ou calculé (membres actifs, entreprises représentées, secteurs représentés). Un chiffre laissé vide n'est pas affiché.</td></tr>
+    <tr><td><b>Tarifs</b></td><td>Voir ci-dessous.</td></tr>
+    <tr><td><b>E-mails automatiques</b></td><td>Adresse qui reçoit l'alerte à chaque candidature (et sa copie), alertes pour les messages, textes des e-mails envoyés par le site, réponses types des messages.</td></tr>
+    <tr><td><b>Référencement</b></td><td>Titre et description du site pour les moteurs de recherche, image de partage par défaut.</td></tr>
+  </table>
+  <p>Cliquez sur <span class="btn btn-p">Enregistrer</span> en haut de l'écran après vos changements.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/15-parametres-ordinateur.png" alt="Écran Paramètres"></div><figcaption>Paramètres : les onglets en haut de l'écran.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Fixer les tarifs : Paramètres, onglet Tarifs</h4>
+  <p>C'est ici, et seulement ici, que se règlent le droit d'adhésion et la cotisation de chaque catégorie, ainsi que les règles de paiement : délai pour solder la cotisation, nombre de tranches au plus, nombre de relances avant constat de perte, intervalle minimal entre relances. Un second bloc règle l'annuaire imprimé : édition en cours, date de clôture des fiches, tarifs des encarts.</p>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>.</li>
+    <li>Modifiez la valeur voulue.</li>
+    <li>Enregistrez.</li>
+  </ol>
+  <div class="savoir"><span class="t">À savoir</span>
+    <ul>
+      <li>Les montants ne sont pas écrits dans ce guide : ils viennent de vos décisions et se lisent dans cet onglet.</li>
+      <li>Un changement de tarif <b>ne touche jamais une échéance déjà émise</b> : il vaut pour les prochaines.</li>
+      <li>Chaque modification des tarifs est inscrite au journal. Le trésorier et l'éditeur ne peuvent pas les modifier.</li>
+    </ul>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Voir les utilisateurs et la matrice</h4>
+  <p>Dans <span class="menu">Utilisateurs et rôles</span>, vous voyez qui a quel rôle, la date de dernière connexion et le statut (actif, invitation envoyée, désactivé). Vous ne pouvez rien changer : pour inviter une personne, changer ses rôles ou désactiver son compte, demandez au super administrateur.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Conduire une procédure de discipline</h4>
+  <p>Une sanction ne se prononce qu'au bout d'une procédure en étapes, dans l'ordre. L'écran vous guide et bloque toute étape trop tôt, en vous disant pourquoi. Tout se fait depuis la <b>fiche du membre</b> (<span class="menu">Membres et entreprises</span>, <span class="btn">Ouvrir</span>), bloc « Discipline ».</p>
+  <ol class="etapes">
+    <li><b>Ouvrir la procédure.</b> Cliquez sur <span class="btn">Ouvrir une procédure</span>. Choisissez le ou les griefs, exposez les faits, indiquez la sanction envisagée. Cliquez sur <span class="btn btn-p">Notifier les griefs au membre</span> : le membre reçoit un courrier. <b>Le délai de 15 jours pour sa défense écrite commence.</b> Il reste membre actif pendant toute la procédure.</li>
+    <li><b>Défense du membre.</b> Dès que vous recevez sa défense écrite, saisissez-la et cliquez sur <span class="btn">Enregistrer la défense</span>.</li>
+    <li><b>Avis de la commission Éthique et Vérification.</b> Saisissez l'avis. Il est consultatif : il ne lie pas le comité. Cette étape est refusée tant que les 15 jours ne sont pas écoulés, sauf si la défense a déjà été reçue.</li>
+    <li><b>Décision.</b> Choisissez la sanction : rappel à l'ordre verbal, avertissement écrit, suspension (de 1 à 6 mois, avec la durée) ou exclusion. Écrivez la décision motivée, puis cliquez sur <span class="btn btn-p">Notifier la décision</span>. Le membre est informé par écrit.</li>
+    <li><b>Recours.</b> Le membre dispose de 30 jours pour un recours devant l'assemblée générale. Si un recours arrive, cliquez sur <span class="btn">Enregistrer le recours</span>. Pour clore ensuite, choisissez <span class="btn">Confirmer la sanction</span> ou <span class="btn">Annuler la sanction</span>.</li>
+  </ol>
+  <p>Pour abandonner la procédure avant la décision, cliquez sur <span class="btn">Classer sans suite</span>. Une frise « Étapes » montre où en est le dossier, avec les dates calculées, et l'historique garde chaque courrier.</p>
+  <div class="savoir attention"><span class="t">Attention</span>
+    <ul>
+      <li>Aucune sanction sans les étapes 1 à 3. Le système l'impose.</li>
+      <li>Le recours n'arrête pas la sanction, sauf pour une exclusion : elle ne prend effet qu'après le délai de recours ou la décision de l'assemblée générale.</li>
+      <li>Un membre suspendu perd l'accès à son espace, mais sa cotisation reste due.</li>
+      <li>Les courriers de discipline doivent avoir été validés par le comité de direction avant d'être utilisés.</li>
+    </ul>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Consulter et exporter le journal</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Administration, Journal</span>.</li>
+    <li>Cliquez sur une pastille pour filtrer : Toutes les actions, Validations, Publications, Exports, Paramètres, Connexions, Paiements, Discipline.</li>
+    <li>Lisez la liste : action, date, auteur, ville.</li>
+    <li>Pour garder une trace, cliquez sur <span class="btn">Exporter le journal</span> (fichier CSV, avec le filtre choisi).</li>
+  </ol>
+  <p>Le journal est en lecture seule : personne ne peut y changer ni y effacer une ligne.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/17-journal-ordinateur.png" alt="Journal des actions"></div><figcaption>Le journal des actions et ses filtres.</figcaption></figure>
+</section>
+
+<!-- RESPONSABLE MEMBRES -->
+<section id="membres" class="role">
+  <h2 class="titre-role">Responsable membres</h2>
+  <p class="chapeau">Le rôle qui accueille les candidats, tient les fiches des membres et répond à leurs demandes.</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td>Candidatures</td><td><span class="n n-tous">Tous droits</span></td><td>Traite, accepte, refuse, convertit.</td></tr>
+    <tr><td>Fiches membres</td><td><span class="n n-tous">Tous droits</span></td><td>Statut, commissions, démission, lien d'activation.</td></tr>
+    <tr><td>Exports de données personnelles</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Commissions et demandes pour les rejoindre</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Demandes des membres (experts, mises en relation)</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Annuaire imprimé et encarts</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Messages des formulaires</td><td><span class="n n-part">Droits partiels</span></td><td>Les messages « Adhésion » qui lui sont transmis.</td></tr>
+    <tr><td>Événements et inscrits</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Cotisations et paiements</td><td><span class="n n-lect">Lecture seule</span></td><td>Voit, n'enregistre rien.</td></tr>
+    <tr><td>Documents</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Discipline</td><td><span class="n n-lect">Lecture seule</span></td><td>Les étapes sont faites par les administrateurs.</td></tr>
+    <tr><td>Gouvernance, experts et étiquettes</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Pages, actualités, opportunités, paramètres, utilisateurs, journal</td><td><span class="n n-non">Aucun accès</span></td><td></td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas faire</h3>
+  <ul>
+    <li>Publier la fiche d'un membre dans l'annuaire sans son accord (vous pouvez seulement la masquer).</li>
+    <li>Enregistrer un paiement ou constater une perte de qualité de membre : c'est le trésorier.</li>
+    <li>Prononcer une sanction : ce sont les administrateurs.</li>
+  </ul>
+
+  <h3>Vos tâches courantes</h3>
+
+  <h4>Traiter une candidature</h4>
+  <p>Ouvrez <span class="menu">Adhésions, Candidatures</span>. Les pastilles en haut filtrent par statut, avec le nombre de dossiers : Toutes, Reçue, En examen, Complément demandé, Acceptée, Refusée. Cliquez sur <span class="btn">Ouvrir</span> sur la ligne du candidat.</p>
+  <figure class="moyen"><div class="cadre"><img src="captures/03-candidatures-ordinateur.png" alt="Liste des candidatures"></div><figcaption>La liste des candidatures avec ses filtres et son bouton « Saisir une candidature papier ».</figcaption></figure>
+  <p>Le dossier suit ce parcours : <b>Reçue</b>, <b>En examen</b>, <b>Complément demandé</b>, <b>Acceptée</b>, puis <b>Active</b> quand le membre est créé. Les sorties sont <b>Refusée</b> et <b>Archivée</b>. Chaque changement est daté, attribué à une personne et inscrit au journal.</p>
+  <figure class="haut"><div class="cadre"><img src="captures/04-candidature-ordinateur.png" alt="Dossier d'une candidature"></div><figcaption>Un dossier de candidature : statut, dossier, rendez-vous, notes, e-mails modèles et historique.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Demander un complément</h4>
+  <ol class="etapes">
+    <li>Dans le dossier, cliquez sur <span class="btn">Demander un complément</span>.</li>
+    <li>Un e-mail modèle s'ouvre en brouillon, avec l'objet et le message. Précisez ce qui manque.</li>
+    <li>Cliquez sur <span class="btn btn-p">Envoyer au candidat</span>. Le message apparaît dans l'historique du dossier. Le statut devient « Complément demandé ».</li>
+  </ol>
+  </div>
+
+  <div class="tache">
+  <h4>Accepter, cocher la pièce et la charte, convertir en membre</h4>
+  <ol class="etapes">
+    <li>Après le rendez-vous avec le comité de direction, choisissez le statut <span class="btn">Acceptée</span>.</li>
+    <li>Dans le bloc « Rendez-vous avec le comité de direction », cochez <b>Pièce d'identité vérifiée en main propre</b> et <b>Charte de l'adhérent signée</b>. Cochez aussi <b>Avis de la commission Éthique et Vérification</b> quand il a été donné.</li>
+    <li>Le bouton <span class="btn btn-p">Convertir en membre</span> s'allume. Il ne s'active que si le dossier est « Acceptée » <b>et</b> que la pièce et la charte sont cochées.</li>
+    <li>Cliquez dessus. Le système crée la fiche du membre, son numéro d'adhérent et sa première cotisation, puis envoie l'e-mail de bienvenue avec le lien d'activation.</li>
+  </ol>
+  <p>Le dossier passe à « Active ». Le lien d'activation est valable 72 heures. Le groupe WhatsApp des membres figure dans l'e-mail de bienvenue.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Refuser avec un motif</h4>
+  <ol class="etapes">
+    <li>Dans « Statut du dossier », cliquez sur <span class="btn">Refusée</span>.</li>
+    <li>Écrivez le « Motif du refus (obligatoire) ». Sans motif, l'envoi est impossible.</li>
+    <li>Cliquez sur <span class="btn">Envoyer l'e-mail de refus</span>. Un message courtois, reprenant le motif, part au candidat.</li>
+  </ol>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Si le candidat a déjà payé, la règle de remboursement n'est pas encore fixée par REC 242. En attendant, le paiement est marqué « remboursement à traiter » et le trésorier est prévenu.</p>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Utiliser les e-mails modèles et les notes</h4>
+  <p>Colonne de droite du dossier : « E-mails modèles » (Accusé de réception, Demande de complément, Bienvenue et activation, Refus motivé). Cliquez sur un modèle : il s'ouvre en brouillon que vous pouvez corriger avant de l'envoyer. « Bienvenue et activation » ne se débloque qu'après la conversion. Plus haut, « Notes internes » garde des remarques visibles de l'équipe seulement.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Saisir une candidature papier</h4>
+  <p>Sur la liste des candidatures, cliquez sur <span class="btn">Saisir une candidature papier</span>. Remplissez le formulaire : nom, téléphone ou WhatsApp, e-mail, activité, catégorie, ville, secteurs (3 au maximum), « Reçu lors de » (passage au siège ou un événement), bulletin signé en pièce jointe, et un éventuel paiement reçu sur place. Les mêmes contrôles que sur le site s'appliquent.</p>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Les doublons sont bloqués : si l'e-mail ou le téléphone existe déjà (candidature ou membre), l'enregistrement est refusé avec un message. Ne cherchez pas à le contourner : ouvrez plutôt le dossier existant.</p>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Valider une demande de modification</h4>
+  <p>Certains champs d'une fiche (nom, raison sociale, secteurs, ville et quartier, téléphone, e-mail) sont verrouillés. Le membre ne peut que demander un changement, avec un justificatif.</p>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Adhésions, Membres et entreprises</span>, onglet <span class="menu">Demandes de modification</span>.</li>
+    <li>Lisez la demande : le champ, l'ancienne valeur, la nouvelle valeur, le motif et le justificatif.</li>
+    <li>Cliquez sur <span class="btn btn-p">Valider</span> : la fiche est mise à jour et le membre est prévenu par e-mail.</li>
+    <li>Ou cliquez sur <span class="btn">Refuser</span>, écrivez le « Motif du refus (envoyé au membre) » puis cliquez sur <span class="btn">Confirmer le refus</span>.</li>
+  </ol>
+  <p>Les nouvelles présentations d'entreprise écrites par les membres attendent aussi ici : <span class="btn">Valider</span> pour les publier sur la fiche, <span class="btn">Refuser</span> pour les écarter.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/05-membres-ordinateur.png" alt="Écran Membres et entreprises"></div><figcaption>Membres et entreprises : onglets Fiches, Demandes de modification, Import et export.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Ouvrir et gérer une fiche membre</h4>
+  <p>Onglet « Fiches » : cherchez par nom et filtrez par statut, puis cliquez sur <span class="btn">Ouvrir</span>.</p>
+  <ul>
+    <li><b>Statut</b> : Actif, Suspendu, Ancien membre. Tout changement demande un motif obligatoire, puis <span class="btn">Confirmer</span>.</li>
+    <li><b>Annuaire</b> : vous voyez les choix du membre. Vous pouvez cliquer sur <span class="btn">Masquer la fiche dans l'annuaire</span> ; vous ne pouvez jamais la publier sans son consentement.</li>
+    <li><b>Commissions</b> : <span class="btn">Modifier les commissions</span>, cochez, puis <span class="btn">Enregistrer</span>.</li>
+    <li><b>Compte</b> : si le membre n'a pas activé son espace, cliquez sur <span class="btn">Renvoyer le lien d'activation</span> (valable 72 heures).</li>
+    <li><b>Fin d'adhésion</b> : <span class="btn">Enregistrer une démission</span> ou <span class="btn">Enregistrer un décès</span>, avec la date. La fiche quitte l'annuaire ; l'historique reste.</li>
+  </ul>
+  <p>Si un membre a envoyé plus de 10 demandes de mise en relation en une semaine, les mises en relation sont suspendues : après vérification, cliquez sur <span class="btn">Rétablir les mises en relation</span>.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/06-membre-ordinateur.png" alt="Fiche d'un membre"></div><figcaption>La fiche d'un membre : statut, visibilité dans l'annuaire, compte, cotisation, discipline, fin d'adhésion.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Répondre à un message du site</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Activité, Messages</span>. Les pastilles par motif (Adhésion, Partenariat, Presse, Événement, Autre) filtrent la liste ; vous voyez ceux qui vous sont transmis.</li>
+    <li>Cliquez sur un message pour l'ouvrir : motif, expéditeur et coordonnées, texte.</li>
+    <li>Dans « Répondre », choisissez <span class="btn">E-mail</span> ou <span class="btn">WhatsApp</span>. Vérifiez le champ « À ».</li>
+    <li>Au besoin, choisissez une « Réponse type » : le texte se remplit, vous pouvez le modifier.</li>
+    <li>Laissez cochée « Marquer comme traité après l'envoi », puis cliquez sur <span class="btn btn-p">Envoyer la réponse</span>.</li>
+  </ol>
+  <p>Pour WhatsApp, le bouton ouvre WhatsApp avec le texte prêt et garde la réponse dans la conversation. Pour passer le message à quelqu'un d'autre, cliquez sur <span class="btn">Transmettre</span> (une personne ou un rôle, avec un petit mot facultatif). Pour garder une remarque que l'expéditeur ne verra jamais, cliquez sur <span class="btn">Ajouter une note interne</span>. Un message traité peut être rouvert avec <span class="btn">Rouvrir la conversation</span>.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/13-messages-ordinateur.png" alt="Boîte de réception des messages"></div><figcaption>La boîte de réception des messages : la liste à gauche, le message ouvert à droite.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Gérer les commissions</h4>
+  <p>Ouvrez <span class="menu">Activité, Commissions</span>. Chaque commission a sa carte : ouverte ou sur désignation, responsable, nombre de membres, experts rattachés, prochaine réunion.</p>
+  <ol class="etapes">
+    <li>En haut, « Demandes pour rejoindre une commission » : lisez le nom du membre, la commission et ce qu'il apporte.</li>
+    <li>Cliquez sur <span class="btn btn-p">Accepter</span> ou <span class="btn">Refuser</span>. Le membre est prévenu.</li>
+    <li>Pour changer une commission ou retirer un membre, cliquez sur <span class="btn">Modifier</span> sur sa carte. Pour en ouvrir une nouvelle : <span class="btn">Créer une commission</span>.</li>
+  </ol>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>La commission Éthique et Vérification n'est pas ouverte aux candidatures : ses membres sont désignés par le comité de direction.</p>
+  </div>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/19-commissions-ordinateur.png" alt="Écran Commissions"></div><figcaption>Commissions : demandes pour rejoindre et cartes des commissions.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Répondre aux demandes des membres</h4>
+  <p>Ouvrez <span class="menu">Activité, Demandes des membres</span>. Deux onglets :</p>
+  <ul>
+    <li><b>Questions aux experts</b> : une question en rouge n'a pas eu de réponse sous 5 jours ouvrés. Choisissez <span class="btn">Relancer l'expert</span>, <span class="btn">Réattribuer</span> (à une autre personne qui porte la même étiquette), <span class="btn">Répondre au membre</span> (au nom de REC 242) ou <span class="btn">Clôturer</span>.</li>
+    <li><b>Mises en relation</b> : suivi en lecture, signalements d'abus à traiter, membres suspendus pour trop de demandes.</li>
+  </ul>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/21-demandes-ordinateur.png" alt="Demandes des membres"></div><figcaption>Demandes des membres : questions aux experts et mises en relation.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Importer, exporter, préparer l'annuaire imprimé</h4>
+  <p>Dans <span class="menu">Membres et entreprises</span>, onglet « Import et export » : export des membres, import d'un fichier CSV (téléchargez d'abord le modèle, cliquez sur <span class="btn">Vérifier le fichier</span> pour voir les doublons et les erreurs avant d'importer) et bloc « Annuaire imprimé » : édition en cours, fiches incluses, encarts réservés, <span class="btn">Réserver un encart</span>, <span class="btn">Exporter pour l'imprimeur</span>. Le paiement d'un encart s'enregistre dans Cotisations, par le trésorier.</p>
+  </div>
+</section>
+
+<!-- TRÉSORIER -->
+<section id="tresorier" class="role">
+  <h2 class="titre-role">Trésorier</h2>
+  <p class="chapeau">Le rôle qui tient les comptes de l'association : encaissements, suivi des cotisations, relances et reçus. Il est à désigner par REC 242.</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td><b>Cotisations et paiements</b></td><td><span class="n n-tous">Tous droits</span></td><td>Enregistre les paiements, envoie les relances, constate la perte.</td></tr>
+    <tr><td>Exports de données personnelles</td><td><span class="n n-part">Droits partiels</span></td><td>Seulement l'export comptable des paiements.</td></tr>
+    <tr><td>Candidatures</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Fiches membres</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Annuaire imprimé et encarts</td><td><span class="n n-lect">Lecture seule</span></td><td>Le paiement des encarts s'enregistre par vous.</td></tr>
+    <tr><td>Pages, actualités, événements, opportunités, paramètres, utilisateurs, journal</td><td><span class="n n-non">Aucun accès</span></td><td></td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas faire</h3>
+  <ul>
+    <li>Modifier les tarifs : ils se règlent dans <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>, par un administrateur.</li>
+    <li>Modifier une fiche membre ou traiter une candidature.</li>
+    <li>Encaisser hors du compte officiel : tout paiement donne un reçu numéroté.</li>
+  </ul>
+
+  <h3>Vos tâches courantes</h3>
+
+  <div class="tache">
+  <h4>Suivre les cotisations</h4>
+  <p>Ouvrez <span class="menu">Adhésions, Cotisations</span>. En haut, quatre compteurs : <b>Membres à jour</b>, <b>Échéance à venir</b>, <b>En relance</b> et <b>FCFA encaissés</b> sur l'exercice. Les pastilles filtrent le tableau : Toutes, À jour, À venir, En relance.</p>
+  <p>Le tableau montre, pour chaque membre : la catégorie, l'échéance, la date limite, les relances déjà faites (de 0 à 3 sur 3) et le statut. En dessous, « Paiements reçus » liste chaque paiement avec son mode et un lien vers le reçu.</p>
+  <figure class="haut"><div class="cadre"><img src="captures/12-cotisations-ordinateur.png" alt="Écran Cotisations"></div><figcaption>Cotisations : compteurs, boutons du trésorier, tableau des échéances et paiements reçus.</figcaption></figure>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>L'exercice court de la date d'adhésion à la veille de la date anniversaire. La cotisation se solde dans les 3 mois qui suivent le début de l'exercice, en une fois ou en deux tranches au plus. Les montants et ces délais sont dans <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>.</p>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Enregistrer un paiement en espèces</h4>
+  <p>Quand un membre ou un candidat paie au siège.</p>
+  <ol class="etapes">
+    <li>Dans <span class="menu">Cotisations</span>, cliquez sur <span class="btn btn-p">Enregistrer un paiement</span>.</li>
+    <li>Choisissez le <b>Membre</b>.</li>
+    <li>Choisissez l'<b>Objet</b> : droit d'adhésion, cotisation en totalité, 1re ou 2e tranche, droit et cotisation ensemble, encart dans l'annuaire imprimé.</li>
+    <li>Écrivez le <b>Montant (FCFA)</b> reçu.</li>
+    <li>Réglez la <b>Date du paiement</b> (pas dans le futur).</li>
+    <li>Dans « Mode de paiement », cliquez sur <span class="btn">Espèces</span>. Écrivez alors le <b>N° du reçu du carnet à souches</b>. (Pour un virement, cliquez sur <span class="btn">Virement</span> et écrivez la référence du virement.)</li>
+    <li>Le champ « Reçu officiel » affiche le numéro attribué automatiquement. Vous n'avez rien à y écrire.</li>
+    <li>Cliquez sur <span class="btn btn-p">Enregistrer et émettre le reçu</span>.</li>
+  </ol>
+  <p>Le reçu officiel numéroté est créé et envoyé par e-mail au membre. Il apparaît dans « Paiements reçus », avec son lien. Le bouton reste éteint tant que le membre, le montant, la date ou la référence manquent.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Envoyer les relances</h4>
+  <p>Quand une cotisation n'est pas payée à l'échéance, trois relances écrites peuvent être envoyées, espacées d'au moins 15 jours. Elles ne partent <b>jamais toutes seules</b> : c'est vous qui les déclenchez.</p>
+  <ol class="etapes">
+    <li>Cliquez sur <span class="btn btn-p">Envoyer les relances dues</span>.</li>
+    <li>L'écran demande confirmation en indiquant le nombre de relances à envoyer. Il ne retient que les membres dont le délai de 15 jours est écoulé et qui n'ont pas déjà reçu 3 relances.</li>
+    <li>Confirmez. Les e-mails partent. Le compteur « Relances » de chaque membre augmente de 1.</li>
+  </ol>
+  <p>Si aucune relance n'est due, l'écran vous l'indique : rien n'est envoyé.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Constater la perte de la qualité de membre</h4>
+  <p>Après la troisième relance, le membre passe à « 3 relances sur 3 » et le bouton <span class="btn">Constater la perte</span> apparaît sur sa ligne. Le constat est une décision du comité de direction, inscrite au procès-verbal. Ce n'est pas une sanction.</p>
+  <ol class="etapes">
+    <li>Cliquez sur <span class="btn">Constater la perte</span> sur la ligne du membre.</li>
+    <li>Écrivez la référence du « Procès-verbal du comité » et choisissez la « Date du comité ». Les deux sont obligatoires.</li>
+    <li>Cliquez sur <span class="btn btn-p">Constater la perte</span>.</li>
+  </ol>
+  <p>Le membre est informé par écrit, passe « ancien membre » et sa fiche quitte l'annuaire. Il peut réadhérer après régularisation, avec un nouvel agrément.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Retrouver un reçu, exporter pour la comptabilité</h4>
+  <ul>
+    <li><b>Reçu</b> : dans « Paiements reçus », cliquez sur le lien de la colonne « Reçu » pour ouvrir le PDF.</li>
+    <li><b>Export comptable</b> : cliquez sur <span class="btn">Export comptable</span>, choisissez les dates « Du » et « Au », puis <span class="btn">Télécharger le CSV</span>. Le fichier contient les paiements confirmés et les remboursements de la période. L'export est inscrit au journal.</li>
+  </ul>
+  </div>
+</section>
+
+<!-- ÉDITEUR -->
+<section id="editeur" class="role">
+  <h2 class="titre-role">Éditeur</h2>
+  <p class="chapeau">Le rôle qui écrit : actualités, opportunités, documents et contenus du site.</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td><b>Actualités</b></td><td><span class="n n-tous">Tous droits</span></td><td>Rédige, programme et publie.</td></tr>
+    <tr><td>Opportunités</td><td><span class="n n-tous">Tous droits</span></td><td>Publie et modère.</td></tr>
+    <tr><td>Documents, FAQ, partenaires, médias, listes de choix</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td><b>Pages</b></td><td><span class="n n-part">Droits partiels</span></td><td>Prépare et corrige en brouillon. Ne publie pas. Ne touche pas aux menus.</td></tr>
+    <tr><td>Paramètres et référencement</td><td><span class="n n-part">Droits partiels</span></td><td>Seulement les champs de référencement des contenus qu'il édite.</td></tr>
+    <tr><td>Messages des formulaires</td><td><span class="n n-part">Droits partiels</span></td><td>Les messages « Presse » qui lui sont transmis.</td></tr>
+    <tr><td>Commissions, gouvernance et experts</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Événements, candidatures, fiches membres, cotisations, discipline, utilisateurs, journal</td><td><span class="n n-non">Aucun accès</span></td><td></td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas publier</h3>
+  <div class="savoir attention"><span class="t">Attention</span>
+    <ul>
+      <li><b>Les pages du site</b> : vous les préparez et les enregistrez en brouillon. Un administrateur les publie. Si vous essayez de publier, l'écran répond que la publication est faite par un administrateur.</li>
+      <li><b>Les menus</b> : vous n'y avez pas accès.</li>
+      <li><b>Les tarifs et les réglages du site</b> : ils sont réservés aux administrateurs. Vous gardez seulement le référencement (titre et description pour les moteurs de recherche) de vos contenus.</li>
+    </ul>
+  </div>
+
+  <h3>Vos tâches courantes</h3>
+
+  <div class="tache">
+  <h4>Rédiger une actualité</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Contenus, Actualités</span> et cliquez sur <span class="btn btn-p">Rédiger une actualité</span> (ou sur le raccourci du tableau de bord).</li>
+    <li>Onglet <b>Contenu</b> : écrivez le titre et le chapeau (le résumé), choisissez l'image principale (son <b>texte alternatif est obligatoire</b>, il décrit l'image pour les personnes qui ne la voient pas), puis écrivez le corps de l'article. Des blocs complémentaires (chiffres clés, cartes, questions, appel à l'action) se glissent dans le texte.</li>
+    <li>Dans le panneau de droite : choisissez le type (Article, Communiqué, Interview, Annonce, Retour sur événement), les secteurs, les tags et la date de publication. Vous pouvez aussi régler la signature affichée.</li>
+    <li>Onglet <b>Référencement</b> : titre et description pour les moteurs de recherche.</li>
+    <li>Onglet <b>Aperçu</b> : relisez comme un visiteur.</li>
+    <li>Cliquez sur <span class="btn btn-p">Publier</span>, ou programmez : choisissez une date de publication à venir, cliquez sur <span class="btn">Programmer</span> et enregistrez.</li>
+  </ol>
+  <p>L'enregistrement est automatique : en haut, vous lisez « Enregistré automatiquement » et le numéro de version. Pour revenir à un état précédent, ouvrez l'historique des versions et cliquez sur <span class="btn">Restaurer</span>.</p>
+  </div>
+  <figure class="haut"><div class="cadre"><img src="captures/10-editeur-ordinateur.png" alt="Éditeur d'actualité"></div><figcaption>L'éditeur d'actualité : onglets Contenu, Référencement et Aperçu, et panneau latéral.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Choisir le statut d'une actualité</h4>
+  <table>
+    <tr><th style="width:24%">Statut</th><th>Effet</th></tr>
+    <tr><td><b>Brouillon</b></td><td>Visible de l'équipe seulement.</td></tr>
+    <tr><td><b>En relecture</b></td><td>Signale l'article à un autre éditeur pour relecture. Rien n'est publié.</td></tr>
+    <tr><td><b>Programmé</b></td><td>Paraît automatiquement à la date de publication.</td></tr>
+    <tr><td><b>Publié</b></td><td>En ligne sur le site.</td></tr>
+    <tr><td><b>Archivé</b></td><td>Retiré du site, sans être supprimé.</td></tr>
+  </table>
+  </div>
+
+  <div class="tache">
+  <h4>Réserver une actualité aux membres</h4>
+  <p>Dans le panneau de droite, cochez <b>« Réservé aux membres (le visiteur voit le chapeau) »</b>.</p>
+  <ul>
+    <li>Un <b>membre connecté</b> lit l'article en entier.</li>
+    <li>Un <b>visiteur</b> voit seulement le titre et le chapeau.</li>
+  </ul>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Comme le chapeau est visible de tous, n'y mettez rien de réservé. Décochez la case pour rendre l'article public.</p>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Publier une opportunité</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Activité, Opportunités</span> et cliquez sur <span class="btn btn-p">Publier une opportunité</span>.</li>
+    <li>Choisissez le type et la visibilité (Public ou Membres actifs). Écrivez le titre et la description. Choisissez les secteurs.</li>
+    <li>Fixez la <b>date limite</b>. Elle est obligatoire : l'annonce passe en « Expirée » le lendemain et disparaît des listes.</li>
+    <li>Pour un appel d'offres relayé, ajoutez la <b>source officielle</b> (lien) : elle est obligatoire. REC 242 relaie l'avis, il ne traite pas les offres.</li>
+    <li>Écrivez « Comment répondre ». Cochez, si vous le voulez, « Prévenir les membres des secteurs concernés » et « Mettre en avant sur l'accueil » (public seulement).</li>
+    <li>Cliquez sur <span class="btn">Enregistrer le brouillon</span> ou <span class="btn btn-p">Publier</span>.</li>
+  </ol>
+  </div>
+
+  <div class="tache">
+  <h4>Modérer une annonce déposée par un membre</h4>
+  <p>Une annonce de membre arrive « À modérer ». Sélectionnez-la dans la liste : le panneau « À modérer » montre l'auteur, le texte et trois vérifications : date limite valide, pas de coordonnées dans le texte, conformité à la charte (celle-ci est à confirmer par vous).</p>
+  <ul>
+    <li><span class="btn btn-p">Publier</span> : l'annonce paraît et l'auteur est prévenu.</li>
+    <li><span class="btn">Demander une modification</span> : écrivez un message au membre. L'annonce attend sa mise à jour.</li>
+    <li><span class="btn">Refuser</span> : le motif est obligatoire et envoyé au membre.</li>
+  </ul>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/11-opportunites-ordinateur.png" alt="Écran Opportunités"></div><figcaption>Opportunités : la liste et le panneau de modération.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Préparer une page</h4>
+  <p>Dans <span class="menu">Pages, menus, médias</span>, ouvrez la page, modifiez les blocs, enregistrez. La page reste en brouillon : prévenez un administrateur pour qu'il la publie.</p>
+  </div>
+</section>
+
+<!-- RESPONSABLE ÉVÉNEMENTS -->
+<section id="evenements" class="role">
+  <h2 class="titre-role">Responsable événements</h2>
+  <p class="chapeau">Le rôle qui organise les rencontres de REC 242 : inscriptions, liste d'attente, présence le jour J.</p>
+
+  <h3>Ce que ce rôle peut faire</h3>
+  <table>
+    <tr><th style="width:42%">Domaine</th><th style="width:20%">Droit</th><th>Précision</th></tr>
+    <tr><td><b>Événements et inscrits</b></td><td><span class="n n-tous">Tous droits</span></td><td>Crée, modifie, gère les inscrits, pointe.</td></tr>
+    <tr><td>Actualités</td><td><span class="n n-part">Droits partiels</span></td><td>Rédige les « Retours sur événement » en brouillon seulement.</td></tr>
+    <tr><td>Exports de données personnelles</td><td><span class="n n-part">Droits partiels</span></td><td>Seulement la liste des inscrits de ses événements.</td></tr>
+    <tr><td>Messages des formulaires</td><td><span class="n n-part">Droits partiels</span></td><td>Les messages « Événement » qui lui sont transmis.</td></tr>
+    <tr><td>Fiches membres</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
+    <tr><td>Pages, candidatures, opportunités, cotisations, paramètres, utilisateurs, journal</td><td><span class="n n-non">Aucun accès</span></td><td></td></tr>
+  </table>
+  <h3>Ce que ce rôle ne peut pas faire</h3>
+  <ul>
+    <li>Publier une actualité : vous préparez le retour sur événement en brouillon, un éditeur ou un administrateur le publie.</li>
+    <li>Écrire une actualité d'un autre type que « Retour sur événement ».</li>
+    <li>Modifier une fiche membre.</li>
+  </ul>
+
+  <h3>Vos tâches courantes</h3>
+
+  <div class="tache">
+  <h4>Créer un événement</h4>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Activité, Événements</span> et cliquez sur <span class="btn btn-p">Créer un événement</span>.</li>
+    <li>Onglet <b>Fiche</b> : titre (obligatoire), type, secteurs, chapeau, description, date de début (obligatoire) et de fin, format (sur place, visioconférence, lieu communiqué aux inscrits), lieu, ville, adresse, indications d'accès (reprises dans le rappel de la veille), images.</li>
+    <li>Onglet <b>Inscriptions</b> : voir la tâche suivante. Remplissez aussi, si besoin, le tarif (texte libre), le programme, les intervenants et les documents.</li>
+    <li>Dans le panneau de droite, réglez le <b>Statut</b> : « Brouillon » tant que l'événement n'est pas prêt, « Publié » pour l'ouvrir aux inscriptions.</li>
+    <li>Enregistrez.</li>
+  </ol>
+  <p>Les statuts possibles : Brouillon, Publié, Complet, Annulé, Reporté, Terminé.</p>
+  </div>
+  <figure class="moyen"><div class="cadre"><img src="captures/07-evenements-ordinateur.png" alt="Écran Événements"></div><figcaption>Événements : une carte par événement, avec le statut, le nombre d'inscrits sur la capacité, et les boutons « Gérer » et « Dupliquer ».</figcaption></figure>
+
+  <div class="tache">
+  <h4>Capacité, accès et liste d'attente</h4>
+  <p>Dans l'onglet <b>Inscriptions</b> de la fiche :</p>
+  <ul>
+    <li><b>Accès</b> : Ouvert à tous, Réservé aux membres, ou Sur invitation.</li>
+    <li><b>Capacité</b> : le nombre de places. Laissée vide, elle veut dire « places illimitées ».</li>
+    <li><b>Clôture des inscriptions</b> : date et heure limites.</li>
+    <li><b>Liste d'attente automatique</b> : une fois la capacité atteinte, les nouvelles personnes sont mises en liste d'attente et en sont prévenues par e-mail.</li>
+    <li><b>Rappel la veille</b> et <b>Billet avec QR code</b> : cochés par défaut.</li>
+  </ul>
+  <p>Quand quelqu'un se désiste, la première personne de la liste d'attente prend la place automatiquement et reçoit un e-mail. Vous pouvez aussi le faire à la main :</p>
+  <ol class="etapes">
+    <li>Cliquez sur <span class="btn">Gérer</span> sur la carte de l'événement.</li>
+    <li>Ouvrez l'onglet <span class="menu">Liste d'attente</span> : vous voyez l'ordre, le participant, son profil (membre ou visiteur) et son téléphone.</li>
+    <li>Cliquez sur <span class="btn">Promouvoir</span> en face de la personne choisie. Un e-mail « Une place s'est libérée » lui est envoyé.</li>
+  </ol>
+  </div>
+
+  <div class="tache">
+  <h4>Suivre les inscrits</h4>
+  <p>Dans <span class="btn">Gérer</span>, onglet <span class="menu">Inscrits</span> : le compteur donne le nombre de présents pointés. Le tableau liste les participants. Cliquez sur <span class="btn">Exporter CSV</span> pour récupérer la liste des inscrits de l'événement.</p>
+  </div>
+  <figure class="haut"><div class="cadre"><img src="captures/08-evenement-ordinateur.png" alt="Gestion d'un événement"></div><figcaption>La gestion d'un événement : onglets Inscrits, Liste d'attente, Fiche, Après l'événement. Le bouton « Scanner les cartes de membre » est en haut de l'onglet Inscrits.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Pointer les présents le jour J</h4>
+  <p><b>Avec la liste</b> : dans l'onglet « Inscrits », cliquez sur le bouton de la colonne « Présence » : il passe de « Absent » à « Présent ».</p>
+  <p><b>Avec le scan</b> (conseillé, depuis le téléphone) :</p>
+  <ol class="etapes">
+    <li>Ouvrez l'événement sur votre téléphone, onglet « Inscrits ».</li>
+    <li>Cliquez sur <span class="btn btn-p">Scanner les cartes de membre</span>. Acceptez l'accès à la caméra si le téléphone le demande.</li>
+    <li>Visez le <b>QR code</b> de la carte de membre ou du billet. La présence est enregistrée aussitôt : un résultat <b>vert</b> (personne reconnue) ou <b>rouge</b> (code refusé) s'affiche avec le nom et un message.</li>
+    <li>Si la caméra ne marche pas, écrivez le code dans le champ « Saisir le code » (ou utilisez un lecteur de QR code qui tape le code puis la touche Entrée).</li>
+    <li>Quand vous avez fini, cliquez sur <span class="btn">Fermer le scanner</span>.</li>
+  </ol>
+  </div>
+
+  <div class="tache">
+  <h4>Pointer sans connexion, puis synchroniser</h4>
+  <p>La salle n'a pas toujours de réseau, ce n'est pas un problème.</p>
+  <ul>
+    <li>Sans connexion, le scan marche quand même : le message « Enregistré, sera synchronisé » s'affiche, et le compteur « pointage(s) en attente de synchronisation » augmente.</li>
+    <li>Dès que le réseau revient, la liste se synchronise toute seule. Vous pouvez aussi cliquer sur <span class="btn">Synchroniser</span>.</li>
+    <li>Le message « pointage(s) synchronisé(s) » confirme que c'est fait.</li>
+  </ul>
+  <div class="savoir attention"><span class="t">Attention</span>
+    <p>Les pointages en attente sont gardés sur <b>ce téléphone et dans ce navigateur</b>. Utilisez le même téléphone pour tout l'événement et ne videz pas les données du navigateur avant la synchronisation. Avant de partir, vérifiez que le compteur d'attente est à 0.</p>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Annuler ou reporter</h4>
+  <p>Onglet <span class="menu">Fiche</span>, bloc « Annuler ou reporter ». Choisissez <span class="btn">Annuler l'événement</span> ou <span class="btn">Reporter</span>. Pour un report, indiquez la « Nouvelle date ». Écrivez le « Message aux inscrits », puis cliquez sur <span class="btn btn-p">Annuler et prévenir les inscrits</span> ou <span class="btn btn-p">Reporter et prévenir les inscrits</span>. Les inscrits et la liste d'attente sont prévenus automatiquement.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Après l'événement</h4>
+  <p>Onglet <span class="menu">Après l'événement</span> : vous voyez le nombre de présents sur les inscrits. Le bouton « Compte rendu, galerie et documents » mène au formulaire pour les renseigner. Le nombre de participants affiché sur le site n'apparaît que s'il est rempli. Cliquez sur <span class="btn btn-p">Créer l'actualité</span> : un brouillon « Retour sur … » est créé, à compléter. Vous ne pouvez pas le publier : un éditeur ou un administrateur le fait.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Dupliquer un événement</h4>
+  <p>Sur la carte de l'événement, <span class="btn">Dupliquer</span> crée une copie en brouillon, sans les inscrits. Pratique pour un rendez-vous qui revient.</p>
+  </div>
+</section>
+
+<!-- EN CAS DE PROBLÈME -->
+<section id="probleme" class="role">
+  <h2 class="titre-role">En cas de problème</h2>
+  <p class="chapeau">Un message d'erreur, un écran qui ne répond pas, un accès qui manque : voici quoi faire.</p>
+
+  <h3>D'abord, quelques vérifications</h3>
+  <table>
+    <tr><th style="width:36%">Ce que vous voyez</th><th>Ce qu'il faut faire</th></tr>
+    <tr><td>Je ne peux plus me connecter</td><td>Après 5 essais ratés, le compte est bloqué 15 minutes. Attendez, puis réessayez. Sinon, utilisez « Mot de passe oublié ? ».</td></tr>
+    <tr><td>Je suis déconnecté d'un coup</td><td>La déconnexion est automatique après 30 minutes sans action. Reconnectez-vous.</td></tr>
+    <tr><td>Un écran du menu manque, ou un bouton est grisé</td><td>Votre rôle ne permet pas cette action. Relisez la page de votre rôle. Si vous pensez qu'il manque un droit, parlez-en au super administrateur.</td></tr>
+    <tr><td>Un bouton ne s'allume pas (par exemple « Convertir en membre »)</td><td>Il manque une condition. Le texte juste sous le bouton, ou en bas de l'écran, la donne.</td></tr>
+    <tr><td>Un message rouge s'affiche après un clic</td><td>Lisez-le : il dit en général ce qui manque (un motif, une date, une référence). Corrigez et recommencez.</td></tr>
+    <tr><td>Une candidature est refusée comme doublon</td><td>L'e-mail ou le téléphone existe déjà. Cherchez la fiche existante avec la barre de recherche.</td></tr>
+    <tr><td>Je n'ai pas reçu l'e-mail d'invitation ou d'activation</td><td>Regardez les courriers indésirables. Le lien dure 72 heures : au-delà, demandez un nouvel envoi (super administrateur pour un utilisateur, responsable membres pour un membre).</td></tr>
+    <tr><td>Une action a été faite par erreur</td><td>Ne refaites rien dans la précipitation. Notez ce qui s'est passé et prévenez un administrateur : le journal des actions permet de retrouver ce qui a été fait.</td></tr>
+  </table>
+
+  <div class="savoir attention"><span class="t">Attention</span>
+    <p>Si vous pensez que votre compte a été utilisé par quelqu'un d'autre (une alerte de nouvelle connexion que vous ne reconnaissez pas, par exemple), changez votre mot de passe tout de suite et prévenez le super administrateur.</p>
+  </div>
+
+  <h3>Qui contacter</h3>
+  <p>Pour un problème de fonctionnement du site ou du back-office, écrivez à Webtinix, maître d'œuvre de la plateforme et chargé de la maintenance.</p>
+  <table>
+    <tr><th style="width:36%">Contact</th><th>Coordonnées</th></tr>
+    <tr><td><b>Webtinix</b>, maître d'œuvre</td><td>contact@webtinix.com</td></tr>
+  </table>
+  <p>Dans votre message, indiquez :</p>
+  <ul>
+    <li>votre nom et votre rôle ;</li>
+    <li>l'écran où vous étiez et ce que vous vouliez faire ;</li>
+    <li>le texte exact du message d'erreur, ou une capture d'écran ;</li>
+    <li>l'heure à laquelle cela s'est produit.</li>
+  </ul>
+  <p>N'écrivez jamais votre mot de passe dans un message.</p>
+
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Pour toute question sur une décision de REC 242 (accepter un membre, fixer un tarif, valider un courrier de discipline), adressez-vous au comité de direction. Webtinix s'occupe du fonctionnement, pas des décisions de l'association.</p>
+  </div>
+</section>
+
+</body>
+</html>
