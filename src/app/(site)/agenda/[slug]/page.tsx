@@ -265,7 +265,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
             name: e.lieu || ville?.nom,
             address: { '@type': 'PostalAddress', streetAddress: e.adresse || undefined, addressLocality: ville?.nom, addressCountry: 'CG' },
           },
-    image: mediaUrl(image, 'grande') ? [mediaUrl(image, 'grande')] : undefined,
+    image: mediaUrl(image, 'grande') ? [`${siteUrl()}${mediaUrl(image, 'grande')}`] : undefined,
     organizer: { '@type': 'Organization', name: 'REC 242', url: siteUrl() },
     url,
   }

@@ -186,7 +186,7 @@ export default async function Article({ params }: { params: Params }) {
           description: n.chapeau,
           datePublished: n.datePublication,
           dateModified: n.updatedAt ?? n.datePublication,
-          image: mediaUrl(n.image, 'grande') ? [mediaUrl(n.image, 'grande')] : undefined,
+          image: mediaUrl(n.image, 'grande') ? [`${siteUrl()}${mediaUrl(n.image, 'grande')}`] : undefined,
           isAccessibleForFree: !n.reserveMembres,
           author: { '@type': 'Organization', name: 'REC 242' },
           publisher: {

@@ -1,6 +1,20 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionAfterReadHook, CollectionConfig } from 'payload'
 
 import { isStaff } from '@/access/roles'
+
+/**
+ * Adresses des fichiers en chemin relatif (« /api/media/file/… ») : Payload les préfixe de `serverURL`, ce qui casse
+ * toutes les images dès que le site est servi à une autre adresse (préproduction, port de prévisualisation).
+ */
+const relatif = (u?: string | null) => (u ? u.replace(/^https?:\/\/[^/]+(?=\/api\/media\/file\/)/, '') : u)
+
+const urlsRelatives: CollectionAfterReadHook = ({ doc }) => {
+  if (doc?.url) doc.url = relatif(doc.url)
+  if (doc?.thumbnailURL) doc.thumbnailURL = relatif(doc.thumbnailURL)
+  for (const t of Object.values((doc?.sizes ?? {}) as Record<string, { url?: string | null }>))
+    if (t?.url) t.url = relatif(t.url)
+  return doc
+}
 
 /**
  * Médiathèque. Les images sont converties en WebP et déclinées en trois tailles à l'import.
@@ -8,6 +22,7 @@ import { isStaff } from '@/access/roles'
  */
 export const Media: CollectionConfig = {
   slug: 'media',
+  hooks: { afterRead: [urlsRelatives] },
   labels: { singular: 'Média', plural: 'Médias' },
   admin: {
     components: { beforeList: ['@/components/admin/ContenusTabs#ContenusTabs'] },
