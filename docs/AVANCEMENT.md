@@ -373,3 +373,7 @@ Premier passage : 47 anomalies graves ou critiques (2 sur le site, 2 dans l'espa
 Écart visuel assumé : dans la carte « Expirées » des opportunités, la date et la note passent du gris discret au gris foncé (contraste).
 
 Résultat : dernier passage complet de `accessibilite.e2e.spec.ts`, 13 tests sur 14 réussis, dont les 7 parcours au clavier, et une seule anomalie grave restante sur les 124 analyses (62 écrans, deux largeurs) (zone de saisie de l'éditeur de texte riche sans nom, fiche d'actualité). Elle est corrigée (zone reliée à l'étiquette du champ), puis vérifiée par une nouvelle analyse des fiches d'actualité et de page aux deux largeurs : zéro anomalie grave ou critique. Sur ce poste, le serveur de développement est lent (connexion d'un membre en 17 s) : les délais d'attente du test sont de 3 minutes.
+
+## Lot 12 : recette interne (27/10/2026)
+
+Déroulé et résultats dans `docs/RECETTE-INTERNE.md`. Nouveau fichier `tests/int/recette.int.spec.ts` (13 tests) pour les points de `docs/12` sans test. Anomalies corrigées : délai de défense de 15 jours contournable par le corps de la requête (`src/collections/DisciplinaryCases.ts`, les dates et délais du dossier ne viennent plus que du serveur) ; boutons de discipline affichés au responsable membres alors que le serveur les lui refuse (question 10 de `docs/QUESTIONS.md`). Paiements joués en mode « simulation » (question 11).

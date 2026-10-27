@@ -41,6 +41,9 @@ const membreDe = async (req: PayloadRequest, c: Cas) =>
     entreprise?: number | null
   }
 
+/** Champs que seul le serveur renseigne (dates, fins de délai, état, numéro, historique, membre concerné). */
+const CHAMPS_SERVEUR = /^(date[A-Z]\w*|fin[A-Z]\w*|statut|numero|historique|membre|id|createdAt|updatedAt)$/
+
 /** Une étape de la procédure : contrôle de l'ordre (article 15), enregistrement, courrier, journal. */
 const etape = (vers: Etape, appliquer: (req: PayloadRequest, c: Cas, b: Record<string, unknown>) => Promise<Record<string, unknown>>): Endpoint => ({
   path: `/:id/${vers}`,
@@ -50,7 +53,9 @@ const etape = (vers: Etape, appliquer: (req: PayloadRequest, c: Cas, b: Record<s
     if (!extraFull(req.user, 'discipline')) throw new APIError('Action réservée aux administrateurs.', 403)
     const c = (await req.payload.findByID({ collection: 'disciplinaryCases', id: req.routeParams?.id as string, depth: 0, overrideAccess: false, req }).catch(() => null)) as unknown as Cas | null
     if (!c) throw new APIError('Dossier introuvable.', 404)
-    const b = await corps(req)
+    // Les dates, délais et l'état du dossier sont fixés par le serveur : le corps de la requête ne peut pas les remplacer
+    // (sinon un délai de défense ou de recours pourrait être avancé ou repoussé, docs/05 §5).
+    const b = Object.fromEntries(Object.entries(await corps(req)).filter(([k]) => !CHAMPS_SERVEUR.test(k)))
     // Les données saisies avec l'étape sont contrôlées avec le dossier tel qu'il serait après l'étape.
     const prevu = { ...c, ...b } as Dossier
     const refus = refusTransition({ ...prevu, statut: c.statut }, vers)

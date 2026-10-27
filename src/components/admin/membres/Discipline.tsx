@@ -384,7 +384,7 @@ export const DisciplinePanel = ({
           </button>
         </div>
       )}
-      {!peutAgir && <p className="small muted">Les étapes de la procédure sont réservées au responsable membres et aux administrateurs.</p>}
+      {!peutAgir && <p className="small muted">Les étapes de la procédure sont réservées aux administrateurs.</p>}
     </section>
   )
 }

@@ -2,7 +2,7 @@ import type { DocumentViewServerProps } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
-import { atLeast } from '@/access/roles'
+import { atLeast, extraFull } from '@/access/roles'
 import { EFFECTIFS, label } from '@/lib/adhesion/options'
 import { lettreCategorie } from '@/lib/adhesion/categories'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
@@ -73,7 +73,8 @@ export const MembreView = async (props: DocumentViewServerProps) => {
   const tous = dossiers.docs as unknown as (DossierData & { dateCloture?: string })[]
   const enCours = tous.find((d) => d.statut !== 'close') ?? null
   const clos: DossierClos[] = tous.filter((d) => d.statut === 'close').map((d) => ({ numero: d.numero, issue: d.issue ?? 'classee', date: d.dateCloture ?? '' }))
-  const peutAgirDiscipline = atLeast(user as never, 'membres', 'full')
+  // Discipline (docs/04, domaines ajoutés) : étapes réservées au super administrateur et à l'administrateur, comme côté serveur.
+  const peutAgirDiscipline = extraFull(user as never, 'discipline')
   const cot = situationCotisation(m, paiements.docs as unknown as PaiementMembre[])
   const e = m.entreprise
   const v = e?.visibilite ?? {}
