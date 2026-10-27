@@ -115,10 +115,10 @@ export default async function Formalisation() {
                 {[jourLong(atelier.debut), atelier.lieu].filter(Boolean).join(' · ')}
               </p>
               <div className="rec-row" data-m="pops" data-m-stagger="" data-m-d="5">
-                <Link href={`/agenda/${atelier.slug}`} className="rec-btn rec-btn--primary">
+                <Link prefetch={false} href={`/agenda/${atelier.slug}`} className="rec-btn rec-btn--primary">
                   Voir l’atelier
                 </Link>
-                <Link href="/adherer/candidature?categorie=A" className="rec-btn rec-btn--secondary">
+                <Link prefetch={false} href="/adherer/candidature?categorie=A" className="rec-btn rec-btn--secondary">
                   Adhérer en catégorie A
                 </Link>
               </div>

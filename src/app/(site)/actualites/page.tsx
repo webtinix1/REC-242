@@ -75,7 +75,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
               <Words text="La vie du réseau" />
             </h1>
           </div>
-          <Link href="/presse" className="rec-btn rec-btn--secondary" data-m="pop" data-m-d="4">
+          <Link prefetch={false} href="/presse" className="rec-btn rec-btn--secondary" data-m="pop" data-m-d="4">
             Espace presse
           </Link>
         </div>
@@ -97,7 +97,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
                 {une.chapeau}
               </p>
               <div className="rec-row" data-m="pops" data-m-stagger="" data-m-d="9">
-                <Link href={`/actualites/${une.slug}`} className="rec-btn rec-btn--accent">
+                <Link prefetch={false} href={`/actualites/${une.slug}`} className="rec-btn rec-btn--accent">
                   Lire l’article
                 </Link>
               </div>
@@ -114,7 +114,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
                 <p className="flabel">Type</p>
                 <div className="chips chips-sm">
                   {[{ value: '', label: 'Tous' }, ...NEWS_TYPES].map((t) => (
-                    <Link
+                    <Link prefetch={false}
                       key={t.value}
                       scroll={false}
                       href={href({ type: t.value || undefined, secteur: secteur?.slug })}
@@ -130,7 +130,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
                 <p className="flabel">Secteur</p>
                 <div className="chips chips-sm">
                   {[{ id: 0, nom: 'Tous', slug: '' }, ...secteurs].map((s) => (
-                    <Link
+                    <Link prefetch={false}
                       key={s.id}
                       scroll={false}
                       href={href({ type, secteur: s.slug || undefined })}
@@ -157,7 +157,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
           <div className="g3 newsgrid" data-m="deal" data-m-stagger="">
             {list.map((n) =>
               n.reserveMembres && !membre ? (
-                <Link
+                <Link prefetch={false}
                   key={n.id}
                   className="card"
                   href={`/espace-membre?suite=${encodeURIComponent(`/actualites/${n.slug}`)}`}
@@ -175,7 +175,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
                   </span>
                 </Link>
               ) : (
-                <Link key={n.id} className="card" href={`/actualites/${n.slug}`}>
+                <Link prefetch={false} key={n.id} className="card" href={`/actualites/${n.slug}`}>
                   {mediaUrl(n.image, 'carte') ? (
                     <Img media={n.image} size="carte" className="ncover" alt="" />
                   ) : (
@@ -194,7 +194,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
           {pages > 1 && (
             <nav className="pager" aria-label="Pagination">
               {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
-                <Link
+                <Link prefetch={false}
                   key={n}
                   href={href({ type, secteur: secteur?.slug, page: n })}
                   className={`pg${n === page ? ' is-on' : ''}`}
@@ -222,7 +222,7 @@ export default async function Actualites({ searchParams }: { searchParams: SP })
               Communiqués, kit média et contact presse, accessibles sans compte.
             </p>
           </div>
-          <Link href="/presse" className="rec-btn rec-btn--primary">
+          <Link prefetch={false} href="/presse" className="rec-btn rec-btn--primary">
             Espace presse
           </Link>
         </div>

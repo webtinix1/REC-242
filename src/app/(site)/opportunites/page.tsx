@@ -45,7 +45,7 @@ export default async function Opportunites({ searchParams }: { searchParams: SP 
           </p>
           <nav className="chips" aria-label="Type d’opportunité" data-m="pops" data-m-stagger="" data-m-d="5">
             {filtres.map((f) => (
-              <Link
+              <Link prefetch={false}
                 key={f.value}
                 scroll={false}
                 href={lien(f.value)}
@@ -64,7 +64,7 @@ export default async function Opportunites({ searchParams }: { searchParams: SP 
           {cartes.length === 0 && (
             <div className="empty">
               <p className="h-s">Aucune opportunité ouverte pour ce type</p>
-              <Link href="/opportunites" className="rec-btn rec-btn--secondary">
+              <Link prefetch={false} href="/opportunites" className="rec-btn rec-btn--secondary">
                 Voir toutes les opportunités
               </Link>
             </div>
@@ -104,7 +104,7 @@ export default async function Opportunites({ searchParams }: { searchParams: SP 
               Les membres actifs publient leurs opportunités depuis leur espace. Chaque annonce est relue avant d’être mise en ligne.
             </p>
             <div className="rec-row" data-m="pops" data-m-stagger="" data-m-d="6">
-              <Link className="rec-btn rec-btn--primary" href="/espace-membre/opportunites/publier">
+              <Link prefetch={false} className="rec-btn rec-btn--primary" href="/espace-membre/opportunites/publier">
                 Publier une opportunité
               </Link>
             </div>

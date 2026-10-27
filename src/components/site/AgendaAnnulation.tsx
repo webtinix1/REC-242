@@ -14,7 +14,7 @@ export const AgendaAnnulation = ({ jeton }: { jeton: string }) => {
       <div className="okbox" role="status">
         <span className="rec-badge rec-badge--active">Inscription annulée</span>
         <p>Votre inscription est annulée. La place est rendue aux personnes en liste d’attente.</p>
-        <Link className="rec-btn rec-btn--secondary" href="/agenda">
+        <Link prefetch={false} className="rec-btn rec-btn--secondary" href="/agenda">
           Voir l’agenda
         </Link>
       </div>

@@ -82,10 +82,10 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
               </span>
             </h1>
             <nav className="chips dark" aria-label="Période" data-m="pops" data-m-stagger="" data-m-d="4">
-              <Link href="/agenda" className={`chip${passes ? '' : ' is-on'}`} aria-current={passes ? undefined : 'true'}>
+              <Link prefetch={false} href="/agenda" className={`chip${passes ? '' : ' is-on'}`} aria-current={passes ? undefined : 'true'}>
                 À venir
               </Link>
-              <Link href="/agenda?onglet=passes" className={`chip${passes ? ' is-on' : ''}`} aria-current={passes ? 'true' : undefined}>
+              <Link prefetch={false} href="/agenda?onglet=passes" className={`chip${passes ? ' is-on' : ''}`} aria-current={passes ? 'true' : undefined}>
                 Passés
               </Link>
             </nav>
@@ -102,7 +102,7 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
                   <p className="flabel">Ville</p>
                   <div className="chips chips-sm">
                     {[['', 'Toutes'], ...villes].map(([slug, nom]) => (
-                      <Link
+                      <Link prefetch={false}
                         key={slug}
                         scroll={false}
                         href={href({ ville: slug || undefined, type })}
@@ -118,7 +118,7 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
                   <p className="flabel">Type</p>
                   <div className="chips chips-sm">
                     {[['', 'Tous'], ...types].map(([slug, nom]) => (
-                      <Link
+                      <Link prefetch={false}
                         key={slug}
                         scroll={false}
                         href={href({ ville, type: slug || undefined })}
@@ -138,7 +138,7 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
             <div className="empty">
               <div className="av sand">0</div>
               <p className="h-s">Aucun rendez-vous ne correspond à ces filtres</p>
-              <Link href={href({ onglet: passes ? 'passes' : undefined })} className="rec-btn rec-btn--secondary">
+              <Link prefetch={false} href={href({ onglet: passes ? 'passes' : undefined })} className="rec-btn rec-btn--secondary">
                 Voir tous les rendez-vous
               </Link>
             </div>
@@ -149,7 +149,7 @@ export default async function Agenda({ searchParams }: { searchParams: SP }) {
               const d = disque(e)
               const p = placesInfo(e, places.get(e.id))
               return (
-                <Link key={e.id} href={`/agenda/${e.slug}`} className="card ev-row">
+                <Link prefetch={false} key={e.id} href={`/agenda/${e.slug}`} className="card ev-row">
                   <div className="datedisc">
                     <b>{d.d}</b>
                     <span>{d.m}</span>

@@ -152,20 +152,18 @@ html:not([data-motion="on"]) .sb .m-toggle .m-off{display:inline}
 [data-motion="on"] .sb [data-m="head"].trame[data-m-in]::after{animation:mb-weave 1300ms var(--mb-soft) 100ms backwards}
 @keyframes mb-weave{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 
-/* halo du héros d'accueil. Le halo est masqué sur mobile (display) : une animation posée sur lui
-   repartirait à chaque bascule de mise en page. On anime donc deux propriétés enregistrées
-   portées par la section (--mb-h pour le cercle, --mb-t pour les pastilles), le halo ne fait que les lire. */
-@property --mb-h{syntax:"<number>";inherits:true;initial-value:1}
-@property --mb-t{syntax:"<number>";inherits:true;initial-value:1}
-[data-motion="on"] .sb [data-m="hero"]:not([data-m-in]){--mb-h:0;--mb-t:0}
-[data-motion="on"] .sb [data-m="hero"][data-m-in]{animation:mb-hv 1100ms var(--mb-bounce) 120ms backwards,mb-tv 900ms linear 480ms backwards}
-@keyframes mb-hv{from{--mb-h:0}to{--mb-h:1}}
-@keyframes mb-tv{from{--mb-t:0}to{--mb-t:1}}
-[data-motion="on"] .sb [data-m="hero"] .halo{opacity:min(1, var(--mb-h) * 2.5);rotate:calc((1 - var(--mb-h)) * -75deg);scale:calc(.72 + .28 * var(--mb-h));transform-origin:50% 0}
-[data-motion="on"] .sb [data-m="hero"] .halo > i{scale:clamp(0, (var(--mb-t) - var(--mb-k0,0)) * 2.6, 1)}
-[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(2){--mb-k0:.14}
-[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(3){--mb-k0:.28}
-[data-motion="on"] .sb [data-m="hero"] .halo > i:nth-child(4){--mb-k0:.42}
+/* halo du héros d'accueil (animations propres au halo : voir ci-dessous). */
+[data-motion="on"] .sb [data-m="hero"]:not([data-m-in]) .halo{opacity:0}
+/* Performance (lot 12) : au lieu d'animer deux propriétés enregistrées héritées (qui recalculaient le style de toute la section à chaque image), le halo et ses pastilles portent leurs propres animations (opacité, rotation, échelle). Courbes et durées identiques ; chaque pastille s'allume linéairement, avec son retard (480 ms + rang × 900 ms × .14). */
+[data-motion="on"] .sb [data-m="hero"] .halo{transform-origin:50% 0}
+[data-motion="on"] .sb [data-m="hero"][data-m-in] .halo{animation:mb-halo 1100ms var(--mb-bounce) 120ms backwards,mb-halo-o 340ms linear 120ms backwards}
+@keyframes mb-halo{from{rotate:-75deg;scale:.72}}
+@keyframes mb-halo-o{from{opacity:0}}
+@keyframes mb-halo-i{from{scale:0}}
+[data-motion="on"] .sb [data-m="hero"][data-m-in] .halo > i{animation:mb-halo-i 346ms linear 480ms backwards}
+[data-motion="on"] .sb [data-m="hero"][data-m-in] .halo > i:nth-child(2){animation-delay:606ms}
+[data-motion="on"] .sb [data-m="hero"][data-m-in] .halo > i:nth-child(3){animation-delay:732ms}
+[data-motion="on"] .sb [data-m="hero"][data-m-in] .halo > i:nth-child(4){animation-delay:858ms}
 
 /* fill : disques de chiffres qui se remplissent depuis le centre, onde autour */
 [data-motion="on"] .sb [data-m="fill"]:not([data-m-in]) > * > b{opacity:0}

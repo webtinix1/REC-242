@@ -63,16 +63,16 @@ export default function NotFound() {
             Liens utiles
           </p>
           <div className="rec-row" data-m="pops" data-m-stagger="" data-m-d="2">
-            <Link href="/" className="rec-btn rec-btn--secondary">
+            <Link prefetch={false} href="/" className="rec-btn rec-btn--secondary">
               Accueil
             </Link>
-            <Link href="/agenda" className="rec-btn rec-btn--secondary">
+            <Link prefetch={false} href="/agenda" className="rec-btn rec-btn--secondary">
               Agenda
             </Link>
-            <Link href="/adherer" className="rec-btn rec-btn--primary">
+            <Link prefetch={false} href="/adherer" className="rec-btn rec-btn--primary">
               Adhérer
             </Link>
-            <Link href="/plan-du-site" className="rec-btn rec-btn--ghost">
+            <Link prefetch={false} href="/plan-du-site" className="rec-btn rec-btn--ghost">
               Plan du site
             </Link>
           </div>

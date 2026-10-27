@@ -74,7 +74,7 @@ function EvenementPasse({ e }: { e: EvenementSite }) {
     <>
       <section className="band bg-night dark net phead" data-m="head">
         <div className="wrap stack" style={{ gap: 28 }}>
-          <Link href="/agenda" className="linkbtn" data-m="rise">
+          <Link prefetch={false} href="/agenda" className="linkbtn" data-m="rise">
             ← Agenda
           </Link>
           <div className="fond">
@@ -141,7 +141,7 @@ function EvenementPasse({ e }: { e: EvenementSite }) {
                 </div>
               )}
               {actu && (
-                <Link href={`/actualites/${actu.slug}`} className="rec-btn rec-btn--secondary">
+                <Link prefetch={false} href={`/actualites/${actu.slug}`} className="rec-btn rec-btn--secondary">
                   Lire l’article
                 </Link>
               )}
@@ -189,7 +189,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
         <>
           <h2 className="h-s">Sur invitation</h2>
           <p className="small">Ce rendez-vous est réservé aux personnes invitées. Pour en savoir plus, écrivez au secrétariat.</p>
-          <Link href="/contact" className="rec-btn rec-btn--secondary">
+          <Link prefetch={false} href="/contact" className="rec-btn rec-btn--secondary">
             Contacter le secrétariat
           </Link>
         </>
@@ -200,7 +200,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
       panneau = (
         <>
           <h2 className="h-s">Réservé aux membres</h2>
-          <Link href={`/espace-membre/connexion?retour=/agenda/${e.slug}`} className="rec-btn rec-btn--primary">
+          <Link prefetch={false} href={`/espace-membre/connexion?retour=/agenda/${e.slug}`} className="rec-btn rec-btn--primary">
             Connectez-vous pour vous inscrire
           </Link>
         </>
@@ -274,7 +274,7 @@ async function Fiche({ e }: { e: EvenementSite }) {
     <>
       <div className="subbar">
         <div className="wrap rec-row" style={{ justifyContent: 'space-between' }}>
-          <Link href="/agenda" className="linkbtn">
+          <Link prefetch={false} href="/agenda" className="linkbtn">
             ← Agenda
           </Link>
         </div>

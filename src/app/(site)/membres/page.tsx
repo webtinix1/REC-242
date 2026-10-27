@@ -131,7 +131,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
                     {[{ value: '', label: g.tous }, ...g.liste].map((o) => {
                       const on = (f[g.cle] ?? '') === o.value
                       return (
-                        <Link
+                        <Link prefetch={false}
                           key={o.value || 'tous'}
                           scroll={false}
                           href={href({ ...f, [g.cle]: o.value || undefined, page: 1 })}
@@ -151,7 +151,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
                 {total} membre(s) · les filtres sont conservés dans l’adresse de la page pour être
                 partagés
               </p>
-              <Link href="/membres" className="linkbtn">
+              <Link prefetch={false} href="/membres" className="linkbtn">
                 Effacer les filtres
               </Link>
             </div>
@@ -164,7 +164,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
                 {actif ? 'Aucun membre ne correspond à ces filtres' : 'Aucun membre n’est encore répertorié'}
               </p>
               {actif && (
-                <Link href="/membres" className="rec-btn rec-btn--secondary">
+                <Link prefetch={false} href="/membres" className="rec-btn rec-btn--secondary">
                   Effacer les filtres
                 </Link>
               )}
@@ -172,12 +172,12 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
           )}
           <div className="g3" data-m="cascade" data-m-stagger="">
             {cartes.map((m) => (
-              <Link key={m.slug} href={`/membres/${m.slug}`} className="card">
+              <Link prefetch={false} key={m.slug} href={`/membres/${m.slug}`} className="card">
                 <div className="person">
                   {m.logo ? (
                     <span className="logo-tile">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={m.logo} alt={`Logo ${m.nom}`} />
+                      <img src={m.logo} alt={`Logo ${m.nom}`} loading="lazy" decoding="async" />
                     </span>
                   ) : (
                     <span className="logo-tile logo-ini">{initiales(m.nom)}</span>
@@ -200,7 +200,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
           {pages > 1 && (
             <nav className="pager" aria-label="Pagination">
               {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
-                <Link
+                <Link prefetch={false}
                   key={n}
                   href={href({ ...f, page: n })}
                   className={`pg${n === page ? ' is-on' : ''}`}
@@ -241,7 +241,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
                   <li key={x}>{x}</li>
                 ))}
               </ul>
-              <Link href="/adherer" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
+              <Link prefetch={false} href="/adherer" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
                 Adhérer pour figurer
               </Link>
             </div>
@@ -264,7 +264,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
                   </div>
                 ))}
               </div>
-              <Link
+              <Link prefetch={false}
                 href="/contact?motif=autre&objet=Encart%20annuaire%20imprimé"
                 className="rec-btn rec-btn--secondary"
                 style={{ width: 'max-content' }}
@@ -289,7 +289,7 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
               Nom, secteur et ville sont publics. Les coordonnées, le dirigeant, le quartier et la
               taille sont réservés aux membres connectés.
             </p>
-            <Link href="/adherer" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
+            <Link prefetch={false} href="/adherer" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
               Pas encore membre ? Adhérer
             </Link>
           </div>

@@ -26,7 +26,7 @@ export default async function Annulation({ params }: { params: Params }) {
         {!b ? (
           <div className="errbox" role="alert">
             <p>Ce lien d’annulation n’est pas valable.</p>
-            <Link href="/agenda" className="linkbtn">
+            <Link prefetch={false} href="/agenda" className="linkbtn">
               Voir l’agenda
             </Link>
           </div>

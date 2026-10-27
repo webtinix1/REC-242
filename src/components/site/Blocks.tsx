@@ -30,7 +30,7 @@ export const Lnk = ({
       </a>
     )
   return (
-    <Link href={href} className={className} {...dataM(m)} {...rest}>
+    <Link prefetch={false} href={href} className={className} {...dataM(m)} {...rest}>
       {children}
     </Link>
   )
@@ -139,7 +139,7 @@ export const Img = ({
       style={{ objectPosition: mediaPos(media), ...style }}
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : undefined}
-      decoding="async"
+      decoding={priority ? 'sync' : 'async'}
       // Image au-dessus de la ligne de flottaison : déjà « révélée » au premier affichage (LCP),
       // l'animation CSS se joue dès le chargement sans attendre le moteur.
       {...dataM(priority && m?.m ? { ...m, in: true } : m)}

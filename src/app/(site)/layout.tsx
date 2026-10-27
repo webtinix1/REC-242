@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: titre, template: '%s · REC 242' },
     description: s.seo?.description,
     openGraph: { siteName: 'REC 242', locale: 'fr_FR', type: 'website' },
-    icons: { icon: '/images/logo-rec242.jpg' },
+    icons: { icon: '/images/logo-rec242-96.png' },
   }
 }
 

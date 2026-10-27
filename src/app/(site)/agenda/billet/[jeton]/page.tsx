@@ -30,7 +30,7 @@ export default async function Billet({ params }: { params: Params }) {
   return (
     <section className="band bg-warm band-end">
       <div className="wrap stack" style={{ gap: 20, maxWidth: 640 }}>
-        <Link href="/agenda" className="linkbtn">
+        <Link prefetch={false} href="/agenda" className="linkbtn">
           ← Agenda
         </Link>
         <h1 className="h-xl">Votre billet</h1>

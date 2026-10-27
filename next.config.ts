@@ -56,6 +56,11 @@ const nextConfig: NextConfig = {
     { source: '/:path*', headers: securite(false) },
     { source: '/admin', headers: securite(true) },
     { source: '/admin/:path*', headers: securite(true) },
+    // Fichiers statiques du site public : polices (jamais modifiées à la même adresse), images et script d'animation, médiathèque publique.
+    { source: '/fonts/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
+    { source: '/images/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
+    { source: '/js/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=86400' }] },
+    { source: '/api/media/file/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=86400' }] },
   ],
   images: {
     localPatterns: [

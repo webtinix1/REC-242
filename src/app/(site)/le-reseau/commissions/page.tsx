@@ -86,12 +86,12 @@ export default async function Commissions() {
                     </div>
                     <div className="line" style={{ borderBottom: 0 }}>
                       <span>Événements liés</span>
-                      <Link href={`/agenda?commission=${c.slug}`} className="linkbtn">
+                      <Link prefetch={false} href={`/agenda?commission=${c.slug}`} className="linkbtn">
                         Voir l’agenda →
                       </Link>
                     </div>
                     {c.ouverture === 'ouverte' && (
-                      <Link
+                      <Link prefetch={false}
                         className="rec-btn rec-btn--secondary"
                         style={{ width: 'max-content' }}
                         href="/espace-membre/commissions"

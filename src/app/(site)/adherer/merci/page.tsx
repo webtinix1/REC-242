@@ -151,7 +151,7 @@ export default async function Merci() {
                   Écrire à l’équipe sur WhatsApp
                 </a>
               ) : (
-                <Link
+                <Link prefetch={false}
                   className="rec-btn rec-btn--secondary"
                   style={{ width: 'max-content' }}
                   href="/contact?motif=Adhésion"

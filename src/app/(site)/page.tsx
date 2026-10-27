@@ -103,7 +103,7 @@ export default async function Accueil() {
               </p>
               <p className="h-s">{prochain.titre}</p>
             </div>
-            <Link href={`/agenda/${prochain.slug}`} className="rec-btn rec-btn--primary">
+            <Link prefetch={false} href={`/agenda/${prochain.slug}`} className="rec-btn rec-btn--primary">
               Je m’inscris
             </Link>
           </div>
@@ -202,7 +202,7 @@ export default async function Accueil() {
                           {p.texte}
                         </span>
                       )}
-                      <Link
+                      <Link prefetch={false}
                         href={`/agenda/${premier.slug}`}
                         className="rec-btn rec-btn--primary"
                         style={{ width: 'max-content', position: 'relative' }}
@@ -236,7 +236,7 @@ export default async function Accueil() {
                             <p className="small muted">{heureLieu(ev)}</p>
                             <div className="rec-row" style={{ justifyContent: 'space-between' }}>
                               {pl ? <span className={`seat ${pl.classe}`}>{pl.texte}</span> : <span />}
-                              <Link href={`/agenda/${ev.slug}`} className="linkbtn">
+                              <Link prefetch={false} href={`/agenda/${ev.slug}`} className="linkbtn">
                                 S’inscrire →
                               </Link>
                             </div>
@@ -285,15 +285,15 @@ export default async function Accueil() {
               </div>
               <div className="g3" data-m="cascade" data-m-stagger>
                 {visagesMembres.map((m) => (
-                  <Link key={m.slug} href={"/membres/" + m.slug} className="card">
+                  <Link prefetch={false} key={m.slug} href={"/membres/" + m.slug} className="card">
                     <div className="person">
                       <span className="duo">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {m.portrait && <img className="duo-face" src={m.portrait} alt="" />}
+                        {m.portrait && <img className="duo-face" src={m.portrait} alt="" loading="lazy" decoding="async" />}
                         {m.logo ? (
                           <span className="logo-tile">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={m.logo} alt={"Logo " + m.nom} />
+                            <img src={m.logo} alt={"Logo " + m.nom} loading="lazy" decoding="async" />
                           </span>
                         ) : (
                           <span className="logo-tile logo-ini">{m.ini}</span>
@@ -358,7 +358,7 @@ export default async function Accueil() {
               bouton={actualites.boutons?.[0]}
             />
             <div className="newsx">
-              <Link href={`/actualites/${une.slug}`} className="newsx-main" data-m="rise">
+              <Link prefetch={false} href={`/actualites/${une.slug}`} className="newsx-main" data-m="rise">
                 <figure className="photo" data-m="iris" data-m-d="1">
                   <Img media={une.image} alt="" />
                 </figure>
@@ -369,7 +369,7 @@ export default async function Accueil() {
               {autres.length > 0 && (
                 <div className="newsx-side" data-m="deal-side" data-m-stagger="" data-m-d="3">
                   {autres.map((n) => (
-                    <Link key={n.id} href={`/actualites/${n.slug}`}>
+                    <Link prefetch={false} key={n.id} href={`/actualites/${n.slug}`}>
                       <Img media={n.image} size="vignette" className="nthumb" alt="" />
                       <span className="pill-type">{NEWS_TYPE_LABEL[n.type]}</span>
                       <span className="small muted">{dateCourt(n.datePublication)}</span>

@@ -43,7 +43,7 @@ export default async function Presse({
     <>
       <section className="band bg-ink dark net phead" data-m="head">
         <div className="wrap stack" style={{ gap: 20 }}>
-          <Link href="/actualites" className="linkbtn" data-m="rise">
+          <Link prefetch={false} href="/actualites" className="linkbtn" data-m="rise">
             ← Actualités
           </Link>
           <span className="eyebrow" data-m="rise" data-m-d="1">
@@ -68,7 +68,7 @@ export default async function Presse({
                 <h2 className="h-m">Communiqués</h2>
                 <div className="chips chips-sm">
                   {annees.map((a) => (
-                    <Link
+                    <Link prefetch={false}
                       key={a}
                       href={`/presse?annee=${a}`}
                       scroll={false}

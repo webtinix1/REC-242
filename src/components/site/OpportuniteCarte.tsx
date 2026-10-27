@@ -33,7 +33,7 @@ export function OpportuniteCarte({ o, accueil }: { o: OppCarte; accueil?: boolea
             </svg>{' '}
             Réservé aux membres. Date limite : {dateLong(o.dateLimite)}
           </p>
-          <Link className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} href="/espace-membre/connexion?retour=/espace-membre/opportunites">
+          <Link prefetch={false} className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} href="/espace-membre/connexion?retour=/espace-membre/opportunites">
             Se connecter
           </Link>
         </div>
@@ -83,7 +83,7 @@ export function OpportuniteCarte({ o, accueil }: { o: OppCarte; accueil?: boolea
           </p>
         </details>
       ) : (
-        <Link className="rec-btn rec-btn--secondary" style={{ width: 'max-content' }} href="/contact">
+        <Link prefetch={false} className="rec-btn rec-btn--secondary" style={{ width: 'max-content' }} href="/contact">
           Répondre
         </Link>
       )}

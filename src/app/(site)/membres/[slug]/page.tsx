@@ -63,7 +63,7 @@ export default async function FicheMembre({ params }: { params: P }) {
       <section className="band bg-green dark rings rings-w phead" data-m="head">
         <div className="wrap stack" style={{ gap: 28 }}>
           <div className="rec-row" style={{ justifyContent: 'space-between' }} data-m="rise">
-            <Link href="/membres" className="linkbtn">
+            <Link prefetch={false} href="/membres" className="linkbtn">
               ← Annuaire
             </Link>
           </div>
@@ -169,10 +169,10 @@ export default async function FicheMembre({ params }: { params: P }) {
                 Réservé aux membres actifs. Le membre reçoit votre demande sans que ses coordonnées
                 ne soient exposées, et choisit d’y répondre.
               </p>
-              <Link href={retour} className="rec-btn rec-btn--primary">
+              <Link prefetch={false} href={retour} className="rec-btn rec-btn--primary">
                 Se connecter pour contacter
               </Link>
-              <Link href="/adherer" className="rec-btn rec-btn--ghost">
+              <Link prefetch={false} href="/adherer" className="rec-btn rec-btn--ghost">
                 Pas encore membre ? Adhérer
               </Link>
             </div>

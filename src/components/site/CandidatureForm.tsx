@@ -317,7 +317,7 @@ export const CandidatureForm = (p: Props) => {
       >
         <div className="wrap" style={{ maxWidth: 940 }}>
           <div className="stack" style={{ gap: 18 }}>
-            <Link href="/adherer" className="linkbtn" data-m="rise">
+            <Link prefetch={false} href="/adherer" className="linkbtn" data-m="rise">
               ← Adhérer
             </Link>
             <div className="rec-row" style={{ justifyContent: 'space-between' }}>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: { default: 'Espace membre · REC 242', template: '%s · Espace membre · REC 242' },
   // Espace privé : jamais indexé.
   robots: { index: false, follow: false },
-  icons: { icon: '/images/logo-rec242.jpg' },
+  icons: { icon: '/images/logo-rec242-96.png' },
 }
 
 export default function EspaceMembreLayout({ children }: { children: React.ReactNode }) {

@@ -82,7 +82,7 @@ export default async function Article({ params }: { params: Params }) {
       <section className="band bg-warm phead">
         <div className="wrap" style={{ maxWidth: 900 }}>
           <div className="stack" style={{ gap: 20 }}>
-            <Link href="/actualites" className="linkbtn" data-m="rise">
+            <Link prefetch={false} href="/actualites" className="linkbtn" data-m="rise">
               ← Actualités
             </Link>
             <div className="rec-row" data-m="rise" data-m-d="1">
@@ -109,7 +109,7 @@ export default async function Article({ params }: { params: Params }) {
             <div className="card-soft">
               <p className="h-s">Article réservé aux membres</p>
               <p className="muted">Connectez-vous à l’espace membre pour lire la suite.</p>
-              <Link
+              <Link prefetch={false}
                 href={`/espace-membre?suite=${encodeURIComponent(`/actualites/${n.slug}`)}`}
                 className="rec-btn rec-btn--primary"
                 style={{ width: 'max-content' }}
@@ -153,13 +153,13 @@ export default async function Article({ params }: { params: Params }) {
           <div className="wrap" style={{ maxWidth: 900 }}>
             <div className="g2" data-m="deal" data-m-stagger="" data-m-d="3">
               {lie && (
-                <Link href={`/agenda/${lie.slug}`} className="card">
+                <Link prefetch={false} href={`/agenda/${lie.slug}`} className="card">
                   <span className="small muted">Événement lié</span>
                   <p className="h-s">{lie.titre}</p>
                 </Link>
               )}
               {suite && suiteHref && (
-                <Link href={suiteHref} className="card">
+                <Link prefetch={false} href={suiteHref} className="card">
                   <span className="small muted">À lire aussi</span>
                   <p className="h-s">{suiteTitre}</p>
                 </Link>

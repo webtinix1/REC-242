@@ -72,7 +72,7 @@ export const AgendaInscription = ({ evenement, slug, jeton, complet }: { eveneme
         {envoi ? 'Envoi…' : complet ? 'M’inscrire sur la liste d’attente' : 'M’inscrire'}
       </button>
       <p className="small muted">
-        Déjà membre ? <Link className="linkbtn" href={`/espace-membre/connexion?retour=/agenda/${slug}`}>Connectez-vous</Link> pour vous inscrire en un clic.
+        Déjà membre ? <Link prefetch={false} className="linkbtn" href={`/espace-membre/connexion?retour=/agenda/${slug}`}>Connectez-vous</Link> pour vous inscrire en un clic.
       </p>
     </form>
   )

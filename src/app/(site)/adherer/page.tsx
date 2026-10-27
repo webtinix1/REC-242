@@ -209,7 +209,7 @@ export default async function Adherer() {
                     ou {NOMBRES[tranches] ?? tranches} tranches de {fcfa(m!.tranche)} sous {delai}{' '}
                     mois
                   </p>
-                  <Link
+                  <Link prefetch={false}
                     href={`/adherer/candidature?categorie=${c.valeur}`}
                     className="rec-btn rec-btn--secondary"
                   >

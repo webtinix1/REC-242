@@ -155,7 +155,7 @@ export default async function Contact({ searchParams }: { searchParams: SP }) {
                   {s.horaires && <p className="small muted">{s.horaires}</p>}
                 </div>
               )}
-              <Link href="/devenir-partenaire" className="card">
+              <Link prefetch={false} href="/devenir-partenaire" className="card">
                 <p className="small muted">Organisation</p>
                 <p className="h-s">Proposer un partenariat →</p>
               </Link>

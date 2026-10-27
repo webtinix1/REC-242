@@ -84,7 +84,7 @@ export default async function PlanDuSite() {
               <div className="card" key={g.t}>
                 <h2 className="h-s">{g.t}</h2>
                 {g.items.map((i) => (
-                  <Link key={i.href + i.label} href={i.href} className="linkbtn">
+                  <Link prefetch={false} key={i.href + i.label} href={i.href} className="linkbtn">
                     {i.label}
                   </Link>
                 ))}
@@ -92,13 +92,13 @@ export default async function PlanDuSite() {
             ))}
             <div className="card">
               <h2 className="h-s">Espace membre</h2>
-              <Link className="linkbtn" href="/espace-membre/connexion">
+              <Link prefetch={false} className="linkbtn" href="/espace-membre/connexion">
                 Connexion
               </Link>
-              <Link className="linkbtn" href="/espace-membre">
+              <Link prefetch={false} className="linkbtn" href="/espace-membre">
                 Tableau de bord
               </Link>
-              <Link className="linkbtn" href="/espace-membre">
+              <Link prefetch={false} className="linkbtn" href="/espace-membre">
                 Profil, événements, cotisation, documents
               </Link>
               <p className="small muted">Application séparée du site, réservée aux membres.</p>

@@ -95,7 +95,7 @@ Tenu à jour à la fin de chaque lot.
 
 ## Lot 3 : performance
 
-Lighthouse mobile sur l’accueil, compilation de production, sur le poste de développement Windows (Edge sans interface, limitation simulée) : accessibilité 100, bonnes pratiques 100, SEO 100, performance entre 80 et 85 selon les passages (LCP simulé 3,6 s, LCP réellement observé 0,6 s). L’écart vient du temps de calcul CPU modélisé (styles et animations de la maquette, scripts Next). Corrections déjà faites : images responsives (`srcset`), image du héros révélée dès le premier affichage, polices du premier écran préchargées, logo en WebP redimensionné, pas de préchargement automatique des liens de navigation, en-tête `Critical-CH` limité à l’admin. Le seuil de 90 n’est pas encore atteint de façon stable : à reprendre au lot 12 sur le serveur de préproduction (mesure hors poste de développement), en priorité le coût des styles d’animation.
+Lighthouse mobile sur l’accueil, compilation de production, sur le poste de développement Windows (Edge sans interface, limitation simulée) : accessibilité 100, bonnes pratiques 100, SEO 100, performance entre 80 et 85 selon les passages (LCP simulé 3,6 s, LCP réellement observé 0,6 s). L’écart vient du temps de calcul CPU modélisé (styles et animations de la maquette, scripts Next). Corrections déjà faites : images responsives (`srcset`), image du héros révélée dès le premier affichage, polices du premier écran préchargées, logo en WebP redimensionné, pas de préchargement automatique des liens de navigation, en-tête `Critical-CH` limité à l’admin. Le seuil de 90 n’est pas encore atteint de façon stable. Suite : voir « Lot 12 : performance, Lighthouse mobile ».
 
 ## Lot 5 : notes
 
@@ -315,3 +315,47 @@ Mesures écran par écran (compilation de production) :
 | 21-demandes-ordinateur | 14,6 %, ×0,96 | 16,5 % | 14,6 % | 934 → 900 (−3,6 %) | non |
 | 22-page-mobile | 29,2 %, ×4,19 | 22,7 % | 23,2 % | 3024 → 7392 (+144,4 %) | non |
 | 22-page-ordinateur | 25,4 %, ×4,69 | 17 % | 16,4 % | 1598 → 4696 (+193,9 %) | non |
+
+## Lot 12 : performance, Lighthouse mobile (27/10/2026)
+
+Mesure : Lighthouse 12.8.2, Edge sans interface, profil mobile simulé (4G lente, processeur ralenti ×4), compilation de production (`next build` puis `next start`), 3 passages par page, médiane. Poste de développement Windows dont l'indice de référence Lighthouse est de 550 à 640 (machine lente) : une même page varie de 10 à 25 points d'un passage à l'autre.
+
+**Résultat : le seuil de 90 en performance n'est pas atteint sur ce poste.** Accessibilité, bonnes pratiques et SEO sont à 90 ou plus partout (le SEO de 58 sur la connexion de l'espace membre est voulu : page en `noindex`).
+
+| Page | Avant (perf / access. / BP / SEO) | Après | LCP avant → après | TBT avant → après | JS transféré |
+|---|---|---|---|---|---|
+| Accueil | 60 / 100 / 100 / 100 | 66 / 100 / 100 / 100 | 4,60 → 4,00 s | 879 → 937 ms | 152 → 149 Ko |
+| Le réseau | 69 / 96 / 100 / 100 | 70 / 96 / 100 / 100 | 3,99 → 3,84 s | 1074 → 696 ms | 154 → 151 Ko |
+| Adhérer | 70 / 100 / 100 / 100 | 75 / 100 / 100 / 100 | 3,74 → 3,65 s | 718 → 566 ms | 151 → 149 Ko |
+| Membres | 84 / 96 / 100 / 100 | 80 / 96 / 100 / 100 | 2,22 → 3,82 s | 371 → 313 ms | 151 → 149 Ko |
+| Agenda | 76 / 96 / 100 / 100 | 78 / 96 / 100 / 100 | 3,04 → 4,28 s | 581 → 324 ms | 151 → 149 Ko |
+| Fiche événement | 58 / 100 / 100 / 100 | 80 / 100 / 100 / 100 | 3,44 → 4,00 s | 1284 → 282 ms | 154 → 153 Ko |
+| Opportunités | 69 / 100 / 100 / 100 | 81 / 100 / 100 / 100 | 2,50 → 4,03 s | 1202 → 273 ms | 151 → 149 Ko |
+| Actualités | 72 / 100 / 100 / 100 | 79 / 100 / 100 / 100 | 3,01 → 4,27 s | 866 → 257 ms | 151 → 149 Ko |
+| Article | 77 / 100 / 100 / 100 | 82 / 100 / 100 / 100 | 4,12 → 3,70 s | 1134 → 311 ms | 152 → 151 Ko |
+| Contact | 79 / 100 / 100 / 100 | 73 / 100 / 100 / 100 | 3,80 → 3,94 s | 278 → 470 ms | 154 → 152 Ko |
+| Connexion espace membre | 92 / 100 / 100 / 58 | 89 / 100 / 100 / 58 | 2,74 → 3,19 s | 225 → 241 ms | 153 Ko |
+
+Le gain net porte sur le temps de blocage (TBT), divisé par 2 à 4 sur la plupart des pages. Les variations du LCP de ±1 s entre deux séries d'une même version sont du bruit de mesure.
+
+Changements (aucun changement visible) :
+- `src/styles/animations.css` : le halo du héros (accueil, Le réseau) n'anime plus deux propriétés CSS enregistrées et héritées (`--mb-h`, `--mb-t`), qui recalculaient le style de toute la section à chaque image ; le halo et ses pastilles portent leurs propres animations (mêmes courbes, mêmes durées). Effet isolé : recalcul de style de 492 ms à 92 ms dans la trace de l'accueil. Écart assumé, invisible : le halo étant masqué sur mobile, franchir le seuil de largeur rejoue son entrée.
+- Avatars et logos de l'accueil et de l'annuaire en `loading="lazy"` (ils étaient chargés d'emblée, en concurrence avec l'image du LCP).
+- `prefetch={false}` sur les liens du site public : une vingtaine de préchargements `?_rsc` en moins après l'ouverture de la page.
+- Image prioritaire du héros en `decoding="sync"` (la valeur `sizes` est gardée : un essai à `100vw` choisissait une variante plus floue et faisait passer l'écart visuel de l'accueil mobile de 1,9 % à 6,5 %).
+- `public/js/rec-motion.min.js` : version minifiée du moteur d'animation (`rec-motion.js` reste la source lisible).
+- Icône d'onglet `logo-rec242-96.png` (6 Ko au lieu de 37 Ko).
+- `next.config.ts` : durées de cache pour `/fonts` (1 an), `/images` (7 jours), `/js` et la médiathèque publique `/api/media/file` (1 jour, lecture libre). En-têtes de sécurité et CSP inchangés.
+
+Essais abandonnés : `content-visibility:auto` (faux échecs de contraste en accessibilité, CLS 0,089 sur un passage), `experimental.inlineCss` (HTML de 17 à 53 Ko, résultats pires), suppression complète du moteur d'animation à titre de plafond (l'accueil reste à 76/77 : les animations ne sont pas la seule cause).
+
+Ce qui reste sous 90, et pourquoi :
+- LCP simulé de 3,2 à 4,3 s. Sur l'accueil, l'élément LCP est l'image du héros ; sur les pages à bandeau texte, c'est le bandeau `.band.phead` et son fond SVG, qui attend les deux feuilles de style bloquantes (21 Ko compressés). La première mise en page coûte 190 à 300 ms réels sur ce poste (environ 1 s après le ralentissement ×4). Le LCP réellement observé reste sous 1 s.
+- TBT de 250 à 950 ms : l'hydratation React et le routeur Next coûtent à eux seuls environ 500 ms simulés, avant tout code de la maquette. L'accueil et Le réseau sont les plus lourds (mots animés du héros, halo, environ 800 nœuds).
+- Accessibilité 96 sur Le réseau, l'agenda et l'annuaire : audit `target-size`, qui mesure les boutons du héros pendant leur animation d'entrée. Résultat dépendant de l'instant de l'audit ; le corriger demanderait de changer l'animation.
+
+Budget de `docs/02` : CLS sous 0,1 respecté partout (0 à 0,023) ; JavaScript compressé d'environ 143 Ko en contenu (149 à 153 Ko transférés, en-têtes compris), dont 115 Ko pour React et le routeur Next ; LCP sous 2,5 s non respecté en simulation sur ce poste.
+
+À faire sur la préproduction Linux : remesurer (même protocole), activer brotli dans Nginx (environ 130 Ko de JavaScript). Pistes qui changent l'apparence ou les animations de la maquette, à valider avec REC 242 avant tout travail : alléger le héros de l'accueil (moins de mots animés), ne plus faire du fond SVG des bandeaux l'élément LCP, découper `site.css` (71 Ko, en grande partie inutilisé sur chaque page).
+
+Vérifications : `tsc --noEmit` et ESLint sans erreur ; `next build` réussi depuis un dossier `.next` vidé ; tests d'intégration 54 / 54 ; E2E du site, de l'adhésion, de l'annuaire, des événements, des opportunités et de la sécurité 33 / 33 (6 échecs au premier passage, tous par délai dépassé pendant la première compilation des pages par le serveur de développement, puis réussis au second passage) ; audit visuel inchangé à 68 / 82 écrans conformes contre la maquette sans démo (la page Merci doit être capturée avec `AUDIT_MERCI_ID` réglé sur une candidature existante).

@@ -143,7 +143,7 @@ export default async function Recherche({
               data-m-d="4"
             >
               {TYPES.map((t) => (
-                <Link
+                <Link prefetch={false}
                   key={t}
                   href={href(t)}
                   scroll={false}
@@ -167,7 +167,7 @@ export default async function Recherche({
           )}
           <div className="stack" style={{ gap: 12 }} data-m="cascade" data-m-stagger="">
             {results.map((r) => (
-              <Link key={r.id} href={r.lien || '/'} className="card row-card">
+              <Link prefetch={false} key={r.id} href={r.lien || '/'} className="card row-card">
                 <span className="pill-type">{r.type}</span>
                 <div style={{ flex: 1 }}>
                   <p className="h-s">{r.title}</p>

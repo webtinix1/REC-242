@@ -30,7 +30,7 @@ export default function DevenirPartenaire() {
       >
         <div className="wrap" style={{ maxWidth: 940 }}>
           <div className="stack" style={{ gap: 18 }}>
-            <Link href="/le-reseau/partenaires" className="linkbtn" data-m="rise">
+            <Link prefetch={false} href="/le-reseau/partenaires" className="linkbtn" data-m="rise">
               ← Partenaires
             </Link>
             <span className="eyebrow" data-m="rise" data-m-d="1">

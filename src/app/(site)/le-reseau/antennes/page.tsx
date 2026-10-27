@@ -113,11 +113,11 @@ export default async function Antennes() {
                   </div>
                   <div className="line" style={{ borderBottom: 0 }}>
                     <span>Prochains événements</span>
-                    <Link href={`/agenda?ville=${encodeURIComponent(a.ville)}`} className="linkbtn">
+                    <Link prefetch={false} href={`/agenda?ville=${encodeURIComponent(a.ville)}`} className="linkbtn">
                       Agenda →
                     </Link>
                   </div>
-                  <Link
+                  <Link prefetch={false}
                     className="rec-btn rec-btn--secondary"
                     style={{ width: 'max-content' }}
                     href={`/contact?motif=Autre&objet=${encodeURIComponent(`Antenne de ${a.ville}`)}`}
