@@ -35,7 +35,7 @@ export const PermissionsMatrix = () => {
           </button>
         ))}
       </div>
-      <div className="tblwrap tblwrap-x">
+      <div className="tblwrap tblwrap-x" role="region" aria-label="Droits par rôle" tabIndex={0}>
         <table className="tbl mtx">
           <thead>
             <tr>

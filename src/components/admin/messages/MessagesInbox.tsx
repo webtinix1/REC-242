@@ -168,13 +168,12 @@ export const MessagesInbox = ({
         </div>
       )}
       <div className="inbox">
-        <div className="inbox-list" role="list" aria-label="Messages reçus">
+        <div className="inbox-list" role="group" aria-label="Messages reçus">
           {messages.length === 0 && <p className="empty-inbox">Aucun message pour ce filtre.</p>}
           {messages.map((x) => (
             <button
               key={x.id}
               type="button"
-              role="listitem"
               className={`ib-item${x.id === m?.id ? ' is-on' : ''}`}
               onClick={() => choisir(x)}
               aria-current={x.id === m?.id ? 'true' : undefined}
@@ -195,7 +194,11 @@ export const MessagesInbox = ({
                   </span>
                 </span>
               </span>
-              {x.nonLu && x.id !== m?.id && <span className="ib-dot" aria-label="Non lu" />}
+              {x.nonLu && x.id !== m?.id && (
+                <span className="ib-dot">
+                  <span className="sr">Non lu</span>
+                </span>
+              )}
             </button>
           ))}
         </div>

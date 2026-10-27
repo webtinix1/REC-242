@@ -79,6 +79,7 @@ import { Icon as Icon_e60daefd9ca0ae7722c67ce9a39e1dd6 } from '@/components/admi
 import { Logo as Logo_e60daefd9ca0ae7722c67ce9a39e1dd6 } from '@/components/admin/Graphics'
 import { AfterLogin as AfterLogin_fa74efde009847e727b14509c0b696e4 } from '@/components/admin/LoginNote'
 import { BeforeLogin as BeforeLogin_fa74efde009847e727b14509c0b696e4 } from '@/components/admin/LoginNote'
+import { AccessibiliteNative as AccessibiliteNative_ca10b7219f33cd61f3b8bc64632848f8 } from '@/components/admin/AccessibiliteNative'
 import { TableauDeBord as TableauDeBord_1aa6468ae5881ebc6a97cc27656ea4ec } from '@/components/admin/tableau/TableauDeBord'
 import { CotisationsView as CotisationsView_f6f1a93f8cf582172d01df220f4ad851 } from '@/components/admin/cotisations/CotisationsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -166,6 +167,7 @@ export const importMap = {
   "@/components/admin/Graphics#Logo": Logo_e60daefd9ca0ae7722c67ce9a39e1dd6,
   "@/components/admin/LoginNote#AfterLogin": AfterLogin_fa74efde009847e727b14509c0b696e4,
   "@/components/admin/LoginNote#BeforeLogin": BeforeLogin_fa74efde009847e727b14509c0b696e4,
+  "@/components/admin/AccessibiliteNative#AccessibiliteNative": AccessibiliteNative_ca10b7219f33cd61f3b8bc64632848f8,
   "@/components/admin/tableau/TableauDeBord#TableauDeBord": TableauDeBord_1aa6468ae5881ebc6a97cc27656ea4ec,
   "@/components/admin/cotisations/CotisationsView#CotisationsView": CotisationsView_f6f1a93f8cf582172d01df220f4ad851,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

@@ -51,3 +51,5 @@
 .sb .newsx-side a .nthumb{grid-column:2;grid-row:1 / span 3;justify-self:end}
 /* Boutons : la maquette utilise des <button> dont la police est héritée (graisse 400, interligne du texte) ; seuls ses liens vers l'espace membre gardent la graisse 600 de .rec-btn. */
 :where(.sb) a.rec-btn:where(:not([href^="/espace-membre"])){font:inherit}
+/* Accessibilité (lot 12) : sous l'opacité de la carte « Expirées », le gris discret descendait sous 4,5:1 sur le fond chaud. */
+.sb .expired .muted{color:var(--ink-800)}

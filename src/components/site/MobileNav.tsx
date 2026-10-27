@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type Item = { libelle: string; href: string }
 
@@ -28,6 +28,13 @@ export const MobileNav = ({ items, whatsapp }: { items: Item[]; whatsapp?: strin
   const setOpen = (v: boolean) => setOpenOn(v ? pathname : null)
   const on = (p: string) =>
     !open && (p === '/' ? pathname === '/' : pathname.startsWith(p)) ? ' is-on' : ''
+  // Échap referme le menu (parcours au clavier).
+  useEffect(() => {
+    if (!open) return
+    const fermer = (e: KeyboardEvent) => e.key === 'Escape' && setOpenOn(null)
+    window.addEventListener('keydown', fermer)
+    return () => window.removeEventListener('keydown', fermer)
+  }, [open])
 
   return (
     <>

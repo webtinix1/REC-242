@@ -1879,3 +1879,37 @@ html[data-theme='light'] {
     display: contents;
   }
 }
+
+/* ---------- Accessibilité (lot 12) : contrastes des textes gris de Payload et de l'extension SEO (4,5:1 minimum) ---------- */
+.btn--style-icon-label .btn__label,
+.btn--icon-style-with-border .btn__label,
+.array-field__add-row .btn__label,
+.upload__dropzoneContent__orText,
+.upload__dragAndDropText,
+.upload-relationship-details__meta {
+  color: var(--text-muted);
+}
+.field-type [style*='color: rgb(154, 154, 154)'] {
+  color: var(--text-muted) !important;
+}
+.field-type [style*='background-color: red'],
+.field-type [style*='background-color: orangered'] {
+  background-color: var(--red-700) !important;
+}
+.field-type [style*='background-color: orange;'] {
+  background-color: var(--gold-800) !important;
+}
+.field-type [style*='background-color: green'] {
+  background-color: var(--green-700) !important;
+}
+
+/* Accessibilité (lot 12) : focus visible au clavier sur les liens et champs du back-office (cartes du tableau de bord, recherche). */
+a:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}

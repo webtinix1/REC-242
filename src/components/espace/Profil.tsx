@@ -507,7 +507,7 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
             <h2 className="h3">Mes données</h2>
             <p className="small muted">
               Vous pouvez consulter, corriger ou faire supprimer vos données personnelles (
-              <Link href="/confidentialite" style={{ color: 'var(--text-brand)' }}>
+              <Link href="/confidentialite" style={{ color: 'var(--text-brand)', textDecoration: 'underline' }}>
                 politique de confidentialité
               </Link>
               ).

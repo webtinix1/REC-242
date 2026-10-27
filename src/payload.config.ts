@@ -83,6 +83,7 @@ export default buildConfig({
     components: {
       Nav: '@/components/admin/Nav#Nav',
       header: ['@/components/admin/BarreHaut#BarreHaut'],
+      providers: ['@/components/admin/AccessibiliteNative#AccessibiliteNative'],
       views: {
         dashboard: { Component: '@/components/admin/tableau/TableauDeBord#TableauDeBord' },
         cotisations: { Component: '@/components/admin/cotisations/CotisationsView#CotisationsView', path: '/cotisations' },
