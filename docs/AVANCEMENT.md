@@ -389,3 +389,13 @@ Payload écrivait les adresses des images de la médiathèque en adresses compl�
 ## Correctif : back-office en thème sombre (28/10/2026)
 
 Sur un poste réglé en thème sombre, Payload passait l'administration en sombre (fond noir) alors que l'habillage de la maquette ne définit que le thème clair. Le back-office est désormais fixé en thème clair (`admin.theme: 'light'` dans `src/payload.config.ts`). Vérifié avec un navigateur en thème sombre : connexion et Cotisations sur fond sable, boutons lisibles.
+
+## Mises en relation : échanges sur la plateforme (28/10/2026)
+
+Décision de Webtinix : une mise en relation acceptée ne transmet plus de coordonnées ; les deux membres échangent par la messagerie de « Mes échanges », que le super administrateur, l'administrateur et le responsable membres peuvent lire.
+- Serveur : `src/lib/echanges/actions.ts` (envoi réservé aux deux membres d'une relation acceptée, 60 messages par heure au plus, e-mail « nouveau message » au premier message non lu) ; fonction `coordonneesPartagees` supprimée.
+- Espace membre : encart des coordonnées retiré ; textes adaptés (« Accepter la mise en relation », aide de l'onglet, mention que l'équipe peut lire ces échanges).
+- Back-office : écran Demandes des membres, onglet Mises en relation, colonne « Conversation » qui se déplie (message de présentation et fil), visible des trois rôles autorisés seulement.
+- E-mails : nouveau modèle 15 ter « Nouveau message d'un membre » (le contenu n'est pas recopié dans l'e-mail) ; texte de la demande reçue mis à jour en base s'il n'avait pas été personnalisé. Migration `20261028_170336_messagerie_membres` (liste des modèles).
+- Documents modifiés : `docs/05-regles-metier.md` (§ mises en relation) et `docs/09-emails-et-notifications.md` (§ 15).
+- Écart assumé avec la maquette : sous la zone d'écriture d'une mise en relation, « L'autre membre est prévenu par e-mail et WhatsApp, sans voir votre numéro » devient « L'autre membre est prévenu par e-mail. L'équipe de REC 242 peut lire ces échanges. » (aucun envoi WhatsApp n'est branché). Inchangé : sur les fiches de l'annuaire, un membre connecté voit toujours les coordonnées que chaque membre choisit d'afficher (`docs/05`, annuaire).

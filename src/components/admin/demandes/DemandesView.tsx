@@ -2,7 +2,7 @@ import type { ListViewServerProps } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
-import { atLeast } from '@/access/roles'
+import { atLeast, extraRead } from '@/access/roles'
 import { PREFERENCES, STATUTS_EXPERT } from '@/collections/ExpertRequests'
 import { STATUTS_RELATION } from '@/collections/ConnectionRequests'
 import { BoView, initiales, relatif } from '../BoView'
@@ -49,8 +49,19 @@ export const DemandesView = async (props: ListViewServerProps) => {
       payload.find({ collection: 'members', where: { relationsSuspendues: { equals: true } }, sort: 'nomComplet', depth: 1, limit: 100, overrideAccess: true }),
     ])
     const nomDe = (m: MembreRef) => m?.nomComplet ?? ''
+    // Conversations entre membres : lisibles par les rôles des demandes des membres seulement (décision du 28/10/2026).
+    const peutLire = extraRead(user as never, 'demandesMembres')
     const lignes: LigneRelation[] = rel.docs.map((d) => {
-      const r = d as unknown as { id: number; statut: string; createdAt: string; demandeur?: MembreRef; destinataire?: MembreRef }
+      const r = d as unknown as {
+        id: number
+        statut: string
+        createdAt: string
+        message?: string
+        demandeur?: MembreRef
+        destinataire?: MembreRef
+        fil?: { auteur?: number | { id: number } | null; texte?: string; date?: string }[]
+      }
+      const auteur = (a: unknown) => (idDe(a) === r.demandeur?.id ? nomDe(r.demandeur ?? null) : nomDe(r.destinataire ?? null))
       return {
         id: r.id,
         demandeur: nomDe(r.demandeur ?? null),
@@ -60,6 +71,12 @@ export const DemandesView = async (props: ListViewServerProps) => {
         statut: STATUTS_RELATION.find((s) => s.value === r.statut)?.label ?? r.statut,
         cls: classeRelation(r.statut),
         date: jour(r.createdAt),
+        conversation: peutLire
+          ? [
+              { qui: nomDe(r.demandeur ?? null), quand: jour(r.createdAt), texte: r.message ?? '', demandeur: true },
+              ...(r.fil ?? []).map((b) => ({ qui: auteur(b.auteur), quand: b.date ? jour(b.date) : '', texte: b.texte ?? '', demandeur: idDe(b.auteur) === r.demandeur?.id })),
+            ]
+          : [],
       }
     })
     const signalements: Signalement[] = signalees.docs.map((d) => {

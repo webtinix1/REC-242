@@ -24,7 +24,9 @@ const lien = () => `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/espace-membre/ec
 
 /**
  * Mises en relation entre membres (docs/05-regles-metier.md §9) : le membre contacté accepte ou refuse ;
- * les coordonnées ne sont partagées qu'au statut « Acceptée », et seulement celles que chacun affiche.
+ * une fois acceptée, les deux membres échangent par le fil de messages de la plateforme. Aucune coordonnée n'est
+ * transmise (décision de Webtinix du 28/10/2026) ; super administrateur, administrateur et responsable membres
+ * peuvent lire les conversations (domaine « demandes des membres »).
  * Toutes les règles (qui peut faire quoi, plafond hebdomadaire, transitions) sont dans les hooks.
  */
 export const ConnectionRequests: CollectionConfig = {
@@ -156,7 +158,7 @@ export const ConnectionRequests: CollectionConfig = {
             vars: {
               membre: `${dest.prenom ?? ''} ${dest.nom ?? ''}`.trim(),
               accepte_ou_refuse: ok ? 'accepté' : 'refusé',
-              texte_reponse: ok ? 'Acceptée : les coordonnées sont dans votre espace.' : 'Refusée : aucun motif n’est donné.',
+              texte_reponse: ok ? 'Acceptée : vous pouvez maintenant échanger dans votre espace membre.' : 'Refusée : aucun motif n’est donné.',
               lien: lien(),
             },
           })

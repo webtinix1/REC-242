@@ -10,7 +10,9 @@
  */
 
 export type TemplateKey =
-  | 'candidatureConfirmation'
+  | 'miseEnRelationReponse'
+  | 'messageMembre'
+| 'candidatureConfirmation'
   | 'candidatureAlerte'
   | 'candidatureComplement'
   | 'bienvenueActivation'
@@ -270,7 +272,7 @@ Réponse souhaitée : {{preference}}. Réponse attendue sous 5 jours ouvrés.
     objet: '{{demandeur}} souhaite entrer en contact avec vous',
     corps: `{{demandeur}}, {{entreprise_demandeur}} : « {{message}} ».
 
-Vos coordonnées ne sont transmises que si vous acceptez.
+Si vous acceptez, vous échangez dans votre espace membre. Aucune coordonnée n’est transmise.
 
 [bouton] Accepter ou refuser | {{lien}}`,
     variables: ['demandeur', 'entreprise_demandeur', 'message', 'lien'],
@@ -282,6 +284,14 @@ Vos coordonnées ne sont transmises que si vous acceptez.
 
 [bouton] Ouvrir mes échanges | {{lien}}`,
     variables: ['membre', 'accepte_ou_refuse', 'texte_reponse', 'lien'],
+  },
+  messageMembre: {
+    label: '15 ter. Nouveau message d’un membre',
+    objet: '{{membre}} vous a écrit',
+    corps: `{{membre}} vous a envoyé un message dans votre espace membre.
+
+[bouton] Lire et répondre | {{lien}}`,
+    variables: ['membre', 'lien'],
   },
   reponseAnnonce: {
     label: '16. Réponse à une annonce',

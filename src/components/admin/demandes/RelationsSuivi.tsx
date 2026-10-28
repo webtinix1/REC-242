@@ -5,7 +5,19 @@ import React, { useState } from 'react'
 
 import { api } from '../membres/api'
 
-export type LigneRelation = { id: number; demandeur: string; demandeurEnt: string; contacte: string; contacteEnt: string; statut: string; cls: string; date: string }
+export type MessageRelation = { qui: string; quand: string; texte: string; demandeur: boolean }
+export type LigneRelation = {
+  id: number
+  demandeur: string
+  demandeurEnt: string
+  contacte: string
+  contacteEnt: string
+  statut: string
+  cls: string
+  date: string
+  /** Message de présentation puis fil des échanges ; vide pour un rôle qui n’a pas à les lire. */
+  conversation: MessageRelation[]
+}
 export type Signalement = { id: number; demandeur: string; demandeurId?: number; contacte: string; signalePar: string; motif: string; date: string }
 export type MembreSuspendu = { id: number; nom: string; entreprise: string }
 
@@ -33,7 +45,7 @@ export const RelationsSuivi = ({ lignes, signalements, suspendus, peutTraiter }:
 
   return (
     <>
-      <p className="muted">Demandes de mise en relation entre membres. Les coordonnées ne sont partagées que si le membre contacté accepte.</p>
+      <p className="muted">Demandes de mise en relation entre membres. Une fois la demande acceptée, les deux membres échangent sur la plateforme, sans coordonnées transmises.</p>
       <div className="tblwrap">
         <table className="tbl">
           <thead>
@@ -42,12 +54,13 @@ export const RelationsSuivi = ({ lignes, signalements, suspendus, peutTraiter }:
               <th scope="col">Membre contacté</th>
               <th scope="col">Statut</th>
               <th scope="col">Date</th>
+              <th scope="col">Conversation</th>
             </tr>
           </thead>
           <tbody>
             {lignes.length === 0 && (
               <tr>
-                <td colSpan={4} className="muted">
+                <td colSpan={5} className="muted">
                   Aucune demande de mise en relation.
                 </td>
               </tr>
@@ -68,6 +81,24 @@ export const RelationsSuivi = ({ lignes, signalements, suspendus, peutTraiter }:
                   <span className={`rec-badge rec-badge--${r.cls}`}>{r.statut}</span>
                 </td>
                 <td data-label="Date">{r.date}</td>
+                <td data-label="Conversation">
+                  {r.conversation.length > 0 && (
+                    <details className="rel-conv">
+                      <summary className="linkbtn">
+                        Lire ({r.conversation.length} message{r.conversation.length > 1 ? 's' : ''})
+                      </summary>
+                      {r.conversation.map((b, i) => (
+                        <div className={`bubble ${b.demandeur ? 'in' : 'out'}`} key={i}>
+                          <p className="xs muted">
+                            {b.qui}
+                            {b.quand ? ` · ${b.quand}` : ''}
+                          </p>
+                          <p style={{ whiteSpace: 'pre-line' }}>{b.texte}</p>
+                        </div>
+                      ))}
+                    </details>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

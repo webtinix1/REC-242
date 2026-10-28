@@ -132,9 +132,13 @@ Variante relance : « Cette demande attend votre réponse depuis 5 jours ouvrés
 ### 15. Mise en relation
 Objet (reçue) : {{demandeur}} souhaite entrer en contact avec vous
 > {{demandeur}}, {{entreprise_demandeur}} : « {{message}} ».
-> Accepter ou refuser : {{lien}}. Vos coordonnées ne sont transmises que si vous acceptez.
+> Si vous acceptez, vous échangez dans votre espace membre. Aucune coordonnée n'est transmise.
+> Accepter ou refuser : {{lien}}.
 Objet (réponse) : {{membre}} a {{accepte_ou_refuse}} votre demande
-> Acceptée : les coordonnées sont dans votre espace. Refusée : aucun motif n'est donné.
+> Acceptée : vous pouvez maintenant échanger dans votre espace membre. Refusée : aucun motif n'est donné.
+Objet (nouveau message, 15 ter) : {{membre}} vous a écrit
+> {{membre}} vous a envoyé un message dans votre espace membre.
+> Lire et répondre : {{lien}}. Le contenu du message n'est pas recopié dans l'e-mail.
 
 ### 16. Réponse à une annonce
 Objet : Nouvelle réponse à votre annonce « {{annonce}} »

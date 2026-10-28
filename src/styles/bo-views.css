@@ -50,3 +50,7 @@
 }
 .bb.bo-view .linkbtn:disabled{opacity:.5;cursor:not-allowed}
 .bb .av.face{display:inline-flex;width:36px;height:36px;font-size:13px}
+/* Demandes des membres, mises en relation : conversation dépliable (lecture par l'équipe, 28/10/2026). */
+.bb .rel-conv{min-width:260px}
+.bb .rel-conv summary{cursor:pointer;min-height:44px;display:inline-flex;align-items:center}
+.bb .rel-conv[open]{display:flex;flex-direction:column;gap:8px;margin-top:4px}

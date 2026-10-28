@@ -6,7 +6,6 @@ vi.mock('server-only', () => ({}))
 
 import { MESSAGE_PLAFOND } from '@/collections/ConnectionRequests'
 import { ficheAnnuaire, listerAnnuaire, MASQUE } from '@/lib/annuaire/donnees'
-import { coordonneesPartagees } from '@/lib/annuaire/relations'
 
 let payload: Payload
 const unique = Date.now()
@@ -73,7 +72,7 @@ describe('Lot 7 : annuaire et mises en relation', () => {
     expect(await ficheAnnuaire(visible.slug, false)).toBeNull()
   })
 
-  it('mise en relation : acceptée, elle ne partage que les coordonnées choisies ; refus et plafond', async () => {
+  it('mise en relation : acceptée, aucune coordonnée transmise (messagerie de la plateforme) ; plafond', async () => {
     const a = await membre(3, { annuaire: true, telephone: false, whatsapp: false, email: true })
     const b = await membre(4, { annuaire: true, telephone: true, whatsapp: false, email: false })
     await expect(
@@ -89,19 +88,16 @@ describe('Lot 7 : annuaire et mises en relation', () => {
     const d = r as unknown as { statut: string; demandeur: number | { id: number }; destinataire: number | { id: number } }
     expect(d.statut).toBe('attente')
     expect(typeof d.demandeur === 'object' ? d.demandeur.id : d.demandeur).toBe(a.id)
-    expect(await coordonneesPartagees(payload, r.id as number, a.id)).toBeNull()
     // Le demandeur ne peut pas accepter sa propre demande.
     await expect(payload.update({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, data: { statut: 'acceptee' } as never })).rejects.toThrow()
     await payload.update({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, data: { statut: 'acceptee' } as never })
-    const pourA = await coordonneesPartagees(payload, r.id as number, a.id)
-    expect(pourA?.telephone).toMatch(/^\+242/)
-    expect(pourA?.email).toBeUndefined()
-    const pourB = await coordonneesPartagees(payload, r.id as number, b.id)
-    expect(pourB?.telephone).toBeUndefined()
-    expect(pourB?.email).toBe(`annuaire3-${unique}@test.rec242.test`)
+    // Acceptée, la mise en relation ouvre la messagerie de la plateforme : aucune coordonnée n'est transmise (28/10/2026).
+    const vuParA = JSON.stringify(await payload.findByID({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, depth: 2 }))
+    expect(vuParA).not.toContain(`annuaire4-${unique}@test.rec242.test`)
+    const vuParB = JSON.stringify(await payload.findByID({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, depth: 2 }))
+    expect(vuParB).not.toContain(`annuaire3-${unique}@test.rec242.test`)
     // Un tiers ne voit rien.
     const c = await membre(5, { annuaire: true })
-    expect(await coordonneesPartagees(payload, r.id as number, c.id)).toBeNull()
     const lus = await payload.find({ collection: 'connectionRequests', user: c as never, overrideAccess: false })
     expect(lus.docs.some((x) => x.id === r.id)).toBe(false)
 

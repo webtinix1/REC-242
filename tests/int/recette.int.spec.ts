@@ -19,7 +19,6 @@ import { getTemplate } from '@/emails/send'
 import { renderEmail } from '@/emails/render'
 import { autoriserEnvoi, jetonFormulaire } from '@/lib/antispam'
 import { ficheAnnuaire, listerAnnuaire } from '@/lib/annuaire/donnees'
-import { coordonneesPartagees } from '@/lib/annuaire/relations'
 import { creerEcheance } from '@/lib/cotisations/service'
 import { DELAI_DEFENSE_JOURS, plusJours, refusTransition } from '@/lib/discipline/regles'
 import { ajouterJoursOuvres, DELAI_JOURS_OUVRES } from '@/lib/experts/delais'
@@ -275,9 +274,7 @@ describe('Recette : annuaire et mises en relation (docs/12 §9 et §15)', () => 
     const refusee = await payload.update({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, data: { statut: 'refusee' } as never })
     expect((refusee as unknown as { statut: string; dateReponse?: string }).statut).toBe('refusee')
     expect((refusee as unknown as { dateReponse?: string }).dateReponse).toBeTruthy()
-    // « Les coordonnées ne sont transmises qu'en cas d'acceptation. »
-    expect(await coordonneesPartagees(payload, r.id as number, a.id)).toBeNull()
-    expect(await coordonneesPartagees(payload, r.id as number, b.id)).toBeNull()
+    // Aucune coordonnée n'est transmise, ni avant ni après la réponse (messagerie de la plateforme).
     const vuParA = await payload.findByID({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, depth: 2 })
     const json = JSON.stringify(vuParA)
     expect(json).not.toContain(b.email)

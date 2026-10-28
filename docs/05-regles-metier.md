@@ -85,7 +85,7 @@ Fin d'adhésion (article 14) : démission écrite, décès, non-paiement après 
 
 - Chaque membre du comité et chaque expert porte des étiquettes d'expertise. Une question d'un membre sur une étiquette est proposée aux personnes qui la portent ; le membre choisit la personne.
 - Réponse attendue sous **5 jours ouvrés**. Au-delà, la demande remonte en « Sans réponse » dans le back-office, qui peut relancer, réattribuer ou répondre au nom de REC 242.
-- Mise en relation : le membre contacté accepte ou refuse. Les coordonnées ne sont transmises qu'en cas d'acceptation ; un refus est envoyé sans motif. Plus de 10 demandes par semaine suspend l'envoi jusqu'à vérification. Un membre peut signaler un abus.
+- Mise en relation : le membre contacté accepte ou refuse ; un refus est envoyé sans motif. Une fois la demande acceptée, les deux membres échangent par la messagerie de leur espace membre : aucune coordonnée n'est transmise (décision de Webtinix du 28/10/2026). Le super administrateur, l'administrateur et le responsable membres peuvent lire ces conversations. Un e-mail prévient d'un nouveau message (au premier message non lu, pas à chaque message) ; 60 messages par heure au plus. Plus de 10 demandes par semaine suspend l'envoi jusqu'à vérification. Un membre peut signaler un abus.
 
 ## 10. Commissions
 

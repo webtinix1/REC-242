@@ -8,7 +8,6 @@ import {
   type Fil,
   type OngletEchange,
 } from '@/components/espace/EchangesBoite'
-import { coordonneesPartagees } from '@/lib/annuaire/relations'
 import { nonLus } from '@/lib/echanges/service'
 import { dateCourte, exigerMembre, initialesDe, urlMedia, type Media } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
@@ -21,7 +20,7 @@ const ONGLETS: { cle: OngletEchange; label: string; aide: string }[] = [
   {
     cle: 'relations',
     label: 'Mises en relation',
-    aide: 'Les coordonnées ne sont échangées que si le membre contacté accepte.',
+    aide: 'Une fois la mise en relation acceptée, vous échangez ici. Aucune coordonnée n’est transmise ; l’équipe de REC 242 peut lire ces échanges.',
   },
   {
     cle: 'annonces',
@@ -172,7 +171,7 @@ export default async function EchangesPage({
         decision:
           attente && recu
             ? {
-                question: `${nom} souhaite vous contacter. Acceptez-vous de lui transmettre vos coordonnées ?`,
+                question: `${nom} souhaite échanger avec vous. Acceptez-vous la mise en relation ?`,
                 prenom: autre.prenom ?? '',
               }
             : undefined,
@@ -354,28 +353,6 @@ export default async function EchangesPage({
   const idDemande = Number(q('id'))
   const choisi = fils.find((f) => f.id === idDemande)
   const courant = choisi ?? fils[0] ?? null
-  if (courant && onglet === 'relations' && courant.peutEcrire) {
-    const c = await coordonneesPartagees(payload, courant.id, m.id)
-    if (c) {
-      // Une coordonnée que l'autre membre a déjà écrite dans le fil n'est pas répétée dans l'encart.
-      const chiffres = (t?: string) => (t ?? '').replace(/D/g, '')
-      const dejaDit = (v?: string) =>
-        !!chiffres(v) &&
-        courant.bulles.some((b) => b.sens === 'in' && chiffres(b.texte).includes(chiffres(v)))
-      const reste = {
-        nom: c.nom,
-        telephone: dejaDit(c.telephone) ? undefined : c.telephone,
-        whatsapp: dejaDit(c.whatsapp) ? undefined : c.whatsapp,
-        email:
-          c.email && courant.bulles.some((b) => b.sens === 'in' && b.texte.includes(c.email!))
-            ? undefined
-            : c.email,
-      }
-      const tout = [c.telephone, c.whatsapp, c.email].filter(Boolean)
-      const restants = [reste.telephone, reste.whatsapp, reste.email].filter(Boolean)
-      if (!tout.length || restants.length) courant.coordonnees = reste
-    }
-  }
   const aide = ONGLETS.find((o) => o.cle === onglet)!.aide
   const sortie: Fil[] = fils.map(({ _t, ...f }) => {
     void _t

@@ -3808,6 +3808,7 @@ export interface EmailTemplate {
           | 'relanceExpert'
           | 'miseEnRelationRecue'
           | 'miseEnRelationReponse'
+          | 'messageMembre'
           | 'reponseAnnonce'
           | 'decisionModeration'
           | 'demandeModificationTraitee'

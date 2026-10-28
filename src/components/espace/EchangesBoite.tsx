@@ -10,7 +10,6 @@ import { cloturerDemande, ecrire, lu } from '@/lib/echanges/actions'
 export type OngletEchange = 'relations' | 'annonces' | 'experts' | 'reseau'
 
 export type Bulle = { sens: 'in' | 'out'; qui: string; texte: string }
-export type Coordonnees = { nom: string; telephone?: string; whatsapp?: string; email?: string }
 export type Fil = {
   id: number
   qui: string
@@ -26,7 +25,7 @@ export type Fil = {
   bulles: Bulle[]
   /** Mise en relation reçue, en attente de décision. */
   decision?: { question: string; prenom: string }
-  coordonnees?: Coordonnees | null
+| null
   peutEcrire: boolean
   peutCloturer: boolean
   lien?: string
@@ -115,8 +114,6 @@ function Conversation({ onglet, base, f, explicite }: { onglet: OngletEchange; b
       router.refresh()
     })
 
-  const c = f.coordonnees
-  const aucune = c && !c.telephone && !c.whatsapp && !c.email
   return (
     <section className="card conv" aria-label={`Conversation : ${f.objet}`}>
       <Link className="linkbtn conv-back" href={href(base, onglet)} scroll={false}>
@@ -144,32 +141,18 @@ function Conversation({ onglet, base, f, explicite }: { onglet: OngletEchange; b
           </p>
         </div>
       ))}
-      {c && (
-        <div className="bubble note">
-          <p className="xs muted">Coordonnées de {c.nom}</p>
-          {aucune ? (
-            <p className="small">Ce membre n’affiche pas de coordonnées.</p>
-          ) : (
-            <>
-              {c.telephone && <p className="small">Téléphone : {c.telephone}</p>}
-              {c.whatsapp && <p className="small">WhatsApp : {c.whatsapp}</p>}
-              {c.email && <p className="small">E-mail : {c.email}</p>}
-            </>
-          )}
-        </div>
-      )}
       {f.decision && !decide && (
         <div className="blk">
           <p className="small">{f.decision.question}</p>
           <div className="row">
             <button type="button" className="rec-btn rec-btn--primary" disabled={occupe} onClick={() => decider(true)}>
-              Accepter et partager mes coordonnées
+              Accepter la mise en relation
             </button>
             <button type="button" className="rec-btn rec-btn--secondary" disabled={occupe} onClick={() => decider(false)}>
               Refuser poliment
             </button>
           </div>
-          <p className="xs muted">Vos coordonnées ne sont transmises que si vous acceptez. Un refus est envoyé sans motif.</p>
+          <p className="xs muted">Aucune coordonnée n’est transmise : vous échangez ici, sur la plateforme. Un refus est envoyé sans motif.</p>
         </div>
       )}
       {decide && (
@@ -177,7 +160,7 @@ function Conversation({ onglet, base, f, explicite }: { onglet: OngletEchange; b
           <span className="rec-badge rec-badge--active">C’est fait</span>
           <p className="small">
             {decide === 'ok'
-              ? `Mise en relation acceptée : vos coordonnées sont transmises à ${f.qui}, et les siennes à vous.`
+              ? `Mise en relation acceptée : vous pouvez maintenant échanger avec ${f.qui} ici.`
               : `Demande refusée. ${f.qui} est prévenu, sans motif.`}
           </p>
         </div>
@@ -207,7 +190,11 @@ function Conversation({ onglet, base, f, explicite }: { onglet: OngletEchange; b
                 Clôturer la demande
               </button>
             )}
-            <span className="xs muted">{"L'autre membre est prévenu par e-mail et WhatsApp, sans voir votre numéro."}</span>
+            <span className="xs muted">
+              {onglet === 'relations'
+                ? 'L’autre membre est prévenu par e-mail. L’équipe de REC 242 peut lire ces échanges.'
+                : "L'autre membre est prévenu par e-mail et WhatsApp, sans voir votre numéro."}
+            </span>
           </div>
           {envoye && !erreur && (
             <div className="okbox" role="status">

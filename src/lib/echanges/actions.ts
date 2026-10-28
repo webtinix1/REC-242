@@ -3,6 +3,7 @@
 import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
+import { notify } from '@/emails/send'
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import { verifierJetonExpert } from '@/lib/experts/delais'
 import { membreConnecte } from '@/lib/membres/espace'
@@ -67,10 +68,14 @@ export async function ecrire(onglet: Onglet, id: number, texte: string): Promise
       demandeur: number
       destinataire: number
       fil?: unknown[]
+      nonLuPar?: unknown[]
     }
     const autre = idDe(r.demandeur) === m.id ? idDe(r.destinataire) : idDe(r.destinataire) === m.id ? idDe(r.demandeur) : undefined
     if (!autre) return { erreur: 'Échange introuvable.' }
     if (r.statut !== 'acceptee') return { erreur: 'Vous pourrez écrire quand la mise en relation sera acceptée.' }
+    // Les échanges restent sur la plateforme (pas de coordonnées transmises) : plafond d'envoi contre les abus.
+    if (!autoriserEnvoi(`relation:${m.id}`, 60, 3600 * 1000)) return { erreur: 'Trop de messages envoyés en une heure. Réessayez plus tard.' }
+    const dejaPrevenu = (r.nonLuPar ?? []).map(idDe).includes(autre)
     await payload.update({
       collection: 'connectionRequests',
       id,
@@ -78,6 +83,15 @@ export async function ecrire(onglet: Onglet, id: number, texte: string): Promise
       context: { systeme: true },
       data: { fil: [...(r.fil ?? []), { auteur: m.id, texte: t, date: maintenant() }], nonLuPar: [autre] } as never,
     })
+    // Un e-mail au premier message non lu seulement, pas à chaque message d'une conversation.
+    if (!dejaPrevenu) {
+      const dest = (await payload.findByID({ collection: 'members', id: autre, depth: 0, overrideAccess: true })) as unknown as { email: string }
+      await notify(payload, {
+        to: dest.email,
+        template: 'messageMembre',
+        vars: { membre: `${m.prenom ?? ''} ${m.nom ?? ''}`.trim(), lien: `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/espace-membre/echanges?onglet=relations&id=${id}` },
+      })
+    }
   } else if (onglet === 'annonces') {
     const r = (await payload.findByID({ collection: 'opportunityReplies', id, depth: 1, overrideAccess: true })) as unknown as {
       membre: number | { id: number }
