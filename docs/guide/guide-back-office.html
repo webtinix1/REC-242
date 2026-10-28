@@ -94,6 +94,9 @@ figure.haut .cadre{height:108mm}
 figure.haut img{height:100%;object-fit:cover;object-position:top}
 figure.moyen .cadre{height:92mm}
 figure.moyen img{height:100%;object-fit:cover;object-position:top}
+figure.libre .cadre{height:auto}
+figure.libre img{height:auto;object-fit:initial}
+figure.etroit{max-width:120mm}
 figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#fff;border-top:1px solid var(--sand-100)}
 .duo{display:block}
 .vide{color:var(--ink-500)}
@@ -117,10 +120,10 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
   <h2>Sommaire</h2>
   <ol>
     <li><a href="#commun">Partie commune : bien démarrer</a><span>Se connecter, le menu, le tableau de bord, la recherche, la sécurité du compte</span></li>
-    <li><a href="#superadmin">Super administrateur</a><span>Utilisateurs et rôles, invitations, déblocage, journal</span></li>
-    <li><a href="#admin">Administrateur</a><span>Publier, programmer, Paramètres et onglet Tarifs, discipline et ses délais, journal</span></li>
-    <li><a href="#membres">Responsable membres</a><span>Candidatures, fiches membres, demandes de modification, messages, commissions</span></li>
-    <li><a href="#tresorier">Trésorier</a><span>Paiements en espèces, suivi des cotisations, relances, reçus</span></li>
+    <li><a href="#superadmin">Super administrateur</a><span>Utilisateurs et rôles, invitations, déblocage, journal, abonnement Annuaire détaillé, lecture des conversations</span></li>
+    <li><a href="#admin">Administrateur</a><span>Publier, programmer, Paramètres et onglet Tarifs (dont l'abonnement Annuaire détaillé), discipline et ses délais, journal</span></li>
+    <li><a href="#membres">Responsable membres</a><span>Candidatures, fiches membres, demandes de modification, messages, commissions, conversations entre membres et signalements</span></li>
+    <li><a href="#tresorier">Trésorier</a><span>Paiements en espèces, abonnement Annuaire détaillé, suivi des cotisations, relances, reçus</span></li>
     <li><a href="#editeur">Éditeur</a><span>Actualités, accès réservé aux membres, ce qui ne se publie pas seul</span></li>
     <li><a href="#evenements">Responsable événements</a><span>Créer un événement, capacité et liste d'attente, pointage par scan</span></li>
     <li><a href="#probleme">En cas de problème</a><span>Que faire, qui contacter</span></li>
@@ -174,6 +177,16 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <p>Chaque bloc ne montre que ce que votre rôle permet de voir. Un bloc qui n'apparaît pas n'est pas une erreur : vous n'y avez pas accès.</p>
   </div>
 
+  <h3>Les échanges entre membres restent sur la plateforme</h3>
+  <p>Depuis l'annuaire de leur espace, les membres s'écrivent directement : il n'y a plus de demande à accepter. Une seule conversation existe entre deux membres, et chaque nouveau message s'y ajoute.</p>
+  <div class="savoir"><span class="t">À savoir</span>
+    <ul>
+      <li>Aucune coordonnée n'est transmise d'un membre à l'autre. Les numéros de téléphone, les adresses e-mail et les liens WhatsApp ou Telegram écrits dans un message sont remplacés par « [coordonnée masquée] », pour tout le monde, l'équipe de REC 242 comprise.</li>
+      <li>Les fiches de l'annuaire n'affichent plus de coordonnées. Les fiches détaillées (dirigeant, portrait, quartier, taille, commissions, liens) sont réservées aux membres qui ont l'abonnement « Annuaire détaillé ».</li>
+      <li>La lecture des conversations est réservée au super administrateur, à l'administrateur et au responsable membres.</li>
+    </ul>
+  </div>
+
   <h3>La recherche</h3>
   <p>La barre en haut de l'écran cherche un <b>membre</b> (nom, numéro d'adhérent ou e-mail) ou une <b>candidature</b> (nom, prénom, entreprise ou e-mail).</p>
   <ol class="etapes">
@@ -206,10 +219,11 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <tr><td>Exports de données personnelles</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Opportunités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Cotisations et paiements</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Demandes des membres</td><td><span class="n n-tous">Tous droits</span></td><td>Lit les conversations entre membres et traite les signalements.</td></tr>
     <tr><td><b>Utilisateurs et rôles</b></td><td><span class="n n-tous">Tous droits</span></td><td>Seul rôle qui invite, change les rôles, désactive et débloque.</td></tr>
     <tr><td>Paramètres et référencement</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td><b>Journal des actions</b></td><td><span class="n n-tous">Tous droits</span></td><td>Lecture et export. Aucune entrée ne se modifie ni ne se supprime.</td></tr>
-    <tr><td>Commissions, gouvernance et experts, demandes des membres, messages, documents, discipline, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td>Reçoit tous les messages des formulaires.</td></tr>
+    <tr><td>Commissions, gouvernance et experts, messages, documents, discipline, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td>Reçoit tous les messages des formulaires.</td></tr>
   </table>
   <h3>Ce que ce rôle ne peut pas faire</h3>
   <ul>
@@ -265,6 +279,11 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
   <div class="savoir"><span class="t">À savoir</span>
     <p>Toutes vos actions sur les comptes sont inscrites au journal. Une personne désactivée n'est jamais supprimée : si elle revient, on la réactive en changeant son statut.</p>
   </div>
+
+  <div class="tache">
+  <h4>Abonnement « Annuaire détaillé » et conversations entre membres</h4>
+  <p>Vous avez les mêmes droits que l'administrateur sur ces deux points : régler le prix et la durée de l'abonnement dans <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>, groupe « Abonnement Annuaire détaillé » (tant qu'ils sont vides, l'offre n'est pas proposée), et lire les conversations entre membres dans <span class="menu">Activité, Demandes des membres</span>. Les pas à pas sont dans le chapitre Administrateur et dans celui du responsable membres.</p>
+  </div>
 </section>
 
 <!-- ADMINISTRATEUR -->
@@ -283,7 +302,8 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <tr><td>Opportunités</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Cotisations et paiements</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Paramètres et référencement</td><td><span class="n n-tous">Tous droits</span></td><td>Seul avec le super administrateur à modifier les Tarifs.</td></tr>
-    <tr><td>Commissions, gouvernance et experts, demandes des membres, documents, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Commissions, gouvernance et experts, documents, annuaire imprimé, FAQ, partenaires, médias</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Demandes des membres</td><td><span class="n n-tous">Tous droits</span></td><td>Lit les conversations entre membres et traite les signalements.</td></tr>
     <tr><td><b>Discipline</b></td><td><span class="n n-tous">Tous droits</span></td><td>Ouvre et conduit les procédures.</td></tr>
     <tr><td>Messages des formulaires</td><td><span class="n n-tous">Tous droits</span></td><td>Reçoit les messages « Partenariat » et « Autre ».</td></tr>
     <tr><td>Utilisateurs et rôles</td><td><span class="n n-lect">Lecture seule</span></td><td>Voit la liste et la matrice, ne modifie rien.</td></tr>
@@ -345,7 +365,7 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
 
   <div class="tache">
   <h4>Fixer les tarifs : Paramètres, onglet Tarifs</h4>
-  <p>C'est ici, et seulement ici, que se règlent le droit d'adhésion et la cotisation de chaque catégorie, ainsi que les règles de paiement : délai pour solder la cotisation, nombre de tranches au plus, nombre de relances avant constat de perte, intervalle minimal entre relances. Un second bloc règle l'annuaire imprimé : édition en cours, date de clôture des fiches, tarifs des encarts.</p>
+  <p>C'est ici, et seulement ici, que se règlent le droit d'adhésion et la cotisation de chaque catégorie, ainsi que les règles de paiement : délai pour solder la cotisation, nombre de tranches au plus, nombre de relances avant constat de perte, intervalle minimal entre relances. Un bloc « Abonnement Annuaire détaillé » règle l'abonnement des membres (prix et durée en mois), et un autre l'annuaire imprimé : édition en cours, date de clôture des fiches, tarifs des encarts.</p>
   <ol class="etapes">
     <li>Ouvrez <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>.</li>
     <li>Modifiez la valeur voulue.</li>
@@ -355,6 +375,7 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <ul>
       <li>Les montants ne sont pas écrits dans ce guide : ils viennent de vos décisions et se lisent dans cet onglet.</li>
       <li>Un changement de tarif <b>ne touche jamais une échéance déjà émise</b> : il vaut pour les prochaines.</li>
+      <li>Pour l'abonnement « Annuaire détaillé », le prix et la durée doivent tous deux être remplis : s'ils sont vides, l'offre n'est pas proposée aux membres. Voir la tâche suivante.</li>
       <li>Chaque modification des tarifs est inscrite au journal. Le trésorier et l'éditeur ne peuvent pas les modifier.</li>
     </ul>
   </div>
@@ -397,6 +418,29 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
   <p>Le journal est en lecture seule : personne ne peut y changer ni y effacer une ligne.</p>
   </div>
   <figure class="moyen"><div class="cadre"><img src="captures/17-journal-ordinateur.png" alt="Journal des actions"></div><figcaption>Le journal des actions et ses filtres.</figcaption></figure>
+
+  <div class="tache">
+  <h4>Régler le prix et la durée de l'abonnement « Annuaire détaillé »</h4>
+  <p>Cet abonnement, payé en plus de la cotisation, donne aux membres les fiches détaillées de l'annuaire (dirigeant, portrait, quartier, taille, commissions, liens), jamais les coordonnées. Il se règle par le super administrateur et les administrateurs.</p>
+  <ol class="etapes">
+    <li>Ouvrez <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>, puis descendez jusqu'au groupe « Abonnement Annuaire détaillé ».</li>
+    <li>Écrivez le <b>Prix de l'abonnement</b> en FCFA, sans espace, et la <b>Durée (mois)</b>.</li>
+    <li>Enregistrez.</li>
+  </ol>
+  <figure class="libre"><div class="cadre"><img src="captures/23-abonnement-parametres-ordinateur.png" alt="Groupe Abonnement Annuaire détaillé dans Paramètres"></div><figcaption>Paramètres, onglet Tarifs : le groupe « Abonnement Annuaire détaillé ».</figcaption></figure>
+  <div class="savoir"><span class="t">À savoir</span>
+    <ul>
+      <li>Si le prix ou la durée est vide, l'abonnement n'est pas proposé : un membre ne peut pas le payer.</li>
+      <li>Le membre paie en ligne depuis son annuaire. Le trésorier peut aussi enregistrer un paiement en espèces. À la confirmation du paiement, l'abonnement s'active et un reçu numéroté est émis.</li>
+      <li>Les montants ne sont pas écrits dans ce guide : ils viennent de vos décisions.</li>
+    </ul>
+  </div>
+  </div>
+
+  <div class="tache">
+  <h4>Lire les conversations entre membres</h4>
+  <p>Les échanges entre membres restent sur la plateforme. Vous pouvez les lire dans <span class="menu">Activité, Demandes des membres</span>, onglet « Conversations entre membres » : cliquez sur <span class="btn">Lire (N messages)</span> dans la colonne « Conversation ». Les numéros, adresses e-mail et liens WhatsApp ou Telegram y sont masqués (« [coordonnée masquée] »). Le traitement des signalements est décrit dans le chapitre du responsable membres.</p>
+  </div>
 </section>
 
 <!-- RESPONSABLE MEMBRES -->
@@ -411,7 +455,7 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <tr><td>Fiches membres</td><td><span class="n n-tous">Tous droits</span></td><td>Statut, commissions, démission, lien d'activation.</td></tr>
     <tr><td>Exports de données personnelles</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Commissions et demandes pour les rejoindre</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
-    <tr><td>Demandes des membres (experts, mises en relation)</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
+    <tr><td>Demandes des membres (questions aux experts, conversations entre membres)</td><td><span class="n n-tous">Tous droits</span></td><td>Lit les conversations, traite les signalements.</td></tr>
     <tr><td>Annuaire imprimé et encarts</td><td><span class="n n-tous">Tous droits</span></td><td></td></tr>
     <tr><td>Messages des formulaires</td><td><span class="n n-part">Droits partiels</span></td><td>Les messages « Adhésion » qui lui sont transmis.</td></tr>
     <tr><td>Événements et inscrits</td><td><span class="n n-lect">Lecture seule</span></td><td></td></tr>
@@ -501,10 +545,11 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <li><b>Statut</b> : Actif, Suspendu, Ancien membre. Tout changement demande un motif obligatoire, puis <span class="btn">Confirmer</span>.</li>
     <li><b>Annuaire</b> : vous voyez les choix du membre. Vous pouvez cliquer sur <span class="btn">Masquer la fiche dans l'annuaire</span> ; vous ne pouvez jamais la publier sans son consentement.</li>
     <li><b>Commissions</b> : <span class="btn">Modifier les commissions</span>, cochez, puis <span class="btn">Enregistrer</span>.</li>
+    <li><b>Cotisation</b> : le bloc montre le droit d'adhésion et les tranches, puis la ligne « Annuaire détaillé » : « Jusqu'au » suivi de la date de fin de l'abonnement, ou « Sans abonnement ».</li>
     <li><b>Compte</b> : si le membre n'a pas activé son espace, cliquez sur <span class="btn">Renvoyer le lien d'activation</span> (valable 72 heures).</li>
     <li><b>Fin d'adhésion</b> : <span class="btn">Enregistrer une démission</span> ou <span class="btn">Enregistrer un décès</span>, avec la date. La fiche quitte l'annuaire ; l'historique reste.</li>
   </ul>
-  <p>Si un membre a envoyé plus de 10 demandes de mise en relation en une semaine, les mises en relation sont suspendues : après vérification, cliquez sur <span class="btn">Rétablir les mises en relation</span>.</p>
+  <p>Si un membre a ouvert plus de 10 nouvelles conversations en une semaine, il ne peut plus en ouvrir de nouvelles : après vérification, cliquez sur <span class="btn">Rétablir les mises en relation</span> (voir « Lire les conversations entre membres et traiter un signalement »).</p>
   </div>
   <figure class="moyen"><div class="cadre"><img src="captures/06-membre-ordinateur.png" alt="Fiche d'un membre"></div><figcaption>La fiche d'un membre : statut, visibilité dans l'annuaire, compte, cotisation, discipline, fin d'adhésion.</figcaption></figure>
 
@@ -536,14 +581,29 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
   <figure class="moyen"><div class="cadre"><img src="captures/19-commissions-ordinateur.png" alt="Écran Commissions"></div><figcaption>Commissions : demandes pour rejoindre et cartes des commissions.</figcaption></figure>
 
   <div class="tache">
-  <h4>Répondre aux demandes des membres</h4>
-  <p>Ouvrez <span class="menu">Activité, Demandes des membres</span>. Deux onglets :</p>
-  <ul>
-    <li><b>Questions aux experts</b> : une question en rouge n'a pas eu de réponse sous 5 jours ouvrés. Choisissez <span class="btn">Relancer l'expert</span>, <span class="btn">Réattribuer</span> (à une autre personne qui porte la même étiquette), <span class="btn">Répondre au membre</span> (au nom de REC 242) ou <span class="btn">Clôturer</span>.</li>
-    <li><b>Mises en relation</b> : suivi en lecture, signalements d'abus à traiter, membres suspendus pour trop de demandes.</li>
-  </ul>
+  <h4>Répondre aux questions des experts</h4>
+  <p>Ouvrez <span class="menu">Activité, Demandes des membres</span>. L'écran a deux onglets ; le premier est « Questions aux experts » : une question en rouge n'a pas eu de réponse sous 5 jours ouvrés. Choisissez <span class="btn">Relancer l'expert</span>, <span class="btn">Réattribuer</span> (à une autre personne qui porte la même étiquette), <span class="btn">Répondre au membre</span> (au nom de REC 242) ou <span class="btn">Clôturer</span>.</p>
   </div>
-  <figure class="moyen"><div class="cadre"><img src="captures/21-demandes-ordinateur.png" alt="Demandes des membres"></div><figcaption>Demandes des membres : questions aux experts et mises en relation.</figcaption></figure>
+  <figure class="moyen"><div class="cadre"><img src="captures/21-demandes-ordinateur.png" alt="Demandes des membres"></div><figcaption>Demandes des membres : l'onglet « Questions aux experts ».</figcaption></figure>
+
+  <div class="tache">
+  <h4>Lire les conversations entre membres et traiter un signalement</h4>
+  <p>Les membres s'écrivent directement depuis l'annuaire de leur espace : il n'y a plus de demande à accepter. Ouvrez <span class="menu">Activité, Demandes des membres</span>, onglet « Conversations entre membres ».</p>
+  <ol class="etapes">
+    <li>Le tableau liste chaque conversation : le demandeur, le membre contacté, le statut, la date.</li>
+    <li>Dans la colonne « Conversation », cliquez sur <span class="btn">Lire (N messages)</span> : le fil se déplie, avec l'auteur et la date de chaque message. Cliquez de nouveau pour le replier.</li>
+    <li>Plus bas, « Signalements à traiter » liste les échanges qu'un membre a signalés comme abusifs (prospection de masse, revente de données). Chaque ligne montre le demandeur, le membre contacté, le motif donné et la date. Lisez la conversation, puis cliquez sur <span class="btn">Ouvrir la fiche du demandeur</span> pour agir sur son compte (par exemple le suspendre, avec un motif).</li>
+    <li>Plus bas encore, « Mises en relation suspendues » liste les membres qui ont ouvert plus de 10 nouvelles conversations en une semaine. Après vérification, cliquez sur <span class="btn">Rétablir les mises en relation</span> à côté de son nom.</li>
+  </ol>
+  <figure class="moyen"><div class="cadre"><img src="captures/22-conversations-ordinateur.png" alt="Conversations entre membres"></div><figcaption>Conversations entre membres : le fil se déplie sous « Lire ». Les signalements et les membres suspendus sont plus bas sur l'écran.</figcaption></figure>
+  <div class="savoir"><span class="t">À savoir</span>
+    <ul>
+      <li>Seuls le super administrateur, l'administrateur et le responsable membres lisent les conversations. Les autres rôles ne voient pas le texte des messages.</li>
+      <li>Aucune coordonnée ne circule : les numéros, les adresses e-mail et les liens WhatsApp ou Telegram sont remplacés par « [coordonnée masquée] ». Vous les voyez aussi masqués.</li>
+      <li>Une conversation encore « En attente » est une ancienne demande : le membre contacté peut encore l'accepter ou la refuser de son côté.</li>
+    </ul>
+  </div>
+  </div>
 
   <div class="tache">
   <h4>Importer, exporter, préparer l'annuaire imprimé</h4>
@@ -591,7 +651,7 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
   <ol class="etapes">
     <li>Dans <span class="menu">Cotisations</span>, cliquez sur <span class="btn btn-p">Enregistrer un paiement</span>.</li>
     <li>Choisissez le <b>Membre</b>.</li>
-    <li>Choisissez l'<b>Objet</b> : droit d'adhésion, cotisation en totalité, 1re ou 2e tranche, droit et cotisation ensemble, encart dans l'annuaire imprimé.</li>
+    <li>Choisissez l'<b>Objet</b> : droit d'adhésion, cotisation en totalité, 1re ou 2e tranche, droit et cotisation ensemble, encart dans l'annuaire imprimé, abonnement « Annuaire détaillé ».</li>
     <li>Écrivez le <b>Montant (FCFA)</b> reçu.</li>
     <li>Réglez la <b>Date du paiement</b> (pas dans le futur).</li>
     <li>Dans « Mode de paiement », cliquez sur <span class="btn">Espèces</span>. Écrivez alors le <b>N° du reçu du carnet à souches</b>. (Pour un virement, cliquez sur <span class="btn">Virement</span> et écrivez la référence du virement.)</li>
@@ -599,6 +659,23 @@ figcaption{padding:1.6mm 3mm;font-size:8.5pt;color:var(--ink-500);background:#ff
     <li>Cliquez sur <span class="btn btn-p">Enregistrer et émettre le reçu</span>.</li>
   </ol>
   <p>Le reçu officiel numéroté est créé et envoyé par e-mail au membre. Il apparaît dans « Paiements reçus », avec son lien. Le bouton reste éteint tant que le membre, le montant, la date ou la référence manquent.</p>
+  </div>
+
+  <div class="tache">
+  <h4>Encaisser un abonnement « Annuaire détaillé » en espèces</h4>
+  <p>L'abonnement s'ajoute à la cotisation et donne accès aux fiches détaillées de l'annuaire. Le membre le paie en ligne depuis son annuaire ; quand il paie au siège, vous l'enregistrez.</p>
+  <ol class="etapes">
+    <li>Dans <span class="menu">Cotisations</span>, cliquez sur <span class="btn btn-p">Enregistrer un paiement</span> et choisissez le <b>Membre</b>.</li>
+    <li>Choisissez l'<b>Objet</b> « Abonnement « Annuaire détaillé » ».</li>
+    <li>Écrivez le <b>Montant (FCFA)</b> reçu : il correspond au prix réglé dans <span class="menu">Paramètres</span>, onglet <span class="menu">Tarifs</span>, groupe « Abonnement Annuaire détaillé ».</li>
+    <li>Réglez la date, choisissez <span class="btn">Espèces</span> et écrivez le numéro du reçu du carnet à souches.</li>
+    <li>Cliquez sur <span class="btn btn-p">Enregistrer et émettre le reçu</span>.</li>
+  </ol>
+  <p>À l'enregistrement, l'abonnement s'active et se prolonge de la durée prévue dans les paramètres, à partir de sa fin en cours s'il en a déjà un. Le reçu est numéroté et envoyé par e-mail comme pour tout paiement. Vous pouvez vérifier sur la fiche du membre, bloc « Cotisation » : « Annuaire détaillé » indique « Jusqu'au » suivi de la date de fin, au lieu de « Sans abonnement ».</p>
+  <figure class="libre etroit"><div class="cadre"><img src="captures/24-fiche-abonnement-ordinateur.png" alt="Bloc Cotisation de la fiche d'un membre"></div><figcaption>Le bloc « Cotisation » d'une fiche membre : la ligne « Annuaire détaillé ».</figcaption></figure>
+  <div class="savoir"><span class="t">À savoir</span>
+    <p>Tant que le prix ou la durée n'est pas réglé dans les paramètres, l'abonnement n'est pas proposé aux membres, et un paiement en espèces s'enregistre sans activer l'abonnement : demandez d'abord à un administrateur de régler la durée.</p>
+  </div>
   </div>
 
   <div class="tache">
