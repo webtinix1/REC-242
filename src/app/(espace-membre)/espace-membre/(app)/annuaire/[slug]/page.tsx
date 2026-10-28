@@ -5,6 +5,7 @@ import React from 'react'
 
 import { AnnuaireRelation } from '@/components/espace/AnnuaireRelation'
 import { Visage } from '@/components/espace/AnnuaireVisage'
+import { estAbonne } from '@/lib/abonnement/service'
 import { ficheAnnuaire } from '@/lib/annuaire/donnees'
 import { exigerMembre } from '@/lib/membres/espace'
 import { demanderRelation, signalerFiche } from '../actions'
@@ -13,8 +14,8 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  await exigerMembre()
-  const f = await ficheAnnuaire(slug, true)
+  const m = await exigerMembre()
+  const f = await ficheAnnuaire(slug, true, estAbonne(m))
   return { title: f?.nom ?? 'Annuaire' }
 }
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function FichePage({ params }: Props) {
   const m = await exigerMembre()
   const { slug } = await params
-  const f = await ficheAnnuaire(slug, true)
+  const f = await ficheAnnuaire(slug, true, estAbonne(m))
   if (!f) notFound()
   const soiMeme = f.titulaireId === m.id
   return (
@@ -57,37 +58,37 @@ export default async function FichePage({ params }: Props) {
               </figure>
             )}
           </div>
-          <div className="card">
-            <h2 className="h3">Informations réservées aux membres</h2>
-            <div className="contact">
-              <span className="muted">Dirigeant</span>
-              <span>{f.dirigeant}</span>
+          {f.detaille ? (
+            <div className="card">
+              <h2 className="h3">Fiche détaillée</h2>
+              <div className="contact">
+                <span className="muted">Dirigeant</span>
+                <span>{f.dirigeant}</span>
+              </div>
+              <div className="contact">
+                <span className="muted">Quartier</span>
+                <span>{f.quartier}</span>
+              </div>
+              <div className="contact">
+                <span className="muted">Taille</span>
+                <span>{f.taille}</span>
+              </div>
+              <div className="contact">
+                <span className="muted">Commission</span>
+                <span>{f.commission}</span>
+              </div>
             </div>
-            <div className="contact">
-              <span className="muted">Quartier</span>
-              <span>{f.quartier}</span>
+          ) : (
+            <div className="card">
+              <h2 className="h3">Fiche détaillée</h2>
+              <p className="small">
+                Dirigeant, portrait, quartier, taille et commissions sont réservés à l’abonnement « Annuaire détaillé ». Vous pouvez déjà écrire à ce membre depuis la plateforme.
+              </p>
+              <Link className="linkbtn" href="/espace-membre/annuaire#abonnement">
+                Découvrir l’abonnement →
+              </Link>
             </div>
-            <div className="contact">
-              <span className="muted">Taille</span>
-              <span>{f.taille}</span>
-            </div>
-            <div className="contact">
-              <span className="muted">Commission</span>
-              <span>{f.commission}</span>
-            </div>
-            <div className="contact">
-              <span className="muted">Téléphone</span>
-              <span className="mono">{f.telephone}</span>
-            </div>
-            <div className="contact">
-              <span className="muted">WhatsApp</span>
-              <span>{f.whatsapp}</span>
-            </div>
-            <div className="contact">
-              <span className="muted">E-mail</span>
-              <span>{f.email}</span>
-            </div>
-          </div>
+          )}
         </div>
         <AnnuaireRelation entreprise={f.id} nom={f.nom} soiMeme={soiMeme} demander={demanderRelation} signaler={signalerFiche} />
       </div>

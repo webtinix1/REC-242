@@ -4,6 +4,7 @@ import { atLeast, isStaff } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { MODES_PAIEMENT, modeLabel, OBJETS_PAIEMENT, objetLabel } from '@/lib/adhesion/paiement'
 import { logAction } from '@/lib/audit'
+import { offreAbonnement, prolongerAbonnement } from '@/lib/abonnement/service'
 import { rapprocherPaiement } from '@/lib/cotisations/service'
 import { numeroDossierCandidat, numeroRecu, prochainNumero } from '@/lib/compteurs'
 import { genererRecu } from '@/lib/paiements/recu'
@@ -119,7 +120,7 @@ export const Payments: CollectionConfig = {
         }
         // Un reçu n'est jamais modifié une fois émis : montant, objet et mode sont figés.
         if (operation === 'update' && originalDoc?.numero) {
-          for (const k of ['montant', 'objet', 'mode', 'candidature', 'numero'])
+          for (const k of ['montant', 'objet', 'mode', 'candidature', 'numero', 'abonnementMois'])
             data[k] = originalDoc[k]
         }
         const devientPaye = data.statut === 'paye' && originalDoc?.statut !== 'paye'
@@ -151,6 +152,12 @@ export const Payments: CollectionConfig = {
           const m = typeof full.membre === 'object' ? full.membre : null
           // Cotisation d'un membre : rapprochement avec son échéance (tranches payées).
           await rapprocherPaiement(req.payload, doc as never, req)
+          // Abonnement « Annuaire détaillé » : prolongé de la durée enregistrée sur le paiement (ou de la durée en vigueur).
+          if (p.objet === 'abonnement' && m) {
+            const duree = Number((doc as { abonnementMois?: number }).abonnementMois) || (await offreAbonnement(req.payload, req))?.dureeMois
+            if (duree) await prolongerAbonnement(req.payload, m.id, duree, req)
+            else req.payload.logger.error({ paiement: p.id }, 'Abonnement payé sans durée : à prolonger à la main')
+          }
           const destinataire = m?.email ?? c?.email
           if (destinataire) {
             const recu = await pdfRecu(req.payload, full, req)
@@ -302,6 +309,13 @@ export const Payments: CollectionConfig = {
       index: true,
     },
     { name: 'echeance', label: 'Échéance de cotisation', type: 'relationship', relationTo: 'dues', index: true },
+    {
+      name: 'abonnementMois',
+      label: 'Durée de l’abonnement payé (mois)',
+      type: 'number',
+      min: 1,
+      admin: { condition: (d) => d?.objet === 'abonnement', description: 'Laissé vide, la durée en vigueur dans Paramètres s’applique.' },
+    },
     {
       type: 'row',
       fields: [

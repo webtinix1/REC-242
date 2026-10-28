@@ -351,6 +351,7 @@ export interface Member {
   statut?: ('attente' | 'actif' | 'suspendu' | 'ancien') | null;
   motifStatut?: string | null;
   suspenduJusquau?: string | null;
+  abonnementJusquau?: string | null;
   civilite?: ('madame' | 'monsieur') | null;
   prenom: string;
   nom: string;
@@ -615,7 +616,11 @@ export interface Payment {
   candidature?: (number | null) | Application;
   membre?: (number | null) | Member;
   echeance?: (number | null) | Due;
-  objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart';
+  /**
+   * Laissé vide, la durée en vigueur dans Paramètres s’applique.
+   */
+  abonnementMois?: number | null;
+  objet: 'adhesion' | 'adhesion-tranche' | 'droit' | 'tranche1' | 'tranche2' | 'cotisation' | 'encart' | 'abonnement';
   exercice?: string | null;
   montant: number;
   mode: 'mtn' | 'airtel' | 'especes' | 'virement';
@@ -2280,6 +2285,7 @@ export interface MembersSelect<T extends boolean = true> {
   statut?: T;
   motifStatut?: T;
   suspenduJusquau?: T;
+  abonnementJusquau?: T;
   civilite?: T;
   prenom?: T;
   nom?: T;
@@ -3417,6 +3423,7 @@ export interface PaymentsSelect<T extends boolean = true> {
   candidature?: T;
   membre?: T;
   echeance?: T;
+  abonnementMois?: T;
   objet?: T;
   exercice?: T;
   montant?: T;
@@ -3689,6 +3696,16 @@ export interface Setting {
     relances?: number | null;
     intervalleRelancesJours?: number | null;
   };
+  /**
+   * Abonnement en plus de la cotisation : il montre aux membres les fiches détaillées de l’annuaire (dirigeant, portrait, quartier, taille, commissions), jamais les coordonnées. Tant que le prix ou la durée est vide, l’abonnement n’est pas proposé.
+   */
+  abonnement?: {
+    /**
+     * En FCFA, sans espace.
+     */
+    montant?: number | null;
+    dureeMois?: number | null;
+  };
   annuaire?: {
     edition?: string | null;
     cloture?: string | null;
@@ -3901,6 +3918,12 @@ export interface SettingsSelect<T extends boolean = true> {
         tranchesMax?: T;
         relances?: T;
         intervalleRelancesJours?: T;
+      };
+  abonnement?:
+    | T
+    | {
+        montant?: T;
+        dureeMois?: T;
       };
   annuaire?:
     | T

@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { MESSAGE_PLAFOND } from '@/collections/ConnectionRequests'
-import { ficheAnnuaire, listerAnnuaire, MASQUE } from '@/lib/annuaire/donnees'
+import { ficheAnnuaire, listerAnnuaire } from '@/lib/annuaire/donnees'
 
 let payload: Payload
 const unique = Date.now()
@@ -51,7 +51,7 @@ afterAll(async () => {
 })
 
 describe('Lot 7 : annuaire et mises en relation', () => {
-  it('visibilité : consentement obligatoire, aucune coordonnée pour le visiteur, coordonnées choisies pour un membre', async () => {
+  it('visibilité : consentement obligatoire ; aucune coordonnée pour personne ; fiche détaillée avec l’abonnement seulement', async () => {
     const visible = await membre(1, { annuaire: true, telephone: true, whatsapp: false, email: false })
     const sansAccord = await membre(2, { annuaire: false, telephone: true })
     const q = String(unique)
@@ -63,16 +63,24 @@ describe('Lot 7 : annuaire et mises en relation', () => {
     expect(json).not.toContain('Annuaire Test1')
     expect(await ficheAnnuaire(sansAccord.slug, false)).toBeNull()
 
-    const vu = await ficheAnnuaire(visible.slug, true)
-    expect(vu?.telephone).toMatch(/^\+242/)
-    expect(vu?.whatsapp).toBe(MASQUE)
-    expect(vu?.email).toBe(MASQUE)
+    // Membre sans abonnement : la fiche de base et de quoi écrire, ni dirigeant ni coordonnées (décision du 28/10/2026).
+    const base = await ficheAnnuaire(visible.slug, true, false)
+    expect(base?.id).toBe(visible.entreprise)
+    expect(base?.detaille).toBe(false)
+    expect(base?.dirigeant).toBe('')
+    expect(JSON.stringify(base)).not.toContain('+242')
+    // Abonné « Annuaire détaillé » : dirigeant, taille, commissions… jamais le téléphone, même si le membre l'affichait.
+    const detail = await ficheAnnuaire(visible.slug, true, true)
+    expect(detail?.detaille).toBe(true)
+    expect(detail?.dirigeant).toBe('Annuaire Test1')
+    expect(JSON.stringify(detail)).not.toContain('+242')
+    expect(JSON.stringify(detail)).not.toContain('@test.rec242.test')
     // Un membre suspendu disparaît de l'annuaire.
     await payload.update({ collection: 'members', id: visible.id, overrideAccess: true, context: { sansMotif: true }, data: { statut: 'suspendu' } as never })
     expect(await ficheAnnuaire(visible.slug, false)).toBeNull()
   })
 
-  it('mise en relation : acceptée, aucune coordonnée transmise (messagerie de la plateforme) ; plafond', async () => {
+  it('écrire directement : le premier message ouvre la conversation, coordonnées masquées, une seule conversation par paire ; plafond', async () => {
     const a = await membre(3, { annuaire: true, telephone: false, whatsapp: false, email: true })
     const b = await membre(4, { annuaire: true, telephone: true, whatsapp: false, email: false })
     await expect(
@@ -82,16 +90,24 @@ describe('Lot 7 : annuaire et mises en relation', () => {
       collection: 'connectionRequests',
       user: a as never,
       overrideAccess: false,
-      data: { entreprise: b.entreprise, message: 'Bonjour, je cherche un partenaire.', demandeur: b.id, statut: 'acceptee' } as never,
+      data: { entreprise: b.entreprise, message: 'Bonjour, je cherche un partenaire. Appelez-moi au 06 903 47 25 ou a@b.cg', demandeur: b.id, statut: 'refusee' } as never,
     })
     crees.connectionRequests.push(r.id as number)
-    const d = r as unknown as { statut: string; demandeur: number | { id: number }; destinataire: number | { id: number } }
-    expect(d.statut).toBe('attente')
+    const d = r as unknown as { statut: string; message: string; demandeur: number | { id: number }; destinataire: number | { id: number } }
+    // Sans demande à accepter (décision du 28/10/2026) : la conversation est ouverte dès le premier message.
+    expect(d.statut).toBe('acceptee')
     expect(typeof d.demandeur === 'object' ? d.demandeur.id : d.demandeur).toBe(a.id)
-    // Le demandeur ne peut pas accepter sa propre demande.
-    await expect(payload.update({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, data: { statut: 'acceptee' } as never })).rejects.toThrow()
-    await payload.update({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, data: { statut: 'acceptee' } as never })
-    // Acceptée, la mise en relation ouvre la messagerie de la plateforme : aucune coordonnée n'est transmise (28/10/2026).
+    expect(d.message).not.toContain('06 903 47 25')
+    expect(d.message).not.toContain('a@b.cg')
+    expect(d.message).toContain('[coordonnée masquée]')
+    // Une seule conversation par paire de membres, dans un sens comme dans l'autre.
+    await expect(
+      payload.create({ collection: 'connectionRequests', user: a as never, overrideAccess: false, data: { entreprise: b.entreprise, message: 'Deuxième conversation, refusée.' } as never }),
+    ).rejects.toThrow(/déjà ouverte/)
+    await expect(
+      payload.create({ collection: 'connectionRequests', user: b as never, overrideAccess: false, data: { entreprise: a.entreprise, message: 'Conversation dans l’autre sens, refusée.' } as never }),
+    ).rejects.toThrow(/déjà ouverte/)
+    // Aucune coordonnée n'est transmise par la conversation.
     const vuParA = JSON.stringify(await payload.findByID({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, depth: 2 }))
     expect(vuParA).not.toContain(`annuaire4-${unique}@test.rec242.test`)
     const vuParB = JSON.stringify(await payload.findByID({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, depth: 2 }))

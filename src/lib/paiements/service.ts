@@ -17,7 +17,7 @@ type PaiementMobile = {
  */
 export async function lancerPaiementMobile(
   payload: Payload,
-  p: { candidature?: number; membre?: number; echeance?: number; operateur: Operateur; telephone: string; montant: number; objet: string; libelle: string; reference: string },
+  p: { candidature?: number; membre?: number; echeance?: number; operateur: Operateur; telephone: string; montant: number; objet: string; libelle: string; reference: string; abonnementMois?: number },
   req?: PayloadRequest,
 ) {
   const doc = (await payload.create({
@@ -28,6 +28,7 @@ export async function lancerPaiementMobile(
       candidature: p.candidature,
       membre: p.membre,
       echeance: p.echeance,
+      abonnementMois: p.abonnementMois,
       objet: p.objet,
       montant: p.montant,
       mode: p.operateur,

@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 
 import { notify } from '@/emails/send'
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
+import { masquerCoordonnees } from './masquage'
 import { verifierJetonExpert } from '@/lib/experts/delais'
 import { membreConnecte } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
@@ -59,7 +60,9 @@ export async function poserQuestion(_: EtatEchange, f: FormData): Promise<EtatEc
 export async function ecrire(onglet: Onglet, id: number, texte: string): Promise<EtatEchange> {
   const c = await contexte()
   if (!c) return { erreur: 'Session expirée : reconnectez-vous.' }
-  const t = String(texte ?? '').trim().slice(0, 3000)
+  const brut = String(texte ?? '').trim().slice(0, 3000)
+  // Entre membres, les coordonnées écrites dans un message sont masquées (les échanges restent sur la plateforme).
+  const t = onglet === 'relations' || onglet === 'annonces' ? masquerCoordonnees(brut) : brut
   if (t.length < 2) return { erreur: 'Écrivez votre message.' }
   const { payload, m } = c
   if (onglet === 'relations') {

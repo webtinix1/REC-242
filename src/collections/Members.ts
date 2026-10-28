@@ -163,6 +163,8 @@ export const Members: CollectionConfig = {
         },
         { name: 'motifStatut', label: 'Motif du dernier changement de statut', type: 'text', access: { update: equipeSeulement } },
         { name: 'suspenduJusquau', label: 'Suspendu jusqu’au', type: 'date', access: { update: equipeSeulement }, admin: { readOnly: true } },
+        // Abonnement « Annuaire détaillé » : prolongé par le serveur à chaque paiement confirmé (src/lib/abonnement).
+        { name: 'abonnementJusquau', label: 'Abonnement « Annuaire détaillé » jusqu’au', type: 'date', access: { update: equipeSeulement }, admin: { readOnly: true } },
       ],
     },
     {

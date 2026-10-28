@@ -1,12 +1,13 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useActionState, useState } from 'react'
 
 import type { RetourRelation } from '@/app/(espace-membre)/espace-membre/(app)/annuaire/actions'
 
 type Act = (r: RetourRelation, f: FormData) => Promise<RetourRelation>
 
-/** Carte « Mise en relation » et signalement de la fiche (écran membre 08). */
+/** Carte « Écrire à ce membre » et signalement de la fiche (écran membre 08). Les échanges restent sur la plateforme. */
 export function AnnuaireRelation({
   entreprise,
   nom,
@@ -28,7 +29,7 @@ export function AnnuaireRelation({
     <div className="stack">
       <div className="card-soft">
         <div className="row between">
-          <h2 className="h3">Mise en relation</h2>
+          <h2 className="h3">Écrire à ce membre</h2>
           {!sig.ok && (
             <button
               type="button"
@@ -43,15 +44,16 @@ export function AnnuaireRelation({
         </div>
         {rel.ok ? (
           <div className="okbox" role="status">
-            <span className="rec-badge rec-badge--active">Demande envoyée</span>
-            <p className="small">
-              {nom} a reçu votre demande. Vous serez prévenu de sa réponse par e-mail.
-            </p>
+            <span className="rec-badge rec-badge--active">Message envoyé</span>
+            <p className="small">{nom} est prévenu par e-mail. Vous serez prévenu de sa réponse.</p>
+            <Link className="linkbtn" href={`/espace-membre/echanges?onglet=relations${rel.conversation ? `&id=${rel.conversation}` : ''}`}>
+              Ouvrir la conversation →
+            </Link>
           </div>
         ) : (
           <form className="stack-s" action={envoyer} noValidate>
             <p className="small muted">
-              Le membre reçoit votre demande et choisit d&apos;y répondre.
+              Votre message arrive dans son espace membre. Les numéros et adresses e-mail sont masqués : les échanges restent sur la plateforme.
             </p>
             <input type="hidden" name="entreprise" value={entreprise} />
             <div className={`rec-field${rel.erreurs?.message ? ' rec-field--error' : ''}`}>
@@ -80,7 +82,7 @@ export function AnnuaireRelation({
               style={{ width: 'max-content' }}
               disabled={relEnCours}
             >
-              Demander une mise en relation
+              Envoyer le message
             </button>
           </form>
         )}

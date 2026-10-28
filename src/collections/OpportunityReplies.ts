@@ -3,6 +3,7 @@ import { APIError, type CollectionConfig, type Where } from 'payload'
 import { atLeast } from '@/access/roles'
 import { verifierPieceDuMembre } from '@/collections/Fichiers'
 import { notify } from '@/emails/send'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
 
 type Moi = { id: number; collection?: string } | null | undefined
 const estMembre = (u: unknown) => (u as Moi)?.collection === 'members'
@@ -45,7 +46,7 @@ export const OpportunityReplies: CollectionConfig = {
           const message = String(data.message ?? '').trim()
           if (message.length < 10) throw new APIError('Écrivez votre réponse (10 caractères au moins).', 400, null, true)
           await verifierPieceDuMembre(req, data.pieceJointe, moi!.id)
-          return { ...data, membre: moi!.id, message: message.slice(0, 3000), lue: false, nonLuPar: [o.membre], fil: [] }
+          return { ...data, membre: moi!.id, message: masquerCoordonnees(message.slice(0, 3000)), lue: false, nonLuPar: [o.membre], fil: [] }
         }
         if (estMembre(moi) && !req.context?.systeme) return { ...originalDoc, lue: Boolean(data.lue) }
         return data

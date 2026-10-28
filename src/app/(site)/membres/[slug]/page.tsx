@@ -158,7 +158,7 @@ export default async function FicheMembre({ params }: { params: P }) {
                     <path d="M8 11V8a4 4 0 0 1 8 0v3" />
                   </svg>
                   <span className="small">
-                    Dirigeant, quartier, taille et coordonnées réservés aux membres connectés.
+                    Dirigeant, quartier et taille réservés aux membres abonnés à l’annuaire détaillé.
                   </span>
                 </div>
               </div>
@@ -166,8 +166,8 @@ export default async function FicheMembre({ params }: { params: P }) {
             <div className="card-soft" data-m="lift" data-m-d="2">
               <h2 className="h-s">Prendre contact</h2>
               <p className="muted small">
-                Réservé aux membres actifs. Le membre reçoit votre demande sans que ses coordonnées
-                ne soient exposées, et choisit d’y répondre.
+                Réservé aux membres actifs. Vous lui écrivez depuis votre espace membre : les échanges
+                restent sur la plateforme, sans coordonnées échangées.
               </p>
               <Link prefetch={false} href={retour} className="rec-btn rec-btn--primary">
                 Se connecter pour contacter

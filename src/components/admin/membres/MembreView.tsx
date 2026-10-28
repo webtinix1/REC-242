@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { atLeast, extraFull } from '@/access/roles'
+import { estAbonne } from '@/lib/abonnement/service'
 import { EFFECTIFS, label } from '@/lib/adhesion/options'
 import { lettreCategorie } from '@/lib/adhesion/categories'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
@@ -15,6 +16,7 @@ type Media = { url?: string; sizes?: { vignette?: { url?: string } } } | null
 type Fiche = {
   id: number
   numeroAdherent?: string
+  abonnementJusquau?: string | null
   prenom: string
   nom: string
   email: string
@@ -212,6 +214,14 @@ export const MembreView = async (props: DocumentViewServerProps) => {
             ) : (
               <p className="small muted">Catégorie sur convention : pas de cotisation à suivre ici.</p>
             )}
+            <div className="vrow">
+              <span>Annuaire détaillé</span>
+              {estAbonne(m) ? (
+                <span className="rec-badge rec-badge--active">Jusqu’au {jour(m.abonnementJusquau!)}</span>
+              ) : (
+                <span className="rec-badge rec-badge--suspended">Sans abonnement</span>
+              )}
+            </div>
             {atLeast(user as never, 'cotisations', 'read') && (
               <Link className="linkbtn" href={`/admin/cotisations?membre=${m.id}`}>
                 Voir les cotisations →

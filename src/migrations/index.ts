@@ -12,6 +12,7 @@ import * as migration_20261025_075814_lot10_echanges from './20261025_075814_lot
 import * as migration_20261025_085408_lot11_cotisations from './20261025_085408_lot11_cotisations';
 import * as migration_20261026_105910_alignement_maquette from './20261026_105910_alignement_maquette';
 import * as migration_20261028_170336_messagerie_membres from './20261028_170336_messagerie_membres';
+import * as migration_20261028_183711_abonnement_annuaire from './20261028_183711_abonnement_annuaire';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20261028_170336_messagerie_membres.up,
     down: migration_20261028_170336_messagerie_membres.down,
-    name: '20261028_170336_messagerie_membres'
+    name: '20261028_170336_messagerie_membres',
+  },
+  {
+    up: migration_20261028_183711_abonnement_annuaire.up,
+    down: migration_20261028_183711_abonnement_annuaire.down,
+    name: '20261028_183711_abonnement_annuaire'
   },
 ];

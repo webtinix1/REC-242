@@ -269,6 +269,9 @@ describe('Recette : annuaire et mises en relation (docs/12 §9 et §15)', () => 
       data: { entreprise: b.entreprise, message: 'Bonjour, je cherche un partenaire de recette.' } as never,
     })
     noter('connectionRequests', r.id)
+    // Depuis le 28/10/2026, un message ouvre directement la conversation ; le refus ne concerne plus que les demandes
+    // « En attente » enregistrées avant ce changement, simulées ici.
+    await payload.db.updateOne({ collection: 'connectionRequests', id: r.id, data: { statut: 'attente' }, returning: false })
     envoi.mockClear()
     // docs/05 §9 : « un refus est envoyé sans motif » ; aucun motif n'est exigé du membre contacté.
     const refusee = await payload.update({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, data: { statut: 'refusee' } as never })
@@ -302,9 +305,9 @@ describe('Recette : annuaire et mises en relation (docs/12 §9 et §15)', () => 
     const fin = (await payload.findByID({ collection: 'members', id: m.id, overrideAccess: true })) as unknown as { statut: string }
     expect(fin.statut).toBe('ancien')
     expect((await listerAnnuaire({ q, page: 1 }, false)).cartes).toHaveLength(0)
-    expect((await listerAnnuaire({ q, page: 1 }, true)).cartes).toHaveLength(0)
+    expect((await listerAnnuaire({ q, page: 1 }, true, true)).cartes).toHaveLength(0)
     expect(await ficheAnnuaire(m.slug, false)).toBeNull()
-    expect(await ficheAnnuaire(m.slug, true)).toBeNull()
+    expect(await ficheAnnuaire(m.slug, true, true)).toBeNull()
     // Le membre est informé par écrit (docs/05 §4).
     expect(pour(m.email)).toHaveLength(1)
   })

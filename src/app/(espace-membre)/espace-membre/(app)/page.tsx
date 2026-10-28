@@ -312,7 +312,7 @@ const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 function resumeEchanges(c: Record<Onglet, number> & { total: number }) {
   if (c.total === 0) return { titre: 'Aucun message en attente', detail: '' }
   const morceaux = [
-    c.relations && (c.relations === 1 ? 'une demande de mise en relation reçue' : `${nombre(c.relations)} demandes de mise en relation reçues`),
+    c.relations && (c.relations === 1 ? 'une conversation avec un membre à lire' : `${nombre(c.relations)} conversations avec des membres à lire`),
     c.annonces && (c.annonces === 1 ? 'une réponse à votre annonce' : `${nombre(c.annonces)} réponses à vos annonces`),
     c.experts && (c.experts === 1 ? 'la réponse d’un expert' : `${nombre(c.experts)} réponses d’experts`),
     c.reseau && (c.reseau === 1 ? 'un message du réseau' : `${nombre(c.reseau)} messages du réseau`),

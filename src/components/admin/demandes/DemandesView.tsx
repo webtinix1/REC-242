@@ -5,6 +5,7 @@ import React from 'react'
 import { atLeast, extraRead } from '@/access/roles'
 import { PREFERENCES, STATUTS_EXPERT } from '@/collections/ExpertRequests'
 import { STATUTS_RELATION } from '@/collections/ConnectionRequests'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
 import { BoView, initiales, relatif } from '../BoView'
 import { DemandesExperts, type DemandeExpert } from './DemandesExperts'
 import { RelationsSuivi, type LigneRelation, type MembreSuspendu, type Signalement } from './RelationsSuivi'
@@ -12,7 +13,7 @@ import { RelationsSuivi, type LigneRelation, type MembreSuspendu, type Signaleme
 const BASE = '/admin/collections/expertRequests'
 const ONGLETS = [
   { value: 'experts', label: 'Questions aux experts' },
-  { value: 'relations', label: 'Mises en relation' },
+  { value: 'relations', label: 'Conversations entre membres' },
 ]
 
 type Media = { url?: string; sizes?: { vignette?: { url?: string } } } | null
@@ -73,8 +74,8 @@ export const DemandesView = async (props: ListViewServerProps) => {
         date: jour(r.createdAt),
         conversation: peutLire
           ? [
-              { qui: nomDe(r.demandeur ?? null), quand: jour(r.createdAt), texte: r.message ?? '', demandeur: true },
-              ...(r.fil ?? []).map((b) => ({ qui: auteur(b.auteur), quand: b.date ? jour(b.date) : '', texte: b.texte ?? '', demandeur: idDe(b.auteur) === r.demandeur?.id })),
+              { qui: nomDe(r.demandeur ?? null), quand: jour(r.createdAt), texte: masquerCoordonnees(r.message ?? ''), demandeur: true },
+              ...(r.fil ?? []).map((b) => ({ qui: auteur(b.auteur), quand: b.date ? jour(b.date) : '', texte: masquerCoordonnees(b.texte ?? ''), demandeur: idDe(b.auteur) === r.demandeur?.id })),
             ]
           : [],
       }

@@ -45,7 +45,7 @@ export const RelationsSuivi = ({ lignes, signalements, suspendus, peutTraiter }:
 
   return (
     <>
-      <p className="muted">Demandes de mise en relation entre membres. Une fois la demande acceptée, les deux membres échangent sur la plateforme, sans coordonnées transmises.</p>
+      <p className="muted">Conversations ouvertes par les membres depuis l’annuaire. Les numéros et adresses e-mail écrits dans les messages sont masqués : les échanges restent sur la plateforme.</p>
       <div className="tblwrap">
         <table className="tbl">
           <thead>
@@ -61,7 +61,7 @@ export const RelationsSuivi = ({ lignes, signalements, suspendus, peutTraiter }:
             {lignes.length === 0 && (
               <tr>
                 <td colSpan={5} className="muted">
-                  Aucune demande de mise en relation.
+                  Aucune conversation entre membres.
                 </td>
               </tr>
             )}

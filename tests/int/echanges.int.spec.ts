@@ -101,7 +101,16 @@ describe('Lot 10 : experts, échanges, commissions', () => {
     expect((await nonLus(payload, a.id)).relations).toBe(0)
     await marquerLu(payload, 'relations', r.id as number, b.id)
     expect((await nonLus(payload, b.id)).relations).toBe(0)
-    await payload.update({ collection: 'connectionRequests', id: r.id, user: b as never, overrideAccess: false, data: { statut: 'acceptee' } as never })
+    // Depuis le 28/10/2026 la conversation est ouverte dès le premier message : la réponse de B (écriture système,
+    // comme l'action `ecrire`) fait apparaître un non-lu chez A.
+    expect((r as unknown as { statut: string }).statut).toBe('acceptee')
+    await payload.update({
+      collection: 'connectionRequests',
+      id: r.id,
+      overrideAccess: true,
+      context: { systeme: true },
+      data: { fil: [{ auteur: b.id, texte: 'Avec plaisir.', date: new Date().toISOString() }], nonLuPar: [a.id] } as never,
+    })
     expect((await nonLus(payload, a.id)).relations).toBe(1)
 
     const msg = await payload.create({ collection: 'networkMessages', overrideAccess: true, data: { membre: a.id, titre: 'Test', texte: 'Message de test' } as never })

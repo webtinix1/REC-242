@@ -30,19 +30,27 @@ test.describe('Lot 7 : annuaire', () => {
     await expect(page.getByText('Khazad')).toBeVisible()
     await expect(page.getByText('Fako Drop')).toHaveCount(0)
     await page.goto(`${BASE}/membres/khazad`, { waitUntil: 'networkidle' })
-    await expect(page.getByText('Dirigeant, quartier, taille et coordonnées réservés aux membres connectés.')).toBeVisible()
+    await expect(page.getByText('Dirigeant, quartier et taille réservés aux membres abonnés à l’annuaire détaillé.')).toBeVisible()
     await expect(page.getByRole('link', { name: 'Se connecter pour contacter' })).toBeVisible()
   })
 
-  test('membre connecté : coordonnées choisies, « Masqué par le membre », redirection de la fiche publique', async ({ page }) => {
+  test('membre connecté sans abonnement : aucune coordonnée, fiche détaillée réservée, écrire depuis la plateforme', async ({ page }) => {
     await page.goto(`${BASE}/espace-membre/connexion`, { waitUntil: 'networkidle' })
     await page.fill('#mb-mail', 'christelle@kimiacreations.cg')
     await page.fill('#mb-pw', PWD)
     await page.getByRole('button', { name: 'Se connecter' }).click()
     await page.waitForURL(`${BASE}/espace-membre`)
+    await page.goto(`${BASE}/espace-membre/annuaire`, { waitUntil: 'networkidle' })
+    await expect(page.getByRole('heading', { name: 'Annuaire détaillé' })).toBeVisible()
+    // Ses propres coordonnées peuvent figurer sur ses pages ; celles des autres membres jamais.
+    const autres = COORDONNEES.filter((c) => !c.startsWith('christelle'))
+    for (const c of autres) expect(await page.content(), `annuaire contient ${c}`).not.toContain(c)
     await page.goto(`${BASE}/membres/khazad`, { waitUntil: 'networkidle' })
     await expect(page).toHaveURL(`${BASE}/espace-membre/annuaire/khazad`)
-    await expect(page.getByText('+242 06 512 34 18')).toBeVisible()
-    await expect(page.getByText('Masqué par le membre').first()).toBeVisible()
+    // Décision du 28/10/2026 : les coordonnées ne sont jamais affichées, l'abonnement montre la fiche détaillée.
+    for (const c of autres) expect(await page.content(), `fiche contient ${c}`).not.toContain(c)
+    await expect(page.getByRole('link', { name: 'Découvrir l’abonnement →' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Écrire à ce membre' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Envoyer le message' })).toBeVisible()
   })
 })

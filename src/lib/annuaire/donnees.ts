@@ -3,19 +3,19 @@ import type { Where } from 'payload'
 
 import { categorie } from '@/lib/adhesion/categories'
 import { EFFECTIFS, label } from '@/lib/adhesion/options'
-import { telephoneAffiche } from '@/lib/adhesion/categories'
 import { getPayloadClient } from '@/lib/site/payload'
 
 /**
  * Annuaire (docs/05-regles-metier.md §6). Une fiche n'y figure que si le membre est actif, a consenti
  * (visibilité « annuaire ») et que l'administration ne l'a pas masquée.
- * Deux formes de données, jamais mélangées :
+ * Formes de données, jamais mélangées (décision de Webtinix du 28/10/2026) :
  * - `CartePublique` pour le visiteur : aucune donnée de contact ni dirigeant, quartier ou taille ;
- * - `CarteMembre` pour un membre connecté : en plus, dirigeant, quartier, taille, commission et les seules coordonnées que le membre affiche.
+ * - `CarteMembre` pour un membre connecté : la même chose, plus de quoi lui écrire depuis la plateforme ;
+ *   avec l'abonnement « Annuaire détaillé » (`detaille`), en plus dirigeant, portrait, quartier, taille, commissions et liens.
+ * Les coordonnées (téléphone, WhatsApp, e-mail) ne sont jamais lues pour l'annuaire : les échanges restent sur la plateforme.
  */
 
 export const PAR_PAGE = 6
-export const MASQUE = 'Masqué par le membre'
 
 type Media = { url?: string | null; alt?: string | null; sizes?: { vignette?: { url?: string | null } } } | null
 type Brut = {
@@ -75,9 +75,8 @@ export type CarteMembre = CartePublique & {
   quartier: string
   taille: string
   commission: string
-  telephone: string
-  whatsapp: string
-  email: string
+  /** Fiche détaillée (abonnement) : sinon dirigeant, portrait, quartier, taille, commission et liens sont vides. */
+  detaille: boolean
   liens: { siteWeb?: string; linkedin?: string; facebook?: string }
 }
 
@@ -124,22 +123,18 @@ const versPublique = (c: Brut): CartePublique => {
   }
 }
 
-const versMembre = (c: Brut): CarteMembre => {
+const versMembre = (c: Brut, detaille: boolean): CarteMembre => {
   const t = c.titulaire
-  const v = c.visibilite ?? {}
+  const base = { ...versPublique(c), id: c.id, titulaireId: t?.id, detaille }
+  if (!detaille) return { ...base, dirigeant: '', quartier: '', taille: '', commission: '', liens: {} }
   const coms = (t?.commissions ?? []).map((x) => obj<{ nom: string }>(x)?.nom).filter(Boolean)
   return {
-    ...versPublique(c),
-    id: c.id,
-    titulaireId: t?.id,
+    ...base,
     dirigeant: `${t?.prenom ?? ''} ${t?.nom ?? ''}`.trim(),
     photo: img(t?.photo),
     quartier: c.quartier ?? '',
     taille: label(EFFECTIFS, c.effectif ?? undefined),
     commission: coms.join(', ') || 'Aucune',
-    telephone: v.telephone && t?.telephone ? telephoneAffiche(t.telephone) : MASQUE,
-    whatsapp: v.whatsapp ? (t?.whatsapp ? 'Oui' : 'Non') : MASQUE,
-    email: v.email && t?.email ? t.email : MASQUE,
     liens: { siteWeb: c.siteWeb ?? undefined, linkedin: c.linkedin ?? undefined, facebook: c.facebook ?? undefined },
   }
 }
@@ -158,8 +153,16 @@ const SELECT_PUBLIC = {
   siteWeb: true,
   titulaire: true,
 } as const
+const POPULATE_PUBLIC = { members: { categorie: true, dateAdhesion: true } } as const
 
-async function whereFiltres(f: Filtres, pourMembre: boolean): Promise<Where> {
+// Champs lus pour un membre connecté : ceux de la fiche détaillée, jamais téléphone, WhatsApp ni e-mail.
+const SELECT_MEMBRE = { ...SELECT_PUBLIC, quartier: true, effectif: true, linkedin: true, facebook: true } as const
+const POPULATE_MEMBRE = { members: { categorie: true, dateAdhesion: true, prenom: true, nom: true, photo: true, commissions: true } } as const
+
+const lecture = (pourMembre: boolean) =>
+  pourMembre ? { select: SELECT_MEMBRE, populate: POPULATE_MEMBRE } : { select: SELECT_PUBLIC, populate: POPULATE_PUBLIC }
+
+async function whereFiltres(f: Filtres, pourMembre: boolean, detaille = false): Promise<Where> {
   const payload = await getPayloadClient()
   const et: Where[] = [conditionAnnuaire]
   if (pourMembre && f.sauf) et.push({ titulaire: { not_equals: f.sauf } })
@@ -171,39 +174,42 @@ async function whereFiltres(f: Filtres, pourMembre: boolean): Promise<Where> {
     const l = await payload.find({ collection: 'localities', where: { or: [{ slug: { equals: f.ville } }, { nom: { equals: f.ville } }] }, limit: 1, depth: 0, overrideAccess: true })
     et.push({ localite: { in: l.docs.map((d) => d.id) } })
   }
-  // Commission et taille ne sont montrées qu'aux membres connectés (docs/05 §6) : le visiteur ne filtre pas dessus.
-  if (f.commission && pourMembre) {
+  // Commission et taille ne sont montrées que sur la fiche détaillée (abonnement) : sans elle, on ne filtre pas dessus.
+  if (f.commission && pourMembre && detaille) {
     const c = await payload.find({ collection: 'commissions', where: { or: [{ slug: { equals: f.commission } }, { nom: { equals: f.commission } }] }, limit: 1, depth: 0, overrideAccess: true })
     et.push({ 'titulaire.commissions': { in: c.docs.map((d) => d.id) } })
   }
-  if (pourMembre && f.taille && EFFECTIFS.some((e) => e.value === f.taille)) et.push({ effectif: { equals: f.taille } })
+  if (pourMembre && detaille && f.taille && EFFECTIFS.some((e) => e.value === f.taille)) et.push({ effectif: { equals: f.taille } })
   if (f.q) et.push({ or: [{ nom: { like: f.q } }, { presentation: { like: f.q } }, { services: { like: f.q } }, { 'localite.nom': { like: f.q } }, { 'secteurs.nom': { like: f.q } }] })
   return { and: et }
 }
 
-/** Liste paginée de l'annuaire, sous la forme qui convient au lecteur. */
+/**
+ * Liste paginée de l'annuaire, sous la forme qui convient au lecteur.
+ * `detaille` : le membre a l'abonnement « Annuaire détaillé » (à vérifier par l'appelant, côté serveur).
+ */
 export async function listerAnnuaire(f: Filtres, pourMembre: false): Promise<{ cartes: CartePublique[]; total: number; pages: number }>
-export async function listerAnnuaire(f: Filtres, pourMembre: true): Promise<{ cartes: CarteMembre[]; total: number; pages: number }>
-export async function listerAnnuaire(f: Filtres, pourMembre: boolean) {
+export async function listerAnnuaire(f: Filtres, pourMembre: true, detaille: boolean): Promise<{ cartes: CarteMembre[]; total: number; pages: number }>
+export async function listerAnnuaire(f: Filtres, pourMembre: boolean, detaille = false) {
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'companies',
-    where: await whereFiltres(f, pourMembre),
+    where: await whereFiltres(f, pourMembre, detaille),
     sort: 'createdAt',
     page: f.page,
     limit: PAR_PAGE,
     depth: 2,
     overrideAccess: true,
-    ...(pourMembre ? {} : { select: SELECT_PUBLIC, populate: { members: { categorie: true, dateAdhesion: true } } }),
+    ...lecture(pourMembre),
   })
   const docs = r.docs as unknown as Brut[]
-  return { cartes: docs.map(pourMembre ? versMembre : versPublique), total: r.totalDocs, pages: r.totalPages }
+  return { cartes: docs.map((c) => (pourMembre ? versMembre(c, detaille) : versPublique(c))), total: r.totalDocs, pages: r.totalPages }
 }
 
 /** Fiche de l'annuaire par son adresse, ou null si elle n'y figure pas. */
 export async function ficheAnnuaire(slug: string, pourMembre: false): Promise<CartePublique | null>
-export async function ficheAnnuaire(slug: string, pourMembre: true): Promise<CarteMembre | null>
-export async function ficheAnnuaire(slug: string, pourMembre: boolean) {
+export async function ficheAnnuaire(slug: string, pourMembre: true, detaille: boolean): Promise<CarteMembre | null>
+export async function ficheAnnuaire(slug: string, pourMembre: boolean, detaille = false) {
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'companies',
@@ -211,11 +217,11 @@ export async function ficheAnnuaire(slug: string, pourMembre: boolean) {
     limit: 1,
     depth: 2,
     overrideAccess: true,
-    ...(pourMembre ? {} : { select: SELECT_PUBLIC, populate: { members: { categorie: true, dateAdhesion: true } } }),
+    ...lecture(pourMembre),
   })
   const c = r.docs[0] as unknown as Brut | undefined
   if (!c) return null
-  return pourMembre ? versMembre(c) : versPublique(c)
+  return pourMembre ? versMembre(c, detaille) : versPublique(c)
 }
 
 /**

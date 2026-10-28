@@ -264,6 +264,25 @@ export const Settings: GlobalConfig = {
               ],
             },
             {
+              name: 'abonnement',
+              label: 'Abonnement « Annuaire détaillé »',
+              type: 'group',
+              access: adminsOnly,
+              admin: {
+                description:
+                  'Abonnement en plus de la cotisation : il montre aux membres les fiches détaillées de l’annuaire (dirigeant, portrait, quartier, taille, commissions), jamais les coordonnées. Tant que le prix ou la durée est vide, l’abonnement n’est pas proposé.',
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    fcfa('montant', 'Prix de l’abonnement'),
+                    { name: 'dureeMois', label: 'Durée (mois)', type: 'number', min: 1 },
+                  ],
+                },
+              ],
+            },
+            {
               name: 'annuaire',
               label: 'Annuaire imprimé',
               type: 'group',

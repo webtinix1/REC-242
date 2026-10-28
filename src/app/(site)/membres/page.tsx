@@ -286,8 +286,8 @@ export default async function Annuaire({ searchParams }: { searchParams: SP }) {
           </div>
           <div className="stack" style={{ gap: 16 }} data-m="rise" data-m-d="2">
             <p className="muted">
-              Nom, secteur et ville sont publics. Les coordonnées, le dirigeant, le quartier et la
-              taille sont réservés aux membres connectés.
+              Nom, secteur et ville sont publics. Les membres s’écrivent depuis la plateforme ;
+              le dirigeant, le quartier et la taille sont réservés à l’annuaire détaillé.
             </p>
             <Link prefetch={false} href="/adherer" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
               Pas encore membre ? Adhérer

@@ -2,9 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
+import { AbonnementAnnuaire } from '@/components/espace/AbonnementAnnuaire'
 import { Visage } from '@/components/espace/AnnuaireVisage'
+import { estAbonne, offreAbonnement } from '@/lib/abonnement/service'
+import { fcfa, telephoneAffiche } from '@/lib/adhesion/categories'
 import { lireFiltres, listerAnnuaire, optionsFiltresUtilisees, type Filtres } from '@/lib/annuaire/donnees'
-import { exigerMembre } from '@/lib/membres/espace'
+import { dateLongue, exigerMembre } from '@/lib/membres/espace'
+import { getPayloadClient } from '@/lib/site/payload'
 
 export const metadata: Metadata = { title: 'Annuaire' }
 
@@ -24,13 +28,26 @@ const lien = (f: Filtres, ch: Partial<Filtres>) => {
 export default async function AnnuairePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const moi = await exigerMembre()
   const f = { ...lireFiltres(await searchParams), sauf: moi.id }
-  const [{ cartes, total, pages }, opt] = await Promise.all([listerAnnuaire(f, true), optionsFiltresUtilisees(moi.id)])
+  // Fiches détaillées : abonnement « Annuaire détaillé » en cours, vérifié ici côté serveur.
+  const detaille = estAbonne(moi)
+  const [{ cartes, total, pages }, opt, offre] = await Promise.all([
+    listerAnnuaire(f, true, detaille),
+    optionsFiltresUtilisees(moi.id),
+    getPayloadClient().then((p) => offreAbonnement(p)),
+  ])
   const chip = (actif: boolean) => `chip ${actif ? 'is-on' : ''}`
   return (
     <>
       <div className="top">
         <h1 className="h1">Annuaire des membres</h1>
       </div>
+      <AbonnementAnnuaire
+        d={{
+          jusquau: detaille ? dateLongue(moi.abonnementJusquau) : undefined,
+          offre: offre ? { montantTexte: fcfa(offre.montant), duree: offre.dureeMois === 1 ? '1 mois' : `${offre.dureeMois} mois` } : undefined,
+          telephone: moi.telephone ? telephoneAffiche(moi.telephone) : '',
+        }}
+      />
       <form className="search" method="get" action={BASE} role="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
@@ -69,7 +86,7 @@ export default async function AnnuairePage({ searchParams }: { searchParams: Pro
           ))}
         </div>
       </div>
-      <p className="small muted">{total} membre(s) · coordonnées affichées selon le choix de chaque membre</p>
+      <p className="small muted">{total} membre(s) · écrivez-leur depuis leur fiche, les échanges restent sur la plateforme</p>
       {total === 0 && (
         <div className="empty">
           <p className="h3">Aucun membre ne correspond</p>
@@ -89,27 +106,24 @@ export default async function AnnuairePage({ searchParams }: { searchParams: Pro
                 <p className="small muted">{[m.secteur, m.ville].filter(Boolean).join(' · ')}</p>
               </div>
             </div>
-            <div>
-              <div className="contact">
-                <span className="muted">Dirigeant</span>
-                <span>{m.dirigeant}</span>
+            {m.detaille && (
+              <div>
+                <div className="contact">
+                  <span className="muted">Dirigeant</span>
+                  <span>{m.dirigeant}</span>
+                </div>
+                {m.quartier && (
+                  <div className="contact">
+                    <span className="muted">Quartier</span>
+                    <span>{m.quartier}</span>
+                  </div>
+                )}
               </div>
-              <div className="contact">
-                <span className="muted">Téléphone</span>
-                <span className="mono">{m.telephone}</span>
-              </div>
-              <div className="contact">
-                <span className="muted">WhatsApp</span>
-                <span>{m.whatsapp}</span>
-              </div>
-              <div className="contact">
-                <span className="muted">E-mail</span>
-                <span>{m.email}</span>
-              </div>
-            </div>
+            )}
             <div className="row between">
               <span className="tag">
-                Cat. {m.categorie} · {m.taille}
+                Cat. {m.categorie}
+                {m.detaille && m.taille ? ` · ${m.taille}` : ''}
               </span>
               <Link className="linkbtn" href={`${BASE}/${m.slug}`}>
                 Voir la fiche →

@@ -8,6 +8,7 @@ import {
   type Fil,
   type OngletEchange,
 } from '@/components/espace/EchangesBoite'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
 import { nonLus } from '@/lib/echanges/service'
 import { dateCourte, exigerMembre, initialesDe, urlMedia, type Media } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
@@ -19,8 +20,8 @@ const BASE = '/espace-membre/echanges'
 const ONGLETS: { cle: OngletEchange; label: string; aide: string }[] = [
   {
     cle: 'relations',
-    label: 'Mises en relation',
-    aide: 'Une fois la mise en relation acceptée, vous échangez ici. Aucune coordonnée n’est transmise ; l’équipe de REC 242 peut lire ces échanges.',
+    label: 'Conversations',
+    aide: 'Vos conversations avec les autres membres. Les numéros et adresses e-mail sont masqués : les échanges restent sur la plateforme, et l’équipe de REC 242 peut les lire.',
   },
   {
     cle: 'annonces',
@@ -132,7 +133,7 @@ export default async function EchangesPage({
           : attente
             ? ['En attente', 'pending']
             : x.statut === 'acceptee'
-              ? ['Acceptée', 'active']
+              ? ['Ouverte', 'active']
               : x.statut === 'refusee'
                 ? ['Refusée', 'suspended']
                 : x.statut === 'annulee'
@@ -143,12 +144,12 @@ export default async function EchangesPage({
         {
           sens: recu ? 'in' : 'out',
           qui: etiquetteBulle(recu ? nom : 'Vous', x.createdAt),
-          texte: x.message,
+          texte: masquerCoordonnees(x.message),
         },
         ...(x.fil ?? []).map((b) => ({
           sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out',
           qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date),
-          texte: b.texte ?? '',
+          texte: masquerCoordonnees(b.texte ?? ''),
         })),
       ]
       return {
@@ -160,13 +161,13 @@ export default async function EchangesPage({
         photo: urlMedia(autre.photo, 'vignette'),
         org: orgDe(autre),
         date: relative(dernier),
-        objet: x.objet || (x.message.length > 80 ? `${x.message.slice(0, 77)}…` : x.message),
+        objet: x.objet || ((m1) => (m1.length > 80 ? `${m1.slice(0, 77)}…` : m1))(masquerCoordonnees(x.message)),
         statut,
         cls,
         nonLu: (x.nonLuPar ?? []).map(idDe).includes(m.id),
         contexte: recu
-          ? 'Demande de mise en relation reçue'
-          : 'Mise en relation envoyée par vous depuis l’annuaire',
+          ? 'Conversation ouverte par ce membre depuis l’annuaire'
+          : 'Conversation ouverte par vous depuis l’annuaire',
         bulles,
         decision:
           attente && recu
@@ -211,12 +212,12 @@ export default async function EchangesPage({
           {
             sens: auteurAnnonce ? 'in' : 'out',
             qui: etiquetteBulle(auteurAnnonce ? nom : 'Vous', x.createdAt),
-            texte: x.message,
+            texte: masquerCoordonnees(x.message),
           },
           ...(x.fil ?? []).map((b) => ({
             sens: (toi(b.auteur) ? 'out' : 'in') as 'in' | 'out',
             qui: etiquetteBulle(toi(b.auteur) ? 'Vous' : nom, b.date),
-            texte: b.texte ?? '',
+            texte: masquerCoordonnees(b.texte ?? ''),
           })),
         ]
         return {

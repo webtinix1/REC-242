@@ -3,8 +3,10 @@ import { APIError, type CollectionConfig, type Where } from 'payload'
 import { extraFull, extraRead } from '@/access/roles'
 import { notify } from '@/emails/send'
 import { logAction } from '@/lib/audit'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
 
 export const PLAFOND_HEBDO = 10
+export const CONVERSATION_OUVERTE = 'Une conversation est déjà ouverte avec ce membre : écrivez-lui depuis Mes échanges.'
 export const MESSAGE_PLAFOND =
   'Vous avez atteint la limite de 10 demandes de mise en relation par semaine. L’envoi est suspendu jusqu’à vérification par l’équipe.'
 
@@ -23,10 +25,11 @@ export const STATUTS_RELATION = [
 const lien = () => `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/espace-membre/echanges`
 
 /**
- * Mises en relation entre membres (docs/05-regles-metier.md §9) : le membre contacté accepte ou refuse ;
- * une fois acceptée, les deux membres échangent par le fil de messages de la plateforme. Aucune coordonnée n'est
- * transmise (décision de Webtinix du 28/10/2026) ; super administrateur, administrateur et responsable membres
- * peuvent lire les conversations (domaine « demandes des membres »).
+ * Conversations entre membres (docs/05-regles-metier.md §9, décision de Webtinix du 28/10/2026) : un membre écrit
+ * directement à un autre depuis l'annuaire ; le premier message ouvre la conversation (statut « Acceptée »), une seule
+ * par paire de membres. Aucune coordonnée n'est transmise et celles écrites dans les messages sont masquées.
+ * Super administrateur, administrateur et responsable membres peuvent lire les conversations (« demandes des membres »).
+ * Les demandes « En attente » d'avant ce changement se traitent encore par acceptation ou refus.
  * Toutes les règles (qui peut faire quoi, plafond hebdomadaire, transitions) sont dans les hooks.
  */
 export const ConnectionRequests: CollectionConfig = {
@@ -61,8 +64,8 @@ export const ConnectionRequests: CollectionConfig = {
           }
           if (demandeur.statut !== 'actif') throw new APIError('Réservé aux membres actifs.', 403)
           if (demandeur.relationsSuspendues) throw new APIError(MESSAGE_PLAFOND, 429, null, true)
-          const message = String(data.message ?? '').trim()
-          if (message.length < 10) throw new APIError('Présentez-vous en quelques mots (10 caractères au moins).', 400, null, true)
+          const message = masquerCoordonnees(String(data.message ?? '').trim())
+          if (message.length < 10) throw new APIError('Écrivez votre message (10 caractères au moins).', 400, null, true)
           if (message.length > 2000) throw new APIError('2 000 caractères au maximum.', 400, null, true)
           // Le destinataire est le titulaire d'une fiche publiée dans l'annuaire, jamais choisi librement.
           const e = (await req.payload
@@ -72,13 +75,24 @@ export const ConnectionRequests: CollectionConfig = {
           const dest = (await req.payload.findByID({ collection: 'members', id: e.titulaire, depth: 0, overrideAccess: true, req })) as unknown as { statut: string }
           if (dest.statut !== 'actif') throw new APIError('Fiche introuvable.', 404)
           if (e.titulaire === moi!.id) throw new APIError('Vous ne pouvez pas vous contacter vous-même.', 400, null, true)
+          // Une seule conversation par paire de membres : un nouveau message s'écrit dans la conversation déjà ouverte.
           const enCours = await req.payload.count({
             collection: 'connectionRequests',
-            where: { and: [{ demandeur: { equals: moi!.id } }, { destinataire: { equals: e.titulaire } }, { statut: { equals: 'attente' } }] },
+            where: {
+              and: [
+                {
+                  or: [
+                    { and: [{ demandeur: { equals: moi!.id } }, { destinataire: { equals: e.titulaire } }] },
+                    { and: [{ demandeur: { equals: e.titulaire } }, { destinataire: { equals: moi!.id } }] },
+                  ],
+                },
+                { statut: { in: ['attente', 'acceptee'] } },
+              ],
+            },
             overrideAccess: true,
             req,
           })
-          if (enCours.totalDocs) throw new APIError('Une demande est déjà en attente auprès de ce membre.', 400, null, true)
+          if (enCours.totalDocs) throw new APIError(CONVERSATION_OUVERTE, 400, null, true)
           const semaine = await req.payload.count({
             collection: 'connectionRequests',
             where: { and: [{ demandeur: { equals: moi!.id } }, { createdAt: { greater_than: new Date(Date.now() - 7 * 86400e3).toISOString() } }] },
@@ -91,7 +105,18 @@ export const ConnectionRequests: CollectionConfig = {
             await logAction(req.payload, { categorie: 'validation', action: 'Mises en relation suspendues : plus de 10 demandes en une semaine', author: { type: 'membre', nom: String(moi!.id) } })
             throw new APIError(MESSAGE_PLAFOND, 429, null, true)
           }
-          return { ...data, demandeur: moi!.id, destinataire: e.titulaire, entreprise: e.id, message, statut: 'attente', fil: [], nonLuPar: [e.titulaire] }
+          // Écrire directement (décision du 28/10/2026) : le premier message ouvre la conversation, sans demande à accepter.
+          return {
+            ...data,
+            demandeur: moi!.id,
+            destinataire: e.titulaire,
+            entreprise: e.id,
+            message,
+            statut: 'acceptee',
+            dateReponse: new Date().toISOString(),
+            fil: [],
+            nonLuPar: [e.titulaire],
+          }
         }
 
         // Mise à jour : seules les transitions prévues, par la bonne personne.
@@ -142,10 +167,11 @@ export const ConnectionRequests: CollectionConfig = {
           }>
         if (operation === 'create') {
           const [dem, dest] = await Promise.all([charger(doc.demandeur), charger(doc.destinataire)])
+          // Le contenu du message n'est jamais recopié dans l'e-mail : il se lit dans l'espace membre.
           await notify(req.payload, {
             to: dest.email,
-            template: 'miseEnRelationRecue',
-            vars: { demandeur: `${dem.prenom ?? ''} ${dem.nom ?? ''}`.trim(), entreprise_demandeur: dem.entreprise?.nom, message: doc.message, lien: lien() },
+            template: 'messageMembre',
+            vars: { membre: `${dem.prenom ?? ''} ${dem.nom ?? ''}`.trim(), lien: `${lien()}?onglet=relations&id=${doc.id}` },
           })
           return doc
         }

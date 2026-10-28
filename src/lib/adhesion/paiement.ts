@@ -29,6 +29,7 @@ export const OBJETS_PAIEMENT = [
   { value: 'tranche2', label: 'Cotisation, 2e tranche' },
   { value: 'cotisation', label: 'Cotisation en totalité' },
   { value: 'encart', label: 'Encart dans l’annuaire imprimé' },
+  { value: 'abonnement', label: 'Abonnement « Annuaire détaillé »' },
 ] as const
 
 export const MODES_PAIEMENT = [

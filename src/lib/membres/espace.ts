@@ -43,6 +43,8 @@ export type Membre = {
   entreprise?: Entreprise | null
   dateAdhesion?: string | null
   validiteCarte?: string | null
+  /** Abonnement « Annuaire détaillé » : fin de la période payée. */
+  abonnementJusquau?: string | null
   dateLimiteCotisation?: string | null
   cotisation?: { droit?: number | null; montant?: number | null; tranches?: number | null }
   commissions?: { id: number; nom?: string; titre?: string; slug?: string }[]
