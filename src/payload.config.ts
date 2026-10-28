@@ -88,7 +88,12 @@ export default buildConfig({
       providers: ['@/components/admin/AccessibiliteNative#AccessibiliteNative'],
       views: {
         dashboard: { Component: '@/components/admin/tableau/TableauDeBord#TableauDeBord' },
-        cotisations: { Component: '@/components/admin/cotisations/CotisationsView#CotisationsView', path: '/cotisations' },
+        cotisations: {
+          Component: '@/components/admin/cotisations/CotisationsView#CotisationsView',
+          path: '/cotisations',
+          // Titre de l'onglet du navigateur (sans lui, Payload affiche « Payload »).
+          meta: { title: 'Cotisations' },
+        },
       },
       graphics: {
         Logo: '@/components/admin/Graphics#Logo',
