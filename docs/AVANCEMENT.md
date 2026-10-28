@@ -385,3 +385,7 @@ Déroulé et résultats dans `docs/RECETTE-INTERNE.md`. Nouveau fichier `tests/i
 ## Correctif : images absentes hors du port 3000 (28/10/2026)
 
 Payload écrivait les adresses des images de la médiathèque en adresses complètes, préfixées de `NEXT_PUBLIC_SERVER_URL` (`http://localhost:3000/api/media/file/…`). Servi à une autre adresse (prévisualisation sur le port 3100, ou préproduction mal réglée), le site n'affichait plus aucune photo. La médiathèque renvoie maintenant des chemins relatifs (`/api/media/file/…`, crochet `afterRead` de `src/collections/Media.ts`) ; les données structurées des actualités et des événements, qui exigent une adresse complète, préfixent elles-mêmes l'adresse du site. Vérifié sur la compilation de production servie au port 3100 : accueil 32 images, Le réseau 9, annuaire 6, agenda 5, actualités 6, opportunités 6, partenaires 8, aucune adresse absolue restante.
+
+## Correctif : back-office en thème sombre (28/10/2026)
+
+Sur un poste réglé en thème sombre, Payload passait l'administration en sombre (fond noir) alors que l'habillage de la maquette ne définit que le thème clair. Le back-office est désormais fixé en thème clair (`admin.theme: 'light'` dans `src/payload.config.ts`). Vérifié avec un navigateur en thème sombre : connexion et Cotisations sur fond sable, boutons lisibles.

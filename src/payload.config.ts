@@ -79,6 +79,8 @@ export default buildConfig({
       icons: [{ rel: 'icon', url: '/images/logo-rec242.jpg' }],
     },
     dateFormat: 'd MMM yyyy, HH:mm',
+    // La maquette n'a qu'un thème clair : sans ce réglage, Payload suit le thème sombre du système et le fond devient noir.
+    theme: 'light',
     avatar: 'default',
     components: {
       Nav: '@/components/admin/Nav#Nav',
