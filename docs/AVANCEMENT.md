@@ -411,3 +411,7 @@ Décisions de Webtinix, en complément de la section précédente : les membres 
 - Migrations `20261028_170336_messagerie_membres` et `20261028_183711_abonnement_annuaire` ; `docs/05` (§ annuaire et § échanges) modifié.
 - Tests : `tests/int/abonnement.int.spec.ts` (masquage, offre vide, prolongation, le membre ne s'attribue pas l'abonnement), `annuaire.int` et `recette.int` adaptés, E2E `lot7-annuaire` adapté.
 - À mettre à jour ensuite : le guide du back-office (`docs/guide/`) et les captures de l'annuaire de l'espace membre (écrans 07 et 08).
+
+## Plan d'accès : carte Google à la demande (29/10/2026)
+
+Demande de Webtinix : une vraie carte sur la page Contact. Le plan illustré de la maquette reste affiché, avec un bouton « Afficher la carte Google » qui charge la carte intégrée au clic (`src/components/site/CarteSiege.tsx`). Écart assumé avec la maquette : la carte ne s'affiche pas d'emblée, pour ne déposer aucun cookie de Google sans geste du visiteur (la politique de confidentialité annonce une mesure d'audience sans cookie publicitaire) et ne pas alourdir la page. La politique de sécurité du contenu autorise désormais `https://www.google.com` en `frame-src` sur le site public. La carte se place sur la latitude et la longitude de Paramètres > Plan d'accès quand elles sont renseignées, sinon sur l'adresse : renseigner les coordonnées exactes du siège pour un repère précis.

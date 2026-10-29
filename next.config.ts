@@ -10,7 +10,8 @@ const prod = process.env.NODE_ENV === 'production'
 
 /**
  * Politique de sécurité du contenu (lot 12). Tout est servi par le site lui-même (polices, images, scripts) ;
- * aucun service tiers n'est chargé par le navigateur (paiements mobiles appelés par le serveur).
+ * aucun service tiers n'est chargé par le navigateur (paiements mobiles appelés par le serveur), sauf la carte Google
+ * du plan d'accès, à la demande du visiteur.
  * - 'unsafe-inline' : scripts inline de Next (données du rendu, JSON-LD) sur des pages statiques ou revalidées,
  *   incompatibles avec un nonce par requête ; 'unsafe-eval' seulement en développement (React, rechargement à chaud).
  * - Admin : l'éditeur des champs JSON de Payload (Monaco) se charge depuis cdn.jsdelivr.net.
@@ -27,7 +28,8 @@ const csp = (admin: boolean) => {
     `connect-src 'self'${prod ? '' : ' ws: wss:'}${cdn}`,
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
-    "frame-src 'self'",
+    // Carte Google du plan d'accès (page Contact), chargée seulement au clic du visiteur.
+    `frame-src 'self'${admin ? '' : ' https://www.google.com'}`,
     "frame-ancestors 'self'",
     "object-src 'none'",
     "base-uri 'self'",

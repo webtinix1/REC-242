@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { Img } from '@/components/site/Blocks'
+import { CarteSiege } from '@/components/site/CarteSiege'
 import { ContactForm } from '@/components/site/ContactForm'
 import { JsonLd } from '@/components/site/JsonLd'
 import { MOTIFS } from '@/collections/ContactMessages'
@@ -215,7 +216,9 @@ export default async function Contact({ searchParams }: { searchParams: SP }) {
                   )}
                 </div>
               </div>
-              <PlanSiege label={`Plan du quartier du siège de REC 242 : ${s.adresse}`} />
+              <CarteSiege position={position ?? s.adresse} label={`Carte du siège de REC 242 : ${s.adresse}`}>
+                <PlanSiege label={`Plan du quartier du siège de REC 242 : ${s.adresse}`} />
+              </CarteSiege>
             </div>
           </div>
         </section>
