@@ -777,7 +777,10 @@ export async function seedPages(payload: Payload): Promise<void> {
             'Vos droits',
             'Accès, correction, suppression, retrait de votre fiche de l’annuaire : écrivez à contact@rec242.cg.',
           ],
-          ['Cookies et mesure d’audience', 'Mesure d’audience anonyme, sans cookie publicitaire.'],
+          [
+            'Cookies et mesure d’audience',
+            'Mesure d’audience anonyme, sans cookie publicitaire. La page Contact intègre une carte Google Maps : Google peut y déposer ses propres cookies, selon sa politique de confidentialité.',
+          ],
         ]),
         liensLegaux([
           ['Mentions légales', '/mentions-legales'],

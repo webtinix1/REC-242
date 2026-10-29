@@ -1,31 +1,19 @@
-'use client'
-
-import React, { useState } from 'react'
+import React from 'react'
 
 /**
- * Plan d'accès du siège. Le plan illustré de la maquette s'affiche d'abord ; la carte Google n'est chargée
- * qu'au clic du visiteur, pour ne déposer aucun cookie de Google sans son geste (politique de confidentialité).
+ * Plan d'accès du siège : carte Google intégrée, affichée d'emblée (décision Webtinix du 29/10/2026).
+ * La politique de confidentialité signale les cookies que Google peut déposer.
  */
-export function CarteSiege({ position, label, children }: { position: string; label: string; children: React.ReactNode }) {
-  const [ouverte, setOuverte] = useState(false)
-  if (ouverte)
-    return (
-      <div className="map">
-        <iframe
-          title={label}
-          src={`https://www.google.com/maps?q=${encodeURIComponent(position)}&z=16&hl=fr&output=embed`}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          allowFullScreen
-        />
-      </div>
-    )
+export function CarteSiege({ position, label }: { position: string; label: string }) {
   return (
-    <div className="map-wrap">
-      {children}
-      <button type="button" className="rec-btn rec-btn--secondary map-load" onClick={() => setOuverte(true)}>
-        Afficher la carte Google
-      </button>
+    <div className="map">
+      <iframe
+        title={label}
+        src={`https://www.google.com/maps?q=${encodeURIComponent(position)}&z=16&hl=fr&output=embed`}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        allowFullScreen
+      />
     </div>
   )
 }
