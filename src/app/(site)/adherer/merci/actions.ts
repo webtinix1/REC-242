@@ -1,6 +1,7 @@
 'use server'
 import { cookies } from 'next/headers'
 
+import { autoriserEnvoi } from '@/lib/request'
 import { COOKIE_MERCI, lireJetonMerci } from '@/lib/adhesion/merci'
 import { numeroRecu } from '@/lib/compteurs'
 import { verifierPaiement } from '@/lib/paiements/service'
@@ -21,7 +22,9 @@ export async function statutPaiementMerci(): Promise<{ statut: string; recu?: st
   })
   const p = r.docs[0] as unknown as { id: number; statut: string; numero?: number } | undefined
   if (!p) return { statut: 'inconnu' }
-  const statut = await verifierPaiement(payload, p as never)
+  // Page interrogée toutes les 4 secondes : au-delà de 240 appels par heure, le statut enregistré suffit
+  // (pas de nouvel appel à l'opérateur).
+  const statut = autoriserEnvoi(`suivi-merci:${id}`, 240, 3600 * 1000) ? await verifierPaiement(payload, p as never) : p.statut
   if (statut === 'paye') {
     const frais = (await payload.findByID({
       collection: 'payments',

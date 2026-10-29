@@ -216,9 +216,10 @@ export function Profil({ d, a }: { d: DonneesProfil; a: Actions }) {
               {d.libres.enRelecture && <span className="rec-help">En relecture par le secrétariat avant publication.</span>}
               <Erreur id="pf-pres-err" texte={fiche.erreurs?.presentation} />
             </div>
-            <div className="rec-field">
+            <div className={`rec-field${fiche.erreurs?.services ? ' rec-field--error' : ''}`}>
               <label htmlFor="pf-serv">Services proposés</label>
               <input id="pf-serv" name="services" className="rec-input" type="text" defaultValue={d.libres.services} placeholder="À compléter" />
+              <Erreur id="pf-serv-err" texte={fiche.erreurs?.services} />
             </div>
             {(
               [

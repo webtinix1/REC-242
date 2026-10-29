@@ -3,7 +3,7 @@ import type { Payload } from 'payload'
 
 import { categorie, montants, type Tarifs } from '@/lib/adhesion/categories'
 import { finExercice, limiteCotisation } from '@/lib/membres/options'
-import { media, readSeed } from './lib'
+import { media, motDePasseSeed, readSeed } from './lib'
 
 /**
  * Membres et entreprises de démonstration (seed/membres-et-entreprises.json, seed/cotisations-et-paiements.json,
@@ -80,7 +80,7 @@ export async function seedMembres(payload: Payload): Promise<void> {
     payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ tarifs?: Tarifs }>,
   ])
   const idPar = (docs: unknown[], nom: string) => (docs as { id: number; nom: string }[]).find((x) => x.nom === nom)?.id
-  const password = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
+  const password = motDePasseSeed()
   const parEntreprise = new Map<string, number>()
 
   for (const a of [...annuaire, ...COMPLEMENTS]) {

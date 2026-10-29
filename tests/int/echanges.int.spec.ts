@@ -82,6 +82,10 @@ describe('Lot 10 : experts, échanges, commissions', () => {
     expect(apres.statut).toBe('repondue')
     expect(apres.nonLuMembre).toBe(true)
     expect((await nonLus(payload, m.id)).experts).toBe(1)
+    // Un autre membre ne peut pas marquer comme lue une demande qui n'est pas la sienne.
+    const tiers = await membre(9)
+    await marquerLu(payload, 'experts', d.id as number, tiers.id)
+    expect((await nonLus(payload, m.id)).experts).toBe(1)
     await marquerLu(payload, 'experts', d.id as number, m.id)
     expect((await nonLus(payload, m.id)).experts).toBe(0)
     // Le membre clôture sa demande.
@@ -116,6 +120,10 @@ describe('Lot 10 : experts, échanges, commissions', () => {
     const msg = await payload.create({ collection: 'networkMessages', overrideAccess: true, data: { membre: a.id, titre: 'Test', texte: 'Message de test' } as never })
     crees.networkMessages.push(msg.id as number)
     const avant = (await nonLus(payload, a.id)).reseau
+    // Un message destiné à A n'est pas marqué lu par B (B n'est pas ajouté à « Lu par »).
+    await marquerLu(payload, 'reseau', msg.id as number, b.id)
+    const luPar = ((await payload.findByID({ collection: 'networkMessages', id: msg.id, depth: 0, overrideAccess: true })) as unknown as { luPar?: number[] }).luPar ?? []
+    expect(luPar).not.toContain(b.id)
     await marquerLu(payload, 'reseau', msg.id as number, a.id)
     expect((await nonLus(payload, a.id)).reseau).toBe(avant - 1)
 

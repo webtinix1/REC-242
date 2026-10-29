@@ -1886,7 +1886,8 @@ html[data-theme='light'] {
 .array-field__add-row .btn__label,
 .upload__dropzoneContent__orText,
 .upload__dragAndDropText,
-.upload-relationship-details__meta {
+.upload-relationship-details__meta,
+.rich-text-lexical .LexicalEditorTheme__placeholder {
   color: var(--text-muted);
 }
 .field-type [style*='color: rgb(154, 154, 154)'] {

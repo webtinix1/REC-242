@@ -3,6 +3,7 @@
 import { headers } from 'next/headers'
 
 import { ecrire } from '@/lib/echanges/actions'
+import { messagePublic } from '@/lib/erreurs'
 import { membreConnecte } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
 
@@ -56,7 +57,7 @@ export async function demanderRelation(_: RetourRelation, f: FormData): Promise<
     })
     return { ok: true, conversation: c.id as number }
   } catch (err) {
-    return { erreur: (err as Error).message }
+    return { erreur: messagePublic(err, 'annuaire') }
   }
 }
 
@@ -91,7 +92,7 @@ export async function repondreRelation(id: number, accepter: boolean): Promise<R
       user: await utilisateur(),
     })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    return { erreur: messagePublic(e, 'annuaire') }
   }
   return { ok: true }
 }

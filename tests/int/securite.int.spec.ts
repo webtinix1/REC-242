@@ -199,7 +199,7 @@ describe('Lot 12 : sécurité des accès', () => {
       superadmin: { members: true, payments: true, dues: true, applications: true, auditLog: true, users: true, disciplinaryCases: true, connectionRequests: true, directoryAds: true, counters: true },
       admin: { members: true, payments: true, dues: true, applications: true, auditLog: true, users: true, disciplinaryCases: true, connectionRequests: true, counters: false },
       editeur: { members: false, companies: false, payments: false, dues: false, applications: false, auditLog: false, pieces: false, disciplinaryCases: false, connectionRequests: false, expertRequests: false, registrations: false, commissionRequests: true, directoryAds: false },
-      evenements: { members: true, registrations: true, payments: false, dues: false, applications: false, auditLog: false, pieces: true, disciplinaryCases: false, connectionRequests: false, expertRequests: false, networkMessages: false, commissionRequests: false, directoryAds: false },
+      evenements: { members: true, registrations: true, payments: false, dues: false, applications: false, auditLog: false, pieces: false, disciplinaryCases: false, connectionRequests: false, expertRequests: false, networkMessages: false, commissionRequests: false, directoryAds: false },
       membres: { members: true, applications: true, payments: true, dues: true, registrations: true, disciplinaryCases: true, connectionRequests: true, expertRequests: true, commissionRequests: true, directoryAds: true, auditLog: false, users: true },
       tresorier: { members: true, applications: true, payments: true, dues: true, directoryAds: true, disciplinaryCases: false, connectionRequests: false, expertRequests: false, registrations: false, auditLog: false },
     }

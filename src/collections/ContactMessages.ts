@@ -3,6 +3,7 @@ import { APIError, type CollectionConfig, type PayloadRequest, type Where } from
 import { hasRole, isStaff, rolesOf, type Role } from '@/access/roles'
 import { renderEmail } from '@/emails/render'
 import { logAction } from '@/lib/audit'
+import { celluleCsv } from '@/lib/csv'
 
 /** Motifs du formulaire de contact (écran site 22). */
 export const MOTIFS = [
@@ -348,7 +349,8 @@ export const ContactMessages: CollectionConfig = {
           'Transmis à',
           'Statut',
         ]
-        const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
+        // Cellule toujours entre guillemets et neutralisée : une valeur saisie « =… » ne devient pas une formule.
+        const esc = (v: unknown) => celluleCsv(v, true)
         const lignes = r.docs.map((d) => {
           const x = d as unknown as Record<string, string>
           return [

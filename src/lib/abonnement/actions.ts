@@ -8,7 +8,7 @@ import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import type { EtatPaiement } from '@/lib/cotisations/actions'
 import { membreConnecte } from '@/lib/membres/espace'
 import type { Operateur } from '@/lib/paiements/operateurs'
-import { lancerPaiementMobile } from '@/lib/paiements/service'
+import { lancerPaiementMobile, MESSAGE_PAIEMENT_EN_COURS } from '@/lib/paiements/service'
 import { getPayloadClient } from '@/lib/site/payload'
 import { offreAbonnement } from './service'
 
@@ -28,6 +28,9 @@ export async function payerAbonnement(_: EtatPaiement, f: FormData): Promise<Eta
   if (!['mtn', 'airtel'].includes(operateur)) erreurs.operateur = 'Choisissez l’opérateur.'
   if (telephone.replace(/\D/g, '').length < 9) erreurs.telephone = 'Indiquez le numéro qui va payer.'
   if (Object.keys(erreurs).length) return { erreurs }
+  // Chaque demande fait sonner le téléphone du payeur : nombre limité par numéro, quel que soit l'appareil.
+  if (!autoriserEnvoi(`payeur:${telephone.replace(/\D/g, '')}`, process.env.NODE_ENV === 'production' ? 5 : 100, 3600 * 1000))
+    return { erreur: 'Trop de demandes de paiement pour ce numéro en une heure. Réessayez plus tard.' }
   const payload = await getPayloadClient()
   const offre = await offreAbonnement(payload)
   if (!offre) return { erreur: 'L’abonnement n’est pas encore proposé.' }
@@ -41,7 +44,11 @@ export async function payerAbonnement(_: EtatPaiement, f: FormData): Promise<Eta
     reference: `ABO-${m.id}-${Date.now()}`,
     // La durée payée est figée sur le paiement : un changement de tarif ensuite ne la modifie pas.
     abonnementMois: offre.dureeMois,
+  }).catch((err: Error) => {
+    if (err.message === MESSAGE_PAIEMENT_EN_COURS) return null
+    throw err
   })
+  if (!p) return { erreur: MESSAGE_PAIEMENT_EN_COURS }
   revalidatePath('/espace-membre/annuaire')
   return { ok: p.statut !== 'echoue', paiement: p.id, statut: p.statut, erreur: p.statut === 'echoue' ? 'Le paiement n’a pas pu être lancé. Réessayez dans un instant.' : undefined }
 }

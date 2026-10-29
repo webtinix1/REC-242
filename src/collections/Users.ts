@@ -6,7 +6,7 @@ import { renderEmail } from '@/emails/render'
 import { getTemplate, sendTemplate } from '@/emails/send'
 import { colonne, colonneActions } from '@/fields/colonneActions'
 import { logAction } from '@/lib/audit'
-import { clientCity, deviceKey, deviceLabel, userAgent } from '@/lib/request'
+import { clientCity, deviceKey, deviceLabel, limiterAuthentification, rendreTentativeConnexion, userAgent } from '@/lib/request'
 
 export const ADMIN_PASSWORD_MIN = 12
 const INVITATION_VALIDITY_MS = 72 * 60 * 60 * 1000
@@ -155,6 +155,8 @@ export const Users: CollectionConfig = {
   ],
   hooks: {
     beforeOperation: [
+      // Routes REST natives (connexion, mot de passe oublié, déblocage, prolongation) : limite par appareil et par adresse.
+      limiterAuthentification,
       ({ args, operation }) => {
         const pwd = (args as { data?: { password?: string } } | undefined)?.data?.password
         if (
@@ -207,6 +209,12 @@ export const Users: CollectionConfig = {
     ],
     afterChange: [
       async ({ doc, previousDoc, operation, req, context }) => {
+        // Compte désactivé : ses sessions ouvertes sont fermées, sinon le jeton déjà délivré resterait valable pour l'API
+        // jusqu'à son expiration (comme pour les membres suspendus).
+        if (operation === 'update' && doc.statut === 'desactive' && previousDoc?.statut !== 'desactive') {
+          const u = await req.payload.db.findOne({ collection: 'users', where: { id: { equals: doc.id } }, req })
+          if (u) await req.payload.db.updateOne({ collection: 'users', id: doc.id, data: { ...u, sessions: [], updatedAt: null }, req, returning: false })
+        }
         if (operation !== 'update' || context?.skipAudit) return doc
         const before = (previousDoc?.roles || []).slice().sort().join(',')
         const after = (doc.roles || []).slice().sort().join(',')
@@ -247,6 +255,7 @@ export const Users: CollectionConfig = {
       },
     ],
     afterLogin: [
+      rendreTentativeConnexion,
       async ({ req, user }) => {
         const u = user as UserDoc
         const ua = userAgent(req)

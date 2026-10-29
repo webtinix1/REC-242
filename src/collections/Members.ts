@@ -8,6 +8,8 @@ import { AGES, CIVILITES } from '@/lib/adhesion/options'
 import { endpointsMembres } from '@/endpoints/membres'
 import { logAction } from '@/lib/audit'
 import { NOTIFICATIONS, STATUTS_MEMBRE } from '@/lib/membres/options'
+import { estSessionCourte, lireJeton, raccourcirSession, strategieEcheanceSession } from '@/lib/membres/session'
+import { limiterAuthentification, rendreTentativeConnexion } from '@/lib/request'
 
 export const MEMBER_PASSWORD_MIN = 10
 
@@ -23,6 +25,12 @@ const lecture: Access = ({ req }) => {
 
 /** Champ vérifié ou géré par l'équipe : le membre le lit mais ne le modifie pas lui-même. */
 const equipeSeulement: FieldAccess = ({ req }) => atLeast(req.user, 'membres', 'partial')
+
+/**
+ * Champ écrit par une action serveur de l'espace membre (`overrideAccess: true`, ou contexte `champServeur`, que l'API REST
+ * ne peut pas poser) ou par l'équipe : un membre ne le change pas directement par PATCH /api/members/<id>.
+ */
+const equipeOuServeur: FieldAccess = ({ req }) => atLeast(req.user, 'membres', 'partial') || req.context?.champServeur === true
 
 /** Champ interne (jetons) : jamais renvoyé par l'API. */
 const interne: FieldAccess = () => false
@@ -46,8 +54,11 @@ export const Members: CollectionConfig = {
     },
   },
   auth: {
-    // 30 jours au plus (« Rester connecté ») ; sans cette case, le cookie ne vit que 30 minutes sans activité (src/proxy.ts).
+    // 30 jours au plus (« Rester connecté ») ; sans cette case, la session en base ne vit que 30 minutes sans activité
+    // (afterLogin ci-dessous, strategieEcheanceSession) et le cookie aussi (src/proxy.ts).
     tokenExpiration: 30 * 24 * 3600,
+    // Placée avant la stratégie JWT de Payload : retire les sessions échues, prolonge les sessions courtes actives.
+    strategies: [strategieEcheanceSession],
     maxLoginAttempts: 5,
     lockTime: 15 * 60 * 1000,
     cookies: { sameSite: 'Lax', secure: process.env.NODE_ENV === 'production' },
@@ -78,6 +89,15 @@ export const Members: CollectionConfig = {
   },
   hooks: {
     beforeOperation: [
+      // Routes REST natives (connexion, mot de passe oublié, déblocage, prolongation) : limite par appareil et par adresse.
+      limiterAuthentification,
+      async ({ args, operation, req }) => {
+        // Une session courte ne se prolonge pas en session de 30 jours par /api/members/refresh-token.
+        const moi = req.user as (Moi & { _sid?: string }) | null | undefined
+        if (operation === 'refresh' && moi?.collection === 'members' && (await estSessionCourte(req.payload, moi.id!, moi._sid, req)))
+          throw new APIError('Session courte : reconnectez-vous.', 403, null, true)
+        return args
+      },
       ({ args, operation, req }) => {
         const data = (args as { data?: { password?: string; email?: string } } | undefined)?.data
         const pwd = data?.password
@@ -120,9 +140,16 @@ export const Members: CollectionConfig = {
       },
     ],
     afterLogin: [
-      async ({ req, user }) => {
+      rendreTentativeConnexion,
+      async ({ req, user, token }) => {
         const u = user as { id: number; nomComplet?: string; email: string }
         await req.payload.db.updateOne({ collection: 'members', id: u.id, data: { derniereConnexion: new Date().toISOString() }, req, returning: false })
+        // Sans « Rester connecté » (case du formulaire, transmise par l'action de connexion), la session est courte côté
+        // serveur : 30 minutes, prolongées à chaque requête. Une connexion par l'API REST est toujours courte.
+        if (!req.context?.rester) {
+          const sid = token ? lireJeton(token, req.payload.secret)?.sid : undefined
+          if (sid) await raccourcirSession(req.payload, u.id, sid, req)
+        }
         await logAction(req.payload, { req, categorie: 'connexion', action: 'Connexion à l’espace membre', cible: u.email, author: { type: 'membre', nom: u.nomComplet || u.email } })
         return user
       },
@@ -185,7 +212,8 @@ export const Members: CollectionConfig = {
         { name: 'trancheAge', label: 'Tranche d’âge', type: 'select', options: AGES, access: { update: equipeSeulement } },
       ],
     },
-    { name: 'photo', label: 'Photo', type: 'upload', relationTo: 'media' },
+    // Écrit par le serveur (action « changer la photo », qui vérifie le fichier) ou par l'équipe, jamais par PATCH du membre.
+    { name: 'photo', label: 'Photo', type: 'upload', relationTo: 'media', access: { update: equipeOuServeur } },
     { name: 'entreprise', label: 'Entreprise', type: 'relationship', relationTo: 'companies', access: { update: equipeSeulement } },
     {
       type: 'row',
@@ -228,7 +256,7 @@ export const Members: CollectionConfig = {
       type: 'group',
       fields: NOTIFICATIONS.map((n) => ({ name: n.name, label: n.label, type: 'checkbox' as const, defaultValue: n.name !== 'lettre' })),
     },
-    { name: 'consentementAnnuaire', label: 'Consentement à l’annuaire (date)', type: 'date' },
+    { name: 'consentementAnnuaire', label: 'Consentement à l’annuaire (date)', type: 'date', access: { update: equipeOuServeur } },
     {
       name: 'relationsSuspendues',
       label: 'Mises en relation suspendues (plus de 10 demandes en une semaine)',
@@ -236,7 +264,7 @@ export const Members: CollectionConfig = {
       defaultValue: false,
       access: { update: equipeSeulement },
     },
-    { name: 'conditionsAcceptees', label: 'Conditions de l’espace membre acceptées le', type: 'date' },
+    { name: 'conditionsAcceptees', label: 'Conditions de l’espace membre acceptées le', type: 'date', access: { update: equipeOuServeur } },
     { name: 'derniereConnexion', label: 'Dernière connexion', type: 'date', admin: { readOnly: true }, access: { update: () => false } },
     {
       name: 'fin',

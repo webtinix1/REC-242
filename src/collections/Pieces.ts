@@ -14,8 +14,9 @@ export const Pieces: CollectionConfig = {
   labels: { singular: 'Pièce de dossier', plural: 'Pièces de dossier' },
   admin: { hidden: true, useAsTitle: 'filename' },
   access: {
-    // Justificatifs des demandes de modification : lus aussi par le responsable membres.
-    read: ({ req }) => atLeast(req.user, 'candidatures', 'read') || atLeast(req.user, 'membres', 'read'),
+    // Justificatifs des demandes de modification : lus aussi par le responsable membres (droit complet sur les fiches).
+    // Le responsable événements lit les fiches membres mais jamais les pièces d'identité des candidats.
+    read: ({ req }) => atLeast(req.user, 'candidatures', 'read') || atLeast(req.user, 'membres', 'partial'),
     // Les pièces envoyées avec une candidature en ligne sont créées par le serveur (accès système).
     create: ({ req }) => atLeast(req.user, 'candidatures', 'partial'),
     update: () => false,

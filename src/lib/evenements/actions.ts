@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 import { autoriserEnvoi, CHAMP_PIEGE, ipDe, jetonValide } from '@/lib/antispam'
+import { messagePublic } from '@/lib/erreurs'
 import { membreConnecte } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
 import { verifierJetonLien } from './billets'
@@ -55,7 +56,7 @@ export async function inscrireVisiteur(_: EtatInscription, f: FormData): Promise
     revalidatePath('/agenda', 'layout')
     return resultat(r)
   } catch (e) {
-    return { general: (e as Error).message }
+    return { general: messagePublic(e, 'evenements') }
   }
 }
 
@@ -71,7 +72,7 @@ export async function inscrireMembre(_: EtatInscription, f: FormData): Promise<E
     revalidatePath('/espace-membre', 'layout')
     return resultat(r)
   } catch (e) {
-    return { general: (e as Error).message }
+    return { general: messagePublic(e, 'evenements') }
   }
 }
 
@@ -83,7 +84,7 @@ export async function annulerInscriptionMembre(id: number): Promise<{ ok?: boole
   try {
     await payload.update({ collection: 'registrations', id, overrideAccess: false, user, data: { statut: 'annule' } as never })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    return { erreur: messagePublic(e, 'evenements') }
   }
   revalidatePath('/espace-membre', 'layout')
   revalidatePath('/agenda', 'layout')

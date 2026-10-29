@@ -176,23 +176,41 @@ export async function envoyerCandidature(f: FormData): Promise<Resultat> {
   const payload = await getPayloadClient()
   if (await existeDoublon(payload, d)) return { doublon: true, etape: 1 }
   const cat = categorie(d.categorie)!
+  // Le numéro payeur est libre sur ce formulaire public : chaque demande fait sonner ce téléphone,
+  // donc nombre de demandes limité par numéro, quel que soit l'appareil.
+  if (
+    !cat.convention &&
+    d.modePaiement === 'mobile' &&
+    !autoriserEnvoi(`payeur:${telephoneInternational(d.numeroPayeur).replace(/\D/g, '')}`, prod ? 3 : 50, HEURE)
+  )
+    return {
+      general:
+        'Trop de demandes de paiement pour ce numéro. Réessayez dans une heure ou choisissez le paiement au siège.',
+    }
   const pieces: number[] = []
-  for (const x of fichiers) {
-    const p = await payload.create({
-      collection: 'pieces',
-      overrideAccess: true,
-      data: { type: 'justificatif' },
-      file: {
-        data: Buffer.from(await x.arrayBuffer()),
-        mimetype: x.type,
-        name: x.name,
-        size: x.size,
-      },
-    })
-    pieces.push(p.id as number)
+  // Pièces créées avant la candidature : supprimées si la candidature n'est pas enregistrée (pas de fichier orphelin).
+  const supprimerPieces = async () => {
+    for (const id of pieces)
+      await payload.delete({ collection: 'pieces', id, overrideAccess: true }).catch((err) => {
+        payload.logger.error({ err, piece: id }, 'Candidature : pièce orpheline non supprimée')
+      })
   }
   let doc: { id: number; numero?: number; createdAt?: string }
   try {
+    for (const x of fichiers) {
+      const p = await payload.create({
+        collection: 'pieces',
+        overrideAccess: true,
+        data: { type: 'justificatif' },
+        file: {
+          data: Buffer.from(await x.arrayBuffer()),
+          mimetype: x.type,
+          name: x.name,
+          size: x.size,
+        },
+      })
+      pieces.push(p.id as number)
+    }
     doc = (await payload.create({
       collection: 'applications',
       overrideAccess: true,
@@ -235,6 +253,7 @@ export async function envoyerCandidature(f: FormData): Promise<Resultat> {
       } as never,
     })) as unknown as { id: number; numero?: number; createdAt?: string }
   } catch (err) {
+    await supprimerPieces()
     const message = (err as Error).message
     if (message === MESSAGE_DOUBLON) return { doublon: true, etape: 1 }
     payload.logger.error({ err }, 'Candidature : enregistrement impossible')
@@ -251,6 +270,7 @@ export async function envoyerCandidature(f: FormData): Promise<Resultat> {
     const m = montants(cat, s.tarifs)
     if (m) {
       const deux = d.modalite === 'deux-tranches'
+      // La candidature est enregistrée : un paiement impossible à lancer ne la bloque pas (paiement au siège ensuite).
       await lancerPaiementMobile(payload, {
         candidature: doc.id,
         operateur: d.operateur as 'mtn' | 'airtel',
@@ -259,7 +279,7 @@ export async function envoyerCandidature(f: FormData): Promise<Resultat> {
         objet: deux ? 'adhesion-tranche' : 'adhesion',
         libelle: `Adhésion REC 242, dossier ${numeroDossierCandidat(doc.numero, doc.createdAt)}`,
         reference: numeroDossierCandidat(doc.numero, doc.createdAt),
-      })
+      }).catch((err) => payload.logger.error({ err, candidature: doc.id }, 'Candidature : paiement mobile non lancé'))
     }
   }
 

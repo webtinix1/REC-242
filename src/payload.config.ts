@@ -11,6 +11,7 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 
+import { hasRole, isStaff } from './access/roles'
 import { Applications } from './collections/Applications'
 import { AuditLog } from './collections/AuditLog'
 import { CommissionRequests } from './collections/CommissionRequests'
@@ -58,6 +59,21 @@ import { searchConfig } from './search/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+/**
+ * Secret de signature (sessions, jetons des liens) : en production, l'application refuse de démarrer avec la valeur
+ * d'exemple ou un secret de moins de 32 caractères. La compilation (`next build`) n'est pas bloquée : le secret est
+ * vérifié au démarrage du serveur.
+ */
+function secretVerifie(): string {
+  const secret = process.env.PAYLOAD_SECRET || ''
+  const compilation = process.env.NEXT_PHASE === 'phase-production-build'
+  if (process.env.NODE_ENV === 'production' && !compilation) {
+    if (['a-remplacer', 'YOUR_SECRET_HERE'].includes(secret.trim()) || secret.length < 32)
+      throw new Error('PAYLOAD_SECRET doit être un secret aléatoire d’au moins 32 caractères en production (par exemple : openssl rand -hex 32).')
+  }
+  return secret
+}
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
@@ -148,11 +164,12 @@ export default buildConfig({
     tasks: [publierProgrammes, verifierPaiements, rappelVeille, expirerOpportunites, demandesSansReponse, suiviAdhesionsTache],
     // En développement et sur le VPS (serveur Node permanent), les tâches tournent dans le processus de l'application.
     autoRun: [{ cron: '* * * * *', queue: 'minute' }],
-    access: { run: ({ req }) => Boolean(req.user && req.user.collection === 'users') },
+    // Lancement manuel des tâches (/api/payload-jobs/run) : administrateurs actifs seulement (compte désactivé exclu).
+    access: { run: ({ req }) => isStaff(req.user) && hasRole(req.user, 'superadmin', 'admin') },
   },
   endpoints: [adminBadges],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: secretVerifie(),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

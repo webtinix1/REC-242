@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { atLeast } from '@/access/roles'
 import { colonne } from '@/fields/colonneActions'
 import { logAction } from '@/lib/audit'
+import { celluleCsv } from '@/lib/csv'
 
 export const AUDIT_CATEGORIES = [
   { value: 'connexion', label: 'Connexions' },
@@ -58,7 +59,8 @@ export const AuditLog: CollectionConfig = {
           req,
           overrideAccess: false,
         })
-        const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
+        // Cellule toujours entre guillemets et neutralisée : une valeur saisie « =… » ne devient pas une formule.
+        const esc = (v: unknown) => celluleCsv(v, true)
         const lines = [
           ['Date', 'Auteur', 'Catégorie', 'Action', 'Cible', 'Adresse IP', 'Ville']
             .map(esc)

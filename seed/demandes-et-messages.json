@@ -11,7 +11,7 @@
    "ini": "AM",
    "qui": "Visiteuse, pas encore membre",
    "tel": "+242 06 455 12 03",
-   "mail": "ariane.mabiala@gmail.com",
+   "mail": "ariane.mabiala@exemple.test",
    "corps": "Bonjour, je tiens un salon de coiffure à Moungali avec deux employées. Mon activité est déclarée mais je n’ai pas encore de RCCM. Est-ce que je dois choisir la catégorie A ou B ? Et est-ce que je peux payer en deux fois ? Merci.",
    "model": "Informations sur l’adhésion",
    "rep": "Bonjour Madame Mabiala, merci pour votre message. Sans RCCM, la catégorie A (individuel, informel) vous correspond : 10 000 FCFA de droit d’adhésion et 25 000 FCFA de cotisation annuelle, payable en deux tranches sous 3 mois. La commission Formalisation pourra ensuite vous accompagner pour obtenir votre RCCM. Vous pouvez déposer votre candidature sur rec242.cg/adherer. Bien cordialement, Béryl Bobanda, responsable membres.",
@@ -20,7 +20,7 @@
    "photo": "design/images/personnes/ariane-mabiala.webp",
    "sent": false,
    "done": false,
-   "to": "ariane.mabiala@gmail.com",
+   "to": "ariane.mabiala@exemple.test",
    "unread": false
   },
   {
@@ -85,7 +85,7 @@
    "ini": "MN",
    "qui": "Membre, inscrite à l’afterwork du 14 novembre",
    "tel": "+242 04 412 88 09",
-   "mail": "mireille.ngoma@gmail.com",
+   "mail": "mireille.ngoma@exemple.test",
    "corps": "Bonjour, je me déplace en fauteuil roulant. La salle de l’afterwork du 14 novembre est-elle accessible ? Y a-t-il des marches à l’entrée du siège ?",
    "model": "Remerciement et prise en charge",
    "rep": "Bonjour Madame Ngoma, merci de nous avoir prévenus. L’entrée du siège se fait de plain-pied par la cour, et la salle est au rez-de-chaussée. Une place de stationnement vous sera réservée devant l’entrée. À très bientôt, Lilia Kongo, événements.",
@@ -94,7 +94,7 @@
    "photo": "design/images/personnes/mireille-ngoma.webp",
    "sent": false,
    "done": false,
-   "to": "mireille.ngoma@gmail.com",
+   "to": "mireille.ngoma@exemple.test",
    "unread": true
   },
   {
@@ -108,7 +108,7 @@
    "ini": "BK",
    "qui": "Candidat, dossier papier C-0044",
    "tel": "+242 06 538 71 09",
-   "mail": "bienvenu.kaya@gmail.com",
+   "mail": "bienvenu.kaya@exemple.test",
    "corps": "Bonjour, quels sont les horaires d’ouverture du siège ? Je voudrais déposer mon bulletin d’adhésion.",
    "model": "Remerciement et prise en charge",
    "rep": "Bonjour Monsieur Kaya, le siège est ouvert du lundi au vendredi de 8 h 30 à 17 h, et le samedi sur rendez-vous. Bien cordialement, le secrétariat.",
@@ -118,7 +118,7 @@
    "photo": "design/images/personnes/bienvenu-kaya.webp",
    "sent": true,
    "done": true,
-   "to": "bienvenu.kaya@gmail.com",
+   "to": "bienvenu.kaya@exemple.test",
    "unread": false
   }
  ],

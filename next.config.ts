@@ -53,6 +53,8 @@ const securite = (admin: boolean) => [
 ]
 
 const nextConfig: NextConfig = {
+  // Pas d'en-tête « X-Powered-By: Next.js » : inutile d'annoncer la technologie du serveur.
+  poweredByHeader: false,
   // La règle de l'admin vient après la règle générale : pour une même clé, Next garde la dernière.
   headers: async () => [
     { source: '/:path*', headers: securite(false) },

@@ -9,7 +9,7 @@ import { getPayloadClient } from '@/lib/site/payload'
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const m = await membreConnecte()
   const id = Number((await params).id)
-  if (!m || !Number.isInteger(id)) return new NextResponse('Accès refusé.', { status: 403 })
+  if (!m || m.statut !== 'actif' || !Number.isInteger(id)) return new NextResponse('Accès refusé.', { status: 403 })
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'registrations',

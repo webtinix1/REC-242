@@ -341,8 +341,9 @@ async function alignerRecherche(payload: Payload): Promise<void> {
       data: { presentation: 'Exploitation agricole de Dolisie, en cours de formalisation de son activité.' },
       returning: false,
     })
-  // Réindexation des pages (nouvelle règle d'indexation).
-  const pages = await payload.find({ collection: 'pages', limit: 200, depth: 0, overrideAccess: true })
+  // Réindexation des pages (nouvelle règle d'indexation), seulement les pages publiées : un brouillon commencé dans
+  // l'admin (sans titre) ne serait pas valide.
+  const pages = await payload.find({ collection: 'pages', where: { _status: { equals: 'published' } }, limit: 200, depth: 0, overrideAccess: true })
   for (const pg of pages.docs) await payload.update({ collection: 'pages', id: pg.id, data: { _status: 'published' }, draft: false, overrideAccess: true, context: { skipAudit: true } })
 }
 

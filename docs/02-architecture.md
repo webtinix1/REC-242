@@ -61,6 +61,15 @@ Le site public utilise un petit moteur d'animation au défilement (`design/rec-m
 
 VPS Linux, Node LTS, PostgreSQL, Nginx en frontal, certificat TLS, sauvegarde quotidienne de la base et des fichiers (rétention 30 jours), environnement de préproduction séparé. Variables d'environnement documentées dans `.env.example`.
 
+Nginx doit transmettre l'adresse réelle du visiteur : les limites d'envoi (connexion, mot de passe oublié, formulaires, paiements) lisent `X-Real-IP`, sinon le dernier élément de `X-Forwarded-For`.
+
+```nginx
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
+Next ne doit écouter que sur l'interface locale (`127.0.0.1`), derrière Nginx.
+
 ## Budget de performance (pages publiques)
 
 LCP inférieur à 2,5 s en 4G simulée, CLS inférieur à 0,1, moins de 150 Ko de JavaScript compressé par page publique, Lighthouse mobile 90 ou plus en performance, accessibilité, bonnes pratiques et SEO.

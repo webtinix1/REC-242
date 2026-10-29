@@ -59,7 +59,9 @@ export const searchConfig: SearchPluginConfig = {
     slug: 'search',
     labels: { singular: 'Résultat de recherche', plural: 'Index de recherche' },
     admin: { hidden: true },
-    access: { read: () => true },
+    // L'index n'est écrit que par le serveur : le plugin synchronise par l'API locale, sans contrôle d'accès.
+    // Par défaut, Payload ouvrirait la modification et la suppression à tout compte connecté (membre compris).
+    access: { read: () => true, create: () => false, update: () => false, delete: () => false },
     fields: ({ defaultFields }) => [
       ...defaultFields,
       { name: 'type', label: 'Type', type: 'text', index: true },
@@ -87,6 +89,10 @@ export const searchConfig: SearchPluginConfig = {
       }
     }
     if (collectionSlug === 'news') {
+      // Une actualité archivée reste publiée pour Payload (le plugin la garde dans l'index) : son entrée est vidée,
+      // aucun mot ne la retrouve plus. Les brouillons ne sont jamais indexés (syncDrafts: false, deleteDrafts: true).
+      if (originalDoc.etat === 'archive')
+        return { ...searchDoc, title: '', type: 'Actualité', lien: '', extrait: '', contenu: '' }
       const corps = originalDoc.reserveMembres ? '' : plainText(originalDoc.corps)
       return {
         ...searchDoc,

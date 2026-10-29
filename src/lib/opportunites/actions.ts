@@ -4,8 +4,10 @@ import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
+import { messagePublic } from '@/lib/erreurs'
 import { membreConnecte } from '@/lib/membres/espace'
 import { getPayloadClient } from '@/lib/site/payload'
+import { formatReel, MIME } from '@/lib/echanges/fichiers'
 import { coordonneesDetectees } from './regles'
 
 /**
@@ -34,14 +36,22 @@ async function deposer(
 ): Promise<number | undefined | { erreur: string }> {
   if (!(fichier instanceof File) || !fichier.size) return undefined
   if (fichier.size > 5 * 1024 * 1024) return { erreur: 'Pièce jointe : 5 Mo au maximum.' }
-  if (!['application/pdf', 'image/jpeg', 'image/png'].includes(fichier.type)) return { erreur: 'Pièce jointe : PDF, JPEG ou PNG.' }
+  // Format lu dans les octets, pas dans le type annoncé par le navigateur.
+  const data = Buffer.from(await fichier.arrayBuffer())
+  const format = formatReel(data)
+  if (!format || format === 'webp') return { erreur: 'Pièce jointe : PDF, JPEG ou PNG.' }
   const doc = await payload.create({
     collection: 'fichiers',
     overrideAccess: true,
     data: { visibilite, proprietaire, destinataire } as never,
-    file: { data: Buffer.from(await fichier.arrayBuffer()), mimetype: fichier.type, name: fichier.name, size: fichier.size },
+    file: { data, mimetype: MIME[format], name: fichier.name, size: data.length },
   })
   return doc.id as number
+}
+
+/** Supprime une pièce déposée quand l'enregistrement qui devait la porter a échoué (pas de fichier orphelin). */
+async function retirer(payload: Awaited<ReturnType<typeof getPayloadClient>>, piece: number | undefined | { erreur: string }) {
+  if (typeof piece === 'number') await payload.delete({ collection: 'fichiers', id: piece, overrideAccess: true }).catch(() => null)
 }
 
 /**
@@ -63,6 +73,13 @@ export async function proposerOpportunite(_: EtatOpportunite, f: FormData): Prom
   if (!dateLimite) erreurs.dateLimite = 'La date limite est obligatoire.'
   if (Object.keys(erreurs).length) return { erreurs }
   const visibilite = val(f, 'visibilite') === 'public' ? 'public' : 'membres'
+  // La cible est vérifiée avant le dépôt de la pièce : une modification ne porte que sur une annonce du membre.
+  const id = Number(f.get('id'))
+  if (id) {
+    const o = (await c.payload.findByID({ collection: 'opportunities', id, depth: 0, overrideAccess: true }).catch(() => null)) as { membre?: number | { id: number } | null } | null
+    const auteur = o?.membre && typeof o.membre === 'object' ? o.membre.id : o?.membre
+    if (auteur !== c.m.id) return { erreur: 'Annonce introuvable.' }
+  }
   const piece = await deposer(c.payload, f.get('pieceJointe'), c.m.id, visibilite)
   if (piece && typeof piece === 'object') return { erreurs: { pieceJointe: piece.erreur } }
   const data = {
@@ -77,11 +94,11 @@ export async function proposerOpportunite(_: EtatOpportunite, f: FormData): Prom
     statut: 'a-moderer',
   }
   try {
-    const id = Number(f.get('id'))
     if (id) await c.payload.update({ collection: 'opportunities', id, data: data as never, overrideAccess: false, user: c.user })
     else await c.payload.create({ collection: 'opportunities', data: data as never, overrideAccess: false, user: c.user })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    await retirer(c.payload, piece)
+    return { erreur: messagePublic(e, 'opportunites') }
   }
   revalidatePath('/espace-membre/opportunites')
   const coords = coordonneesDetectees(titre, description, data.commentRepondre)
@@ -100,8 +117,13 @@ export async function repondreOpportunite(_: EtatOpportunite, f: FormData): Prom
   const message = val(f, 'message')
   if (message.length < 10) return { erreurs: { message: 'Écrivez votre réponse (10 caractères au moins).' } }
   const id = Number(f.get('opportunite'))
-  const o = (await c.payload.findByID({ collection: 'opportunities', id, depth: 0, overrideAccess: true }).catch(() => null)) as { membre?: number } | null
-  if (!o?.membre) return { erreur: 'Cette annonce ne reçoit pas de réponse.' }
+  const o = (await c.payload.findByID({ collection: 'opportunities', id, depth: 0, overrideAccess: true }).catch(() => null)) as {
+    membre?: number
+    statut?: string
+  } | null
+  // Mêmes contrôles que la collection `opportunityReplies`, faits avant de déposer la pièce jointe.
+  if (!o?.membre || o.statut !== 'publiee') return { erreur: 'Cette annonce ne reçoit pas de réponse.' }
+  if (o.membre === c.m.id) return { erreur: 'Vous ne pouvez pas répondre à votre propre annonce.' }
   const piece = await deposer(c.payload, f.get('pieceJointe'), c.m.id, 'prive', o.membre)
   if (piece && typeof piece === 'object') return { erreurs: { pieceJointe: piece.erreur } }
   try {
@@ -112,7 +134,8 @@ export async function repondreOpportunite(_: EtatOpportunite, f: FormData): Prom
       user: c.user,
     })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    await retirer(c.payload, piece)
+    return { erreur: messagePublic(e, 'opportunites') }
   }
   return { ok: true }
 }

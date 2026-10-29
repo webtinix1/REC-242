@@ -88,8 +88,16 @@ export const ExpertRequests: CollectionConfig = {
             visible?: boolean
           } | null
           if (!p || !(p.etiquettes ?? []).map(idDe).includes(idDe(data.etiquette))) throw new APIError('Cette personne ne porte pas cette étiquette.', 400, null, true)
+          // Une personne retirée du site (comme sur l'écran « Solliciter un expert ») ne reçoit plus de question.
+          if (p.visible === false) throw new APIError('Cette personne ne reçoit pas de question pour le moment.', 400, null, true)
+          // « Me faire aider » : seulement une opportunité que le membre peut lire (publiée ou la sienne) ; sinon aucune.
+          const opp = idDe(data.opportunite)
+          const opportunite = opp
+            ? ((await req.payload.findByID({ collection: 'opportunities', id: opp, depth: 0, overrideAccess: false, user: req.user, req }).catch(() => null)) as { id: number } | null)?.id
+            : undefined
           return {
             ...data,
+            opportunite: opportunite ?? null,
             membre: moi!.id,
             question: question.slice(0, 3000),
             statut: 'envoyee',

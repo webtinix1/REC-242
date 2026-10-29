@@ -106,12 +106,17 @@ export const ConnectionRequests: CollectionConfig = {
             throw new APIError(MESSAGE_PLAFOND, 429, null, true)
           }
           // Écrire directement (décision du 28/10/2026) : le premier message ouvre la conversation, sans demande à accepter.
+          // L'objet, s'il est fourni, suit la même règle que le message (coordonnées masquées) ; aucun signalement n'est
+          // créé avec la conversation : il ne s'écrit que par la transition « Signalée », au nom de celui qui signale.
+          const objet = masquerCoordonnees(String(data.objet ?? '').trim().slice(0, 160))
           return {
             ...data,
             demandeur: moi!.id,
             destinataire: e.titulaire,
             entreprise: e.id,
+            objet: objet || null,
             message,
+            signalement: {},
             statut: 'acceptee',
             dateReponse: new Date().toISOString(),
             fil: [],
@@ -143,6 +148,8 @@ export const ConnectionRequests: CollectionConfig = {
             statut: apres,
             dateReponse: originalDoc?.dateReponse,
             signalement: originalDoc?.signalement,
+            // Les non-lus ne changent que par une réponse (ci-dessous) ou par les écritures système (lecture, message).
+            nonLuPar: originalDoc?.nonLuPar,
           }
           if (apres === 'signalee' && avant !== 'signalee') garde.signalement = { motif: String(data.signalement?.motif ?? '').trim(), par: moi!.id, date: new Date().toISOString() }
           if (apres !== avant && ['acceptee', 'refusee'].includes(apres)) {

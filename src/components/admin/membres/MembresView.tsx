@@ -2,7 +2,7 @@ import type { ListViewServerProps } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
-import { atLeast } from '@/access/roles'
+import { atLeast, extraRead } from '@/access/roles'
 import { lettreCategorie } from '@/lib/adhesion/categories'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
 import { badgeMembre, champLabel, statutMembreLabel, STATUTS_MEMBRE } from '@/lib/membres/options'
@@ -39,14 +39,21 @@ const img = (m?: Media) => m?.sizes?.vignette?.url || m?.url || undefined
 /** Écran 05 : membres et entreprises (fiches, demandes de modification, import et export). */
 export const MembresView = async (props: ListViewServerProps) => {
   const { payload, user, searchParams } = props
-  const onglet = ONGLETS.some((o) => o.value === searchParams?.onglet) ? String(searchParams?.onglet) : 'fiches'
+  let onglet = ONGLETS.some((o) => o.value === searchParams?.onglet) ? String(searchParams?.onglet) : 'fiches'
   const q = typeof searchParams?.q === 'string' ? searchParams.q.trim() : ''
   const statut = typeof searchParams?.statut === 'string' && STATUTS_MEMBRE.some((s) => s.value === searchParams.statut) ? searchParams.statut : ''
   const peutModifier = atLeast(user as never, 'membres', 'partial')
+  // « Import et export » : annuaire imprimé et encarts (lus sans contrôle d'accès plus bas), import et export complets.
+  // Le responsable événements lit les fiches mais n'a aucun droit sur l'annuaire imprimé ni sur ces exports.
+  const peutAnnuaire = extraRead(user as never, 'annuaireImprime')
+  const peutIo = peutAnnuaire || atLeast(user as never, 'exports', 'full') || atLeast(user as never, 'membres', 'full')
+  // La situation de cotisation se calcule à partir des paiements : réservée aux rôles qui lisent les cotisations.
+  const voitCotisations = atLeast(user as never, 'cotisations', 'read')
+  if (onglet === 'io' && !peutIo) onglet = 'fiches'
 
   const tabs = (
     <div className="tabs" role="tablist">
-      {ONGLETS.map((o) => (
+      {ONGLETS.filter((o) => o.value !== 'io' || peutIo).map((o) => (
         <Link key={o.value} role="tab" aria-selected={onglet === o.value} className={`tab${onglet === o.value ? ' is-on' : ''}`} href={o.value === 'fiches' ? BASE : `${BASE}?onglet=${o.value}`}>
           {o.label}
         </Link>
@@ -98,7 +105,9 @@ export const MembresView = async (props: ListViewServerProps) => {
   if (onglet === 'io') {
     const [{ edition, cloture, fiches }, encarts, actifs, s] = await Promise.all([
       fichesImprimees(payload),
-      payload.find({ collection: 'directoryAds', where: { statut: { not_equals: 'annule' } }, sort: '-createdAt', depth: 2, limit: 200, overrideAccess: true }),
+      peutAnnuaire
+        ? payload.find({ collection: 'directoryAds', where: { statut: { not_equals: 'annule' } }, sort: '-createdAt', depth: 2, limit: 200, overrideAccess: true })
+        : { docs: [] },
       payload.find({ collection: 'members', where: { statut: { equals: 'actif' } }, sort: 'nomComplet', depth: 1, limit: 2000, overrideAccess: true, select: { nomComplet: true, entreprise: true } }),
       payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true }) as Promise<{ annuaire?: Record<string, number | string | undefined> }>,
     ])
@@ -143,7 +152,7 @@ export const MembresView = async (props: ListViewServerProps) => {
   }
   const r = await payload.find({ collection: 'members', where: where as never, sort: 'numeroAdherent', depth: 2, limit: 300, user, overrideAccess: false })
   const ids = r.docs.map((d) => d.id)
-  const paiements = ids.length
+  const paiements = ids.length && voitCotisations
     ? await payload.find({ collection: 'payments', where: { membre: { in: ids } }, depth: 0, limit: 3000, overrideAccess: true })
     : { docs: [] }
   const parMembre = new Map<number, PaiementMembre[]>()
@@ -183,7 +192,7 @@ export const MembresView = async (props: ListViewServerProps) => {
               <th scope="col">Entreprise</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Statut</th>
-              <th scope="col">Cotisation</th>
+              {voitCotisations && <th scope="col">Cotisation</th>}
               <th scope="col">Annuaire</th>
               <th scope="col">
                 <span className="sr">Action</span>
@@ -193,7 +202,7 @@ export const MembresView = async (props: ListViewServerProps) => {
           <tbody>
             {r.docs.length === 0 && (
               <tr>
-                <td colSpan={7} className="muted">
+                <td colSpan={voitCotisations ? 7 : 6} className="muted">
                   Aucun membre pour cette recherche.
                 </td>
               </tr>
@@ -228,7 +237,7 @@ export const MembresView = async (props: ListViewServerProps) => {
                   <td data-label="Statut">
                     <span className={`rec-badge rec-badge--${badgeMembre(m.statut)}`}>{statutMembreLabel(m.statut)}</span>
                   </td>
-                  <td data-label="Cotisation">{situationCotisation(m, parMembre.get(m.id) ?? []).libelle}</td>
+                  {voitCotisations && <td data-label="Cotisation">{situationCotisation(m, parMembre.get(m.id) ?? []).libelle}</td>}
                   <td data-label="Annuaire">
                     {publique ? 'Publique' : 'Masquée'}
                     {m.fin?.suppressionDemandee && (

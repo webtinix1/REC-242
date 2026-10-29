@@ -1,6 +1,8 @@
+import { sql } from '@payloadcms/db-postgres'
 import type { Payload, PayloadRequest } from 'payload'
 
 import { logAction } from '@/lib/audit'
+import { verrouiller } from '@/lib/compteurs'
 
 /**
  * Abonnement « Annuaire détaillé » (décision de Webtinix du 28/10/2026) : en plus de la cotisation, il montre aux
@@ -30,8 +32,43 @@ export function nouvelleFin(finActuelle: string | null | undefined, dureeMois: n
   return fin
 }
 
-/** Prolonge l'abonnement d'un membre après un paiement confirmé (durée enregistrée sur le paiement). */
-export async function prolongerAbonnement(payload: Payload, membreId: number, dureeMois: number, req?: PayloadRequest): Promise<Date> {
+/** Exécute une requête SQL dans la transaction de `req` s'il y en a une (même principe que `prochainNumero`). */
+async function executer(payload: Payload, q: ReturnType<typeof sql>, req?: PayloadRequest): Promise<{ rows: unknown[] }> {
+  const adapter = payload.db as unknown as {
+    drizzle: { execute: (q: unknown) => Promise<{ rows: unknown[] }> }
+    sessions?: Record<string, { db: { execute: (q: unknown) => Promise<{ rows: unknown[] }> } }>
+  }
+  const tid = req?.transactionID ? await req.transactionID : undefined
+  const db = (tid && adapter.sessions?.[String(tid)]?.db) || adapter.drizzle
+  return db.execute(q)
+}
+
+/**
+ * Prolonge l'abonnement d'un membre après un paiement confirmé (durée enregistrée sur le paiement).
+ * Avec `paiementId`, la prolongation n'est appliquée qu'une fois pour ce paiement : la marque `abonnement_prolonge_le`
+ * est posée par une seule requête conditionnelle (« … WHERE abonnement_prolonge_le IS NULL RETURNING »), si bien
+ * qu'un second appel (rappel rejoué, double confirmation, nouvel enregistrement par l'équipe) ne fait rien et renvoie null.
+ */
+export async function prolongerAbonnement(
+  payload: Payload,
+  membreId: number,
+  dureeMois: number,
+  req?: PayloadRequest,
+  paiementId?: number,
+): Promise<Date | null> {
+  if (paiementId) {
+    const r = await executer(
+      payload,
+      sql`UPDATE "payments" SET "abonnement_prolonge_le" = now() WHERE "id" = ${paiementId} AND "abonnement_prolonge_le" IS NULL RETURNING "id"`,
+      req,
+    )
+    if (!r.rows.length) {
+      payload.logger.warn({ paiement: paiementId }, 'Abonnement déjà prolongé pour ce paiement : rien à refaire')
+      return null
+    }
+  }
+  // Deux paiements du même membre confirmés en même temps : la fin d'abonnement est relue sous verrou.
+  await verrouiller(payload, 'members', membreId, req)
   const m = (await payload.findByID({ collection: 'members', id: membreId, depth: 0, overrideAccess: true, req })) as unknown as {
     abonnementJusquau?: string | null
     numeroAdherent?: string

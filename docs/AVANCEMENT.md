@@ -415,3 +415,39 @@ Décisions de Webtinix, en complément de la section précédente : les membres 
 ## Plan d'accès : carte Google à la demande (29/10/2026)
 
 Demande de Webtinix : une vraie carte sur la page Contact. La carte Google intégrée remplace le plan illustré de la maquette et s'affiche d'emblée (`src/components/site/CarteSiege.tsx`, chargement différé du cadre). Écart assumé avec la maquette, à la demande de Webtinix. Google pouvant déposer ses cookies, la politique de confidentialité le signale (seed et page en base mises à jour). La politique de sécurité du contenu autorise désormais `https://www.google.com` en `frame-src` sur le site public. La carte se place sur la latitude et la longitude de Paramètres > Plan d'accès quand elles sont renseignées, sinon sur l'adresse : renseigner les coordonnées exactes du siège pour un repère précis.
+
+## Audit de sécurité complet et correctifs (29/10/2026)
+
+Audit en quatre volets (droits d'accès des collections ; actions, routes et endpoints serveur ; authentification, sessions, jetons et paiements ; injection, configuration et dépendances), puis correction de chaque faille confirmée. Aucune faille critique dans le code de l'application en dehors du mode simulation des paiements ; les failles critiques venaient des dépendances.
+
+Corrigé :
+
+- Dépendances : next 16.3.3 → 16.4.3 (exécution de code à distance par l'optimiseur d'images, déni de service des actions serveur, SSRF, empoisonnement de cache), Payload 3.92.0 → 3.92.1, sharp 0.35.4 → 0.35.5 (librsvg), fflate 0.8.3 ; versions minimales imposées (`pnpm.overrides`) pour dompurify, happy-dom et graphql-scalars. Restent deux avis mineurs sans correctif disponible côté Payload : esbuild (serveur de développement de drizzle-kit, jamais lancé en production) et deepmerge (basse).
+- Paiements : le mode simulation est refusé en production dès que `NEXT_PUBLIC_SERVER_URL` n'est pas locale (il validait tout paiement sans prélèvement) ; `.env.example` ne l'active plus. Passage à « payé » sous verrou de ligne : un même paiement n'attribue qu'un numéro de reçu et ne prolonge l'abonnement qu'une fois (champ interne `abonnementProlongeLe`, migration `20261029_133310_securite_paiements`). Un paiement confirmé ne revient plus en attente ou en échec ; membre, échéance, montant et objet sont figés une fois le reçu numéroté. Une nouvelle demande est refusée pendant qu'un paiement mobile attend (10 minutes) ; limites par numéro payeur et sur le suivi des paiements (y compris la page Merci).
+- Authentification : adresse du visiteur lue sur `X-Real-IP` posé par Nginx (le premier élément de `X-Forwarded-For`, fixé par le client, permettait de contourner toutes les limites) ; limites par appareil sur les routes natives de Payload (connexion, mot de passe oublié, réinitialisation, déblocage, prolongation) et par adresse e-mail sur les demandes de lien et de mot de passe. Session sans « Rester connecté » limitée à 30 minutes d'inactivité côté serveur, et non plus seulement par le cookie ; elle ne se prolonge plus en session de 30 jours. Sessions d'un utilisateur du back-office fermées à sa désactivation ; tâches de fond réservées au super admin et à l'admin. Le serveur refuse de démarrer en production avec un `PAYLOAD_SECRET` d'exemple ou de moins de 32 caractères. Lien de réponse d'expert daté (délai de réponse plus 30 jours). Seed refusé en production sauf `SEED_EN_PRODUCTION=oui` avec un `SEED_PASSWORD` fourni.
+- Échanges entre membres : masquage des coordonnées réécrit (normalisation Unicode, séparateurs quelconques, chiffres pleine largeur ou arabes, caractères invisibles, lettres O et l, nombres en lettres, variantes d'arobase, liens et identifiants de messageries) ; un montant de 8 chiffres ou plus n'est conservé que s'il est groupé par milliers et finit par « 000 ». Objet d'une conversation masqué, signalement et « non lu » non forgeables par un membre ; marquer « lu » vérifie que le fil appartient au membre. Textes de la fiche entreprise (présentation, services) masqués aussi.
+- Droits : filtres de l'API sur le contenu des actualités réservées refusés aux visiteurs (le texte se reconstituait lettre par lettre) ; pièces des candidatures retirées au responsable événements ; index de recherche non modifiable par un compte connecté (un membre pouvait y placer un lien d'hameçonnage) et vidé pour une actualité archivée ; liens et textes des fiches entreprises validés côté serveur, logo et photo non choisissables par l'API ; champs de modération des opportunités, de traitement des demandes de modification, consentement à l'annuaire et acceptation des conditions non forgeables ; expert masqué non sollicitable ; e-mail des personnes et vue des membres du back-office alignés sur la matrice des droits.
+- Données personnelles : un visiteur ne liste plus les portraits des membres par `GET /api/media` (seuls restent ceux que le site publie déjà : gouvernance, témoignages, intervenants) ; les nouveaux portraits ont un nom de fichier aléatoire et un texte alternatif neutre. Adresses Gmail réalistes du jeu de démonstration passées en `.test`.
+- Divers : formules neutralisées dans tous les exports CSV (`src/lib/csv.ts`) ; images des membres vérifiées d'après leurs octets (JPEG, PNG ou WebP) avant tout traitement ; pièces jointes orphelines supprimées quand l'envoi échoue ; erreurs internes remplacées par un message générique ; carte ICS refusée à un membre suspendu ; en-tête `X-Powered-By` retiré.
+
+Écarts et effets assumés :
+
+- Un candidat sans compte qui tente de se connecter voit « E-mail ou mot de passe incorrect » au lieu de l'écran « En attente » (sinon la page révélait qui a postulé).
+- Le bouton « Réindexer » de la recherche (caché, inutilisé) ne fonctionne plus ; le seed réindexe par l'API locale.
+- Médiathèque : le trésorier n'envoie plus d'image ; seuls super admin, admin et éditeur modifient ou suppriment un média après l'envoi.
+- Les anciens liens de réponse d'expert sans date sont refusés (une relance envoie un lien neuf).
+- Seed : un brouillon de page sans titre commencé dans l'admin n'est plus republié (il faisait échouer le seed).
+
+Documents modifiés : `docs/02-architecture.md` (directives Nginx `X-Real-IP` et écoute de Next sur 127.0.0.1), `.env.example` (`PAIEMENT_MODE`, `PAYLOAD_SECRET`, `SEED_EN_PRODUCTION`).
+
+Reste à faire ou à décider :
+
+- Nginx de préproduction et de production : poser `proxy_set_header X-Real-IP $remote_addr;`, sinon toutes les limites d'envoi se partagent une seule adresse.
+- Portraits déjà envoyés : leurs noms de fichiers (`prenom-nom-….webp`) ne sont pas renommés ; un fichier reste ouvrable par qui connaît son adresse.
+- Justificatifs des demandes de modification : sans propriétaire sur la collection `pieces`, l'appartenance se vérifie par l'origine de l'envoi ; un champ propriétaire demanderait une migration.
+- Masquage : un numéro découpé exprès en plusieurs messages ou en suites de 7 chiffres reste possible ; la modération et le signalement restent nécessaires.
+- La session « Rester connecté » reste valable 30 jours fixes, sans contrôle d'inactivité.
+
+La limite de connexion par appareil ne compte que les échecs : une connexion réussie rend sa tentative (une équipe qui se connecte souvent depuis le même bureau n'est pas bloquée). Accessibilité : le texte indicatif de l'éditeur de texte riche passe au gris lisible (contraste relevé après la mise à jour de Payload). Tests de bout en bout mis à jour : adresse de liste de l'admin avec la pagination ajoutée par Payload 3.92.1, liste des messages en boutons depuis le lot 12.
+
+Vérifications : `tsc --noEmit` et ESLint sans erreur ; seed réussi ; tests d'intégration 162 / 162 (nouveaux fichiers : `acces-securite`, `auth-securite`, `paiements-securite`, `masquage`) ; `next build` réussi depuis un dossier `.next` vidé ; tests de bout en bout 75 / 75 sur la compilation de production (premier passage : 4 échecs, corrigés ci-dessus et repassés).

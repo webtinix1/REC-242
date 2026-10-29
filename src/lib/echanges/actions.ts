@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 import { notify } from '@/emails/send'
+import { messagePublic } from '@/lib/erreurs'
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import { masquerCoordonnees } from './masquage'
 import { verifierJetonExpert } from '@/lib/experts/delais'
@@ -50,7 +51,7 @@ export async function poserQuestion(_: EtatEchange, f: FormData): Promise<EtatEc
       } as never,
     })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    return { erreur: messagePublic(e, 'echanges') }
   }
   revalidatePath('/espace-membre', 'layout')
   return { ok: true }
@@ -62,6 +63,8 @@ export async function ecrire(onglet: Onglet, id: number, texte: string): Promise
   if (!c) return { erreur: 'Session expirée : reconnectez-vous.' }
   const brut = String(texte ?? '').trim().slice(0, 3000)
   // Entre membres, les coordonnées écrites dans un message sont masquées (les échanges restent sur la plateforme).
+  // Pas dans le fil d'une demande à un expert : la personne sollicitée (comité ou expert de la collection `people`)
+  // n'est pas forcément membre et répond, au choix du membre, par WhatsApp, par e-mail ou au siège (docs/05 §9).
   const t = onglet === 'relations' || onglet === 'annonces' ? masquerCoordonnees(brut) : brut
   if (t.length < 2) return { erreur: 'Écrivez votre message.' }
   const { payload, m } = c
@@ -131,7 +134,7 @@ export async function ecrire(onglet: Onglet, id: number, texte: string): Promise
 export async function lu(onglet: Onglet, id: number): Promise<void> {
   const c = await contexte()
   if (!c) return
-  // marquerLu ne touche que la liste du membre connecté : rien n'est révélé sur un fil qui n'est pas le sien.
+  // marquerLu vérifie que le fil est celui du membre connecté et ne touche que sa propre entrée ; sinon il n'écrit rien.
   await marquerLu(c.payload, onglet, id, c.m.id)
   revalidatePath('/espace-membre', 'layout')
 }
@@ -144,7 +147,7 @@ export async function cloturerDemande(id: number): Promise<EtatEchange> {
   try {
     await c.payload.update({ collection: 'expertRequests', id, overrideAccess: false, user, data: { statut: 'cloturee' } as never })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    return { erreur: messagePublic(e, 'echanges') }
   }
   revalidatePath('/espace-membre/echanges')
   return { ok: true }
@@ -184,7 +187,7 @@ export async function demanderCommission(_: EtatEchange, f: FormData): Promise<E
   try {
     await c.payload.create({ collection: 'commissionRequests', overrideAccess: false, user, data: { commission: Number(f.get('commission')), apport } as never })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    return { erreur: messagePublic(e, 'echanges') }
   }
   revalidatePath('/espace-membre/profil')
   return { ok: true }

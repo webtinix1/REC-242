@@ -133,8 +133,12 @@ export const isActiveMember = (user: MaybeUser): boolean => {
   return u?.collection === 'members' && u.statut === 'actif'
 }
 
-/** Champ d'un contenu « réservé aux membres » : lisible par l'équipe, les membres actifs, ou si le contenu est public. */
+/**
+ * Champ d'un contenu « réservé aux membres » : lisible par l'équipe, les membres actifs, ou si le contenu est public.
+ * Sans document (contrôle des filtres `where` de l'API), le champ est traité comme réservé : sinon un visiteur
+ * reconstituerait le texte d'un contenu réservé par des filtres successifs.
+ */
 export const reservedFieldRead: FieldAccess = ({ req, doc }) =>
-  !(doc as { reserveMembres?: boolean } | undefined)?.reserveMembres ||
   isStaff(req.user) ||
-  isActiveMember(req.user)
+  isActiveMember(req.user) ||
+  (doc != null && !(doc as { reserveMembres?: boolean }).reserveMembres)

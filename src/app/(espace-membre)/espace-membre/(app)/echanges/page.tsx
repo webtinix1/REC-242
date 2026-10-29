@@ -161,7 +161,7 @@ export default async function EchangesPage({
         photo: urlMedia(autre.photo, 'vignette'),
         org: orgDe(autre),
         date: relative(dernier),
-        objet: x.objet || ((m1) => (m1.length > 80 ? `${m1.slice(0, 77)}…` : m1))(masquerCoordonnees(x.message)),
+        objet: ((m1) => (m1.length > 80 ? `${m1.slice(0, 77)}…` : m1))(masquerCoordonnees(x.objet || x.message)),
         statut,
         cls,
         nonLu: (x.nonLuPar ?? []).map(idDe).includes(m.id),

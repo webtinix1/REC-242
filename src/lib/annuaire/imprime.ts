@@ -3,6 +3,7 @@ import path from 'path'
 import type { Payload } from 'payload'
 
 import { categorie, telephoneAffiche } from '@/lib/adhesion/categories'
+import { celluleCsv } from '@/lib/csv'
 import { situationCotisation, type PaiementMembre } from '@/lib/membres/cotisation'
 
 export type FicheImprimee = {
@@ -74,7 +75,8 @@ export async function fichesImprimees(payload: Payload): Promise<{ edition?: str
 export async function archiveImprimeur(payload: Payload): Promise<{ nom: string; donnees: Uint8Array }> {
   const { zipSync, strToU8 } = await import('fflate')
   const { edition, fiches } = await fichesImprimees(payload)
-  const esc = (v: string) => (/[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
+  // Cellule neutralisée : une raison sociale saisie « =… » ne devient pas une formule dans le tableur.
+  const esc = (v: string) => celluleCsv(v)
   const lignes = [
     'numero_adherent;entreprise;secteurs;ville;categorie;contact;encart;fichier_logo',
     ...fiches.map((f) => [f.numero, f.entreprise, f.secteurs, f.ville, f.categorie, f.contact, f.encart ?? 'standard', f.logo ? `logos/${f.logo}` : ''].map(esc).join(';')),

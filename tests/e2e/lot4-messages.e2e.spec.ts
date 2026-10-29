@@ -66,7 +66,8 @@ test.describe.serial('Lot 4 : formulaires et messages', () => {
     await expect(page.getByRole('heading', { name: 'Messages', level: 1 })).toBeVisible()
     // Routage : la demande de presse ne lui est pas transmise.
     await expect(page.getByText('Ruth Mavoungou, Congo Business Hebdo')).toHaveCount(0)
-    await page.getByRole('listitem').filter({ hasText: unique }).click()
+    // Depuis le lot 12 (accessibilité), chaque message de la liste est un bouton.
+    await page.getByRole('group', { name: 'Messages reçus' }).getByRole('button').filter({ hasText: unique }).click()
     await expect(page.locator('.who-a')).toContainText('Responsable membres')
     const debut = new Date()
     await page.fill('#bb-mrep', 'Bonjour, la catégorie A vous correspond. Bien cordialement.')
@@ -75,7 +76,7 @@ test.describe.serial('Lot 4 : formulaires et messages', () => {
     const mail = await waitForMail(email, debut, /^Re : /)
     expect(mail.text).toContain('la catégorie A vous correspond')
     await expect(
-      page.getByRole('listitem').filter({ hasText: unique }).getByText('Traité'),
+      page.getByRole('group', { name: 'Messages reçus' }).getByRole('button').filter({ hasText: unique }).getByText('Traité'),
     ).toBeVisible()
   })
 })

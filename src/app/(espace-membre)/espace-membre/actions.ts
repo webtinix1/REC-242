@@ -7,6 +7,7 @@ import { notify } from '@/emails/send'
 import { emailNormalise } from '@/lib/adhesion/categories'
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import { logAction } from '@/lib/audit'
+import { autoriserOubliPourEmail } from '@/lib/request'
 import { envoyerActivation } from '@/lib/membres/conversion'
 import { membreConnecte } from '@/lib/membres/espace'
 import {
@@ -25,6 +26,7 @@ export type EtatFormulaire = { erreur?: string; erreurs?: Record<string, string>
 
 const MIN = 10
 const DEV = process.env.NODE_ENV !== 'production'
+const HEURE = 3600 * 1000
 
 /** Retour après connexion : seulement une page de l'espace membre. */
 const retourSur = (v: unknown) => {
@@ -57,25 +59,17 @@ export async function seConnecter(_: EtatFormulaire, f: FormData): Promise<EtatF
   const payload = await getPayloadClient()
   let etat: string | null = null
   try {
-    const r = await payload.login({ collection: 'members', data: { email, password } })
+    // « Rester connecté » décide de l'échéance de la session en base (hook afterLogin de la collection members).
+    const r = await payload.login({ collection: 'members', data: { email, password }, context: { rester } })
     if (r.token) await poserSession(r.token, rester)
   } catch (e) {
     const err = e as { name?: string; message?: string }
+    // Ces deux états ne sont signalés qu'après un mot de passe juste (hook beforeLogin) : ils ne révèlent rien à un tiers.
     if (err.message === 'COMPTE_SUSPENDU') etat = 'suspendu'
     else if (err.message === 'COMPTE_EN_ATTENTE') etat = 'attente'
-    else if (err.name === 'LockedAuth')
-      return { erreur: 'Après 5 essais, le compte est bloqué pendant 15 minutes. Réessayez plus tard ou choisissez « Mot de passe oublié ? ».' }
-    else {
-      // Candidature encore en cours d'examen pour cette adresse : l'écran « En attente » l'explique.
-      const enCours = await payload.count({
-        collection: 'applications',
-        where: { and: [{ email: { equals: email } }, { statut: { in: ['recue', 'en-examen', 'complement', 'acceptee'] } }] },
-        overrideAccess: true,
-      })
-      const membre = await payload.count({ collection: 'members', where: { email: { equals: email } }, overrideAccess: true })
-      if (enCours.totalDocs && !membre.totalDocs) etat = 'attente'
-      else return { erreur: 'E-mail ou mot de passe incorrect.' }
-    }
+    // Mot de passe faux, adresse inconnue, candidature en cours ou compte bloqué après 5 essais : même message, pour ne
+    // pas confirmer qu'une adresse a un compte ou une candidature.
+    else return { erreur: 'E-mail ou mot de passe incorrect.' }
   }
   if (etat) redirect(`/espace-membre/connexion?etat=${etat}`)
   redirect(retourSur(f.get('retour')))
@@ -85,7 +79,8 @@ export async function seConnecter(_: EtatFormulaire, f: FormData): Promise<EtatF
 export async function motDePasseOublie(_: EtatFormulaire, f: FormData): Promise<EtatFormulaire> {
   const email = emailNormalise(String(f.get('email') ?? ''))
   if (!email) return { erreurs: { email: 'Indiquez votre e-mail.' } }
-  if (await limite('oubli', 5)) {
+  // Par appareil et par adresse (compteur partagé avec /api/members/forgot-password).
+  if ((await limite('oubli', 5)) && autoriserOubliPourEmail('members', email)) {
     const payload = await getPayloadClient()
     await payload.forgotPassword({ collection: 'members', data: { email } }).catch(() => null)
   }
@@ -96,7 +91,7 @@ export async function motDePasseOublie(_: EtatFormulaire, f: FormData): Promise<
 export async function recevoirLien(_: EtatFormulaire, f: FormData): Promise<EtatFormulaire> {
   const email = emailNormalise(String(f.get('email') ?? ''))
   if (!email) return { erreurs: { email: 'Indiquez votre e-mail.' } }
-  if (await limite('lien', 5)) {
+  if ((await limite('lien', 5)) && autoriserEnvoi(`lien-email:${email}`, DEV ? 30 : 3, HEURE)) {
     const payload = await getPayloadClient()
     const r = await payload.find({ collection: 'members', where: { email: { equals: email } }, limit: 1, depth: 0, overrideAccess: true })
     const m = r.docs[0] as unknown as { id: number; statut: string; email: string } | undefined
@@ -172,7 +167,9 @@ export async function activer(_: EtatFormulaire, f: FormData): Promise<EtatFormu
 export async function renvoyerActivation(_: EtatFormulaire, f: FormData): Promise<EtatFormulaire> {
   if (!(await limite('activation', 3))) return { erreur: 'Trop de demandes depuis cet appareil. Réessayez dans 15 minutes.' }
   const m = await parActivation(String(f.get('jeton') ?? ''))
-  if (m && m.statut === 'attente') await envoyerActivation(await getPayloadClient(), m.id)
+  // Par compte aussi : au plus 3 nouveaux liens par heure pour une même adresse, quel que soit l'appareil.
+  if (m && m.statut === 'attente' && autoriserEnvoi(`activation-email:${m.id}`, DEV ? 30 : 3, HEURE))
+    await envoyerActivation(await getPayloadClient(), m.id)
   return { ok: true }
 }
 

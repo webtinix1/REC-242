@@ -1,6 +1,8 @@
 import 'server-only'
 import { createHmac, timingSafeEqual } from 'crypto'
 
+import { autoriserEnvoi, ipDepuisEntetes } from './request'
+
 /**
  * Protection des formulaires publics (docs/02-architecture.md) :
  * - champ piège invisible (rempli par les robots seulement) ;
@@ -32,30 +34,11 @@ export const jetonValide = (jeton: unknown, now = Date.now()): boolean => {
   return age >= DELAI_MIN_MS && age <= DUREE_MAX_MS
 }
 
-const fenetres = new Map<string, number[]>()
+/** Limitation par fenêtre glissante : la mémoire est partagée avec les hooks d'authentification de Payload (src/lib/request.ts). */
+export { autoriserEnvoi }
 
 /**
- * Vrai si l'envoi est autorisé (et le compte). Mémoire du processus : suffisant pour le serveur unique du VPS.
- * `cle` combine l'usage et l'appareil (par exemple « contact:203.0.113.4 »).
+ * Adresse IP de la requête en cours : X-Real-IP posé par Nginx (`proxy_set_header X-Real-IP $remote_addr;`), sinon le
+ * dernier élément de X-Forwarded-For. Jamais le premier, fourni par le client (voir ipDepuisEntetes).
  */
-export const autoriserEnvoi = (
-  cle: string,
-  max: number,
-  fenetreMs: number,
-  now = Date.now(),
-): boolean => {
-  const liste = (fenetres.get(cle) ?? []).filter((t) => now - t < fenetreMs)
-  if (liste.length >= max) {
-    fenetres.set(cle, liste)
-    return false
-  }
-  liste.push(now)
-  fenetres.set(cle, liste)
-  if (fenetres.size > 10000)
-    for (const [k, v] of fenetres) if (!v.some((t) => now - t < fenetreMs)) fenetres.delete(k)
-  return true
-}
-
-/** Adresse IP de la requête en cours (derrière Nginx : X-Forwarded-For). */
-export const ipDe = (h: Headers): string =>
-  h.get('x-forwarded-for')?.split(',')[0].trim() || h.get('x-real-ip') || 'local'
+export const ipDe = (h: Headers): string => ipDepuisEntetes(h) || 'local'

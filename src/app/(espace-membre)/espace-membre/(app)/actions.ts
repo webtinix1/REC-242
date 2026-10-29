@@ -2,10 +2,14 @@
 
 import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
+import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
 
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import { logAction } from '@/lib/audit'
+import { formatReel, MIME } from '@/lib/echanges/fichiers'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
+import { messagePublic } from '@/lib/erreurs'
 import { membreConnecte, type Membre } from '@/lib/membres/espace'
 import { CHAMPS_VERIFIES, NOTIFICATIONS, VISIBILITES } from '@/lib/membres/options'
 import { fermerSessions } from '@/lib/membres/session'
@@ -35,24 +39,33 @@ export async function enregistrerFiche(_: Retour, f: FormData): Promise<Retour> 
   const { m, user } = await exiger()
   if (!m.entreprise) return { erreur: 'Aucune fiche entreprise n’est rattachée à votre compte.' }
   const payload = await getPayloadClient()
-  const presentation = String(f.get('presentation') ?? '').trim()
+  // Présentation et services sont publiés dans l'annuaire : aucune coordonnée n'y passe d'un membre à l'autre
+  // (docs/05-regles-metier.md §6 et §9). La collection applique aussi ce masquage.
+  const presentation = masquerCoordonnees(String(f.get('presentation') ?? '').trim())
+  const services = masquerCoordonnees(String(f.get('services') ?? '').trim())
   const erreurs: Record<string, string> = {}
   const liens = { siteWeb: url(f.get('siteWeb')), linkedin: url(f.get('linkedin')), facebook: url(f.get('facebook')) }
   for (const [k, v] of Object.entries(liens)) if (v && !/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(v)) erreurs[k] = 'Adresse invalide.'
+  // Même limite que la collection `companies` (texte enregistré, après masquage), signalée sous le champ.
   if (presentation.length > 1200) erreurs.presentation = '1 200 caractères au maximum.'
+  if (services.length > 1200) erreurs.services = '1 200 caractères au maximum.'
   if (Object.keys(erreurs).length) return { erreurs }
   const actuelle = m.entreprise.presentationProposee ?? m.entreprise.presentation ?? ''
-  await payload.update({
-    collection: 'companies',
-    id: m.entreprise.id,
-    data: {
-      ...(presentation !== actuelle ? { presentationProposee: presentation } : {}),
-      services: String(f.get('services') ?? '').trim(),
-      ...liens,
-    } as never,
-    overrideAccess: false,
-    user,
-  })
+  try {
+    await payload.update({
+      collection: 'companies',
+      id: m.entreprise.id,
+      data: {
+        ...(presentation !== actuelle ? { presentationProposee: presentation } : {}),
+        services,
+        ...liens,
+      } as never,
+      overrideAccess: false,
+      user,
+    })
+  } catch (e) {
+    return { erreur: messagePublic(e, 'espace-membre') }
+  }
   revalidatePath('/espace-membre', 'layout')
   return { ok: 'Modifications enregistrées' }
 }
@@ -76,6 +89,8 @@ export async function changerVisibilite(nom: string, valeur: boolean): Promise<R
       data: { consentementAnnuaire: valeur ? new Date().toISOString() : null } as never,
       overrideAccess: false,
       user,
+      // `consentementAnnuaire` est réservé au serveur (collection members) : autorisé pour ce seul appel.
+      context: { champServeur: true },
     })
   revalidatePath('/espace-membre/profil')
   return { ok: valeur ? 'Activé' : 'Désactivé' }
@@ -110,13 +125,15 @@ export async function demanderModification(_: Retour, f: FormData): Promise<Reto
   const fichier = f.get('justificatif')
   if (fichier instanceof File && fichier.size > 0) {
     if (fichier.size > 5 * 1024 * 1024) return { erreurs: { justificatif: '5 Mo au maximum.' } }
-    if (!['application/pdf', 'image/jpeg', 'image/png'].includes(fichier.type))
-      return { erreurs: { justificatif: 'Formats acceptés : PDF, JPEG ou PNG.' } }
+    // Format lu dans les octets, pas dans le type annoncé par le navigateur.
+    const data = Buffer.from(await fichier.arrayBuffer())
+    const format = formatReel(data)
+    if (!format || format === 'webp') return { erreurs: { justificatif: 'Formats acceptés : PDF, JPEG ou PNG.' } }
     const piece = await payload.create({
       collection: 'pieces',
       overrideAccess: true,
       data: { type: 'justificatif' } as never,
-      file: { data: Buffer.from(await fichier.arrayBuffer()), mimetype: fichier.type, name: fichier.name, size: fichier.size },
+      file: { data, mimetype: MIME[format], name: fichier.name, size: data.length },
     })
     justificatif = piece.id as number
   }
@@ -128,7 +145,9 @@ export async function demanderModification(_: Retour, f: FormData): Promise<Reto
       user,
     })
   } catch (e) {
-    return { erreur: (e as Error).message }
+    // La demande n'est pas enregistrée : la pièce déposée juste avant ne reste pas orpheline.
+    if (justificatif) await payload.delete({ collection: 'pieces', id: justificatif, overrideAccess: true }).catch(() => null)
+    return { erreur: messagePublic(e, 'espace-membre') }
   }
   revalidatePath('/espace-membre/profil')
   return { ok: 'Demande envoyée' }
@@ -142,10 +161,14 @@ export async function changerImage(_: Retour, f: FormData): Promise<Retour> {
   const fichier = f.get('fichier')
   if (!(fichier instanceof File) || !fichier.size) return { erreur: 'Choisissez une image.' }
   if (fichier.size > 8 * 1024 * 1024) return { erreur: 'Image trop lourde : 8 Mo au maximum.' }
-  if (!fichier.type.startsWith('image/')) return { erreur: 'Choisissez une image (JPEG, PNG ou WebP).' }
+  const octets = Buffer.from(await fichier.arrayBuffer())
+  // Seuls JPEG, PNG et WebP, reconnus à leurs premiers octets, atteignent sharp : un SVG ou un autre format (analysé
+  // par des bibliothèques comme librsvg) est refusé avant tout décodage, quel que soit le type annoncé.
+  const format = formatReel(octets)
+  if (!format || format === 'pdf') return { erreur: 'Choisissez une image (JPEG, PNG ou WebP).' }
   let data: Buffer
   try {
-    const img = sharp(Buffer.from(await fichier.arrayBuffer())).rotate()
+    const img = sharp(octets).rotate()
     data =
       cible === 'photo'
         ? await img.resize(800, 800, { fit: 'cover', position: 'attention' }).webp({ quality: 82 }).toBuffer()
@@ -154,20 +177,27 @@ export async function changerImage(_: Retour, f: FormData): Promise<Retour> {
     return { erreur: 'Image illisible. Essayez avec un autre fichier.' }
   }
   const payload = await getPayloadClient()
-  const base = (cible === 'photo' ? `${m.prenom}-${m.nom}` : (m.entreprise?.nom ?? 'logo'))
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+  // Le portrait ne porte ni le nom du membre ni rien qui l'identifie (texte alternatif neutre, nom de fichier aléatoire) :
+  // la médiathèque ne doit pas permettre de retrouver qui est membre. Le logo garde le nom de l'entreprise, publié.
+  const base =
+    cible === 'photo'
+      ? `portrait-${randomUUID()}`
+      : `${(m.entreprise?.nom ?? 'logo')
+          .normalize('NFD')
+          .replace(/[̀-ͯ]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')}-${Date.now()}`
   const media = await payload.create({
     collection: 'media',
     overrideAccess: true,
-    data: { alt: cible === 'photo' ? `${m.prenom} ${m.nom}` : `Logo ${m.entreprise?.nom ?? ''}`.trim() } as never,
-    file: { data, mimetype: 'image/webp', name: `${base}-${Date.now()}.webp`, size: data.length },
+    data: { alt: cible === 'photo' ? 'Portrait' : `Logo ${m.entreprise?.nom ?? ''}`.trim() } as never,
+    file: { data, mimetype: 'image/webp', name: `${base}.webp`, size: data.length },
   })
   const ancien = cible === 'photo' ? m.photo : m.entreprise?.logo
-  if (cible === 'photo') await payload.update({ collection: 'members', id: m.id, data: { photo: media.id } as never, overrideAccess: false, user })
+  // `photo` est réservé au serveur (collection members) : le contexte `champServeur` l'autorise pour ce seul appel.
+  if (cible === 'photo')
+    await payload.update({ collection: 'members', id: m.id, data: { photo: media.id } as never, overrideAccess: false, user, context: { champServeur: true } })
   else if (m.entreprise)
     await payload.update({ collection: 'companies', id: m.entreprise.id, data: { logo: media.id } as never, overrideAccess: false, user })
   const ancienId = ancien && typeof ancien === 'object' ? (ancien as { id?: number }).id : typeof ancien === 'number' ? ancien : undefined

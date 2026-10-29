@@ -66,6 +66,10 @@ export const Opportunities: CollectionConfig = {
           data.prevenirSecteurs = false
           data.messageModeration = operation === 'create' ? undefined : originalDoc?.messageModeration
           data.motifRefus = undefined
+          // Champs de l'équipe ou du serveur : jamais fournis par le membre (rang dans les listes, alerte déjà envoyée…).
+          data.rang = operation === 'create' ? undefined : (originalDoc?.rang ?? null)
+          data.alerteEnvoyee = operation === 'create' ? false : Boolean(originalDoc?.alerteEnvoyee)
+          data.publieLe = operation === 'create' ? undefined : (originalDoc?.publieLe ?? null)
         } else if (operation === 'create' && !data.membre) {
           data.auteur = data.auteur || 'rec242'
         }

@@ -90,10 +90,32 @@ describe('Lot 7 : annuaire et mises en relation', () => {
       collection: 'connectionRequests',
       user: a as never,
       overrideAccess: false,
-      data: { entreprise: b.entreprise, message: 'Bonjour, je cherche un partenaire. Appelez-moi au 06 903 47 25 ou a@b.cg', demandeur: b.id, statut: 'refusee' } as never,
+      data: {
+        entreprise: b.entreprise,
+        message: 'Bonjour, je cherche un partenaire. Appelez-moi au 06 903 47 25 ou a@b.cg',
+        demandeur: b.id,
+        statut: 'refusee',
+        // Ni l'objet ni un signalement forgé ne passent tels quels.
+        objet: 'Mon numéro : 06 903 47 25',
+        signalement: { motif: 'Signalement forgé', par: b.id },
+      } as never,
     })
     crees.connectionRequests.push(r.id as number)
-    const d = r as unknown as { statut: string; message: string; demandeur: number | { id: number }; destinataire: number | { id: number } }
+    const d = r as unknown as {
+      statut: string
+      message: string
+      objet?: string
+      signalement?: { motif?: string | null; par?: unknown }
+      demandeur: number | { id: number }
+      destinataire: number | { id: number }
+    }
+    expect(d.objet).toBe('Mon numéro : [coordonnée masquée]')
+    expect(d.signalement?.motif ?? null).toBeNull()
+    expect(d.signalement?.par ?? null).toBeNull()
+    // Le membre ne réécrit pas la liste des non-lus de l'autre.
+    await payload.update({ collection: 'connectionRequests', id: r.id, user: a as never, overrideAccess: false, data: { nonLuPar: [] } as never })
+    const relu = (await payload.findByID({ collection: 'connectionRequests', id: r.id, depth: 0, overrideAccess: true })) as unknown as { nonLuPar?: unknown[] }
+    expect((relu.nonLuPar ?? []).map((x) => (x && typeof x === 'object' ? (x as { id: number }).id : x))).toEqual([b.id])
     // Sans demande à accepter (décision du 28/10/2026) : la conversation est ouverte dès le premier message.
     expect(d.statut).toBe('acceptee')
     expect(typeof d.demandeur === 'object' ? d.demandeur.id : d.demandeur).toBe(a.id)

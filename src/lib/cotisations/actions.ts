@@ -7,9 +7,12 @@ import { telephoneInternational } from '@/lib/adhesion/categories'
 import { autoriserEnvoi, ipDe } from '@/lib/antispam'
 import { membreConnecte } from '@/lib/membres/espace'
 import type { Operateur } from '@/lib/paiements/operateurs'
-import { lancerPaiementMobile, verifierPaiement } from '@/lib/paiements/service'
+import { lancerPaiementMobile, MESSAGE_PAIEMENT_EN_COURS, verifierPaiement } from '@/lib/paiements/service'
 import { getPayloadClient } from '@/lib/site/payload'
 import type { Tranche } from './regles'
+
+const HEURE = 3600 * 1000
+const prod = process.env.NODE_ENV === 'production'
 
 /**
  * Paiement de la cotisation depuis l'espace membre (écran 11) : la prochaine tranche due, ou le solde.
@@ -28,8 +31,11 @@ export async function payerCotisation(_: EtatPaiement, f: FormData): Promise<Eta
   if (!['mtn', 'airtel'].includes(operateur)) erreurs.operateur = 'Choisissez l’opérateur.'
   if (telephone.replace(/\D/g, '').length < 9) erreurs.telephone = 'Indiquez le numéro qui va payer.'
   if (Object.keys(erreurs).length) return { erreurs }
+  // Chaque demande fait sonner le téléphone du payeur : nombre limité par numéro, quel que soit l'appareil.
+  if (!autoriserEnvoi(`payeur:${telephone.replace(/\D/g, '')}`, prod ? 5 : 100, HEURE))
+    return { erreur: 'Trop de demandes de paiement pour ce numéro en une heure. Réessayez plus tard.' }
   const payload = await getPayloadClient()
-  const e = (await payload.find({ collection: 'dues', where: { membre: { equals: m.id } }, sort: '-exercice.debut', limit: 1, depth: 0, overrideAccess: true })).docs[0] as unknown as
+  const e =(await payload.find({ collection: 'dues', where: { membre: { equals: m.id } }, sort: '-exercice.debut', limit: 1, depth: 0, overrideAccess: true })).docs[0] as unknown as
     | { id: number; tranches?: Tranche[]; exercice?: { libelle?: string } }
     | undefined
   const dues = (e?.tranches ?? []).filter((t) => t.statut !== 'paye')
@@ -46,7 +52,11 @@ export async function payerCotisation(_: EtatPaiement, f: FormData): Promise<Eta
     objet,
     libelle: `Cotisation REC 242 ${e.exercice?.libelle ?? ''}`.trim(),
     reference: `COT-${e.id}-${Date.now()}`,
+  }).catch((err: Error) => {
+    if (err.message === MESSAGE_PAIEMENT_EN_COURS) return null
+    throw err
   })
+  if (!p) return { erreur: MESSAGE_PAIEMENT_EN_COURS }
   revalidatePath('/espace-membre/cotisation')
   return { ok: p.statut !== 'echoue', paiement: p.id, statut: p.statut, erreur: p.statut === 'echoue' ? 'Le paiement n’a pas pu être lancé. Réessayez dans un instant.' : undefined }
 }
@@ -67,7 +77,9 @@ export async function suivrePaiement(id: number): Promise<{ statut: string; nume
     numero?: number
   } | null
   if (!p || p.membre !== m.id) return { statut: 'inconnu' }
-  const statut = await verifierPaiement(payload, p)
+  // Le suivi interroge l'opérateur : limité par membre (l'écran relance toutes les 3 secondes, 60 fois au plus).
+  // Au-delà, on renvoie le statut enregistré sans rappeler l'opérateur.
+  const statut = autoriserEnvoi(`suivi-paiement:${m.id}`, prod ? 240 : 10000, HEURE) ? await verifierPaiement(payload, p) : p.statut
   if (statut === 'paye') revalidatePath('/espace-membre', 'layout')
   const relu = (await payload.findByID({ collection: 'payments', id, depth: 0, overrideAccess: true })) as unknown as { numero?: number }
   return { statut, numero: relu.numero ? `PAY-${String(relu.numero).padStart(4, '0')}` : undefined }

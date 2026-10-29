@@ -4,6 +4,7 @@ import { atLeast } from '@/access/roles'
 import { promouvoir } from '@/lib/evenements/inscriptions'
 import { telephoneAffiche } from '@/lib/adhesion/categories'
 import { logAction } from '@/lib/audit'
+import { celluleCsv } from '@/lib/csv'
 import { pointer } from '@/lib/evenements/pointage'
 
 const corps = async (req: PayloadRequest): Promise<Record<string, unknown>> => {
@@ -70,10 +71,8 @@ const exporter: Endpoint = {
     const ev = Number(new URL(req.url ?? '', 'http://x').searchParams.get('evenement'))
     const e = (await req.payload.findByID({ collection: 'events', id: ev, depth: 0, overrideAccess: false, req })) as unknown as { titre: string; slug?: string }
     const r = await req.payload.find({ collection: 'registrations', where: { evenement: { equals: ev } }, depth: 2, limit: 5000, sort: 'createdAt', overrideAccess: false, req })
-    const esc = (v: unknown) => {
-      const s = String(v ?? '')
-      return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
-    }
+    // Cellule neutralisée : un nom saisi « =… » ne devient pas une formule dans le tableur.
+    const esc = (v: unknown) => celluleCsv(v)
     const lignes = r.docs.map((d) => {
       const x = d as unknown as {
         statut: string

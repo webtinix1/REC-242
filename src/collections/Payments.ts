@@ -6,7 +6,8 @@ import { MODES_PAIEMENT, modeLabel, OBJETS_PAIEMENT, objetLabel } from '@/lib/ad
 import { logAction } from '@/lib/audit'
 import { offreAbonnement, prolongerAbonnement } from '@/lib/abonnement/service'
 import { rapprocherPaiement } from '@/lib/cotisations/service'
-import { numeroDossierCandidat, numeroRecu, prochainNumero } from '@/lib/compteurs'
+import { numeroDossierCandidat, numeroRecu, prochainNumero, verrouiller } from '@/lib/compteurs'
+import { celluleCsv } from '@/lib/csv'
 import { genererRecu } from '@/lib/paiements/recu'
 
 type Paiement = {
@@ -113,28 +114,51 @@ export const Payments: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, operation, originalDoc, req }) => {
+      async ({ context, data, operation, originalDoc, req }) => {
         if (operation === 'create' && isStaff(req.user)) {
           data.enregistrePar = req.user!.id
           if (!data.statut && ['especes', 'virement'].includes(data.mode)) data.statut = 'paye'
         }
-        // Un reçu n'est jamais modifié une fois émis : montant, objet et mode sont figés.
-        if (operation === 'update' && originalDoc?.numero) {
-          for (const k of ['montant', 'objet', 'mode', 'candidature', 'numero', 'abonnementMois'])
-            data[k] = originalDoc[k]
+        // Marque posée par le serveur seulement (prolongation de l'abonnement appliquée), jamais par une saisie.
+        if (operation === 'create') delete data.abonnementProlongeLe
+        let actuel = originalDoc as Record<string, unknown> | undefined
+        if (operation === 'update' && originalDoc?.id) {
+          // `originalDoc` est lu avant tout verrou : deux mises à jour simultanées (rappel de l'opérateur, suivi,
+          // tâche périodique, équipe) le verraient toutes deux « en attente ». On verrouille la ligne jusqu'à la fin
+          // de la transaction et on relit le paiement : une seule attribue le numéro et déclenche les effets.
+          await verrouiller(req.payload, 'payments', originalDoc.id, req)
+          actuel =
+            ((await req.payload.db.findOne({ collection: 'payments', where: { id: { equals: originalDoc.id } }, req })) as Record<string, unknown> | null) ??
+            actuel
+          // Payload complète les champs absents de `data` avec `originalDoc` : on les reprend de la version relue.
+          for (const [k, v] of Object.entries(actuel ?? {}))
+            if (data[k] === undefined && !['id', 'createdAt', 'updatedAt'].includes(k)) data[k] = v
+          data.abonnementProlongeLe = actuel?.abonnementProlongeLe ?? null
         }
-        const devientPaye = data.statut === 'paye' && originalDoc?.statut !== 'paye'
-        if (devientPaye && !originalDoc?.numero) {
+        const confirme = Boolean(actuel?.numero) || ['paye', 'remboursement', 'rembourse'].includes(String(actuel?.statut ?? ''))
+        // Un paiement confirmé ne revient jamais en attente ni en échec (il peut seulement être remboursé).
+        if (operation === 'update' && confirme && ['en-attente', 'echoue'].includes(data.statut))
+          throw new APIError('Un paiement confirmé ne peut pas revenir « en attente » ni passer « échoué ».', 400)
+        // Un reçu n'est jamais modifié une fois émis : montant, objet, mode, payeur et rattachements sont figés.
+        if (operation === 'update' && actuel?.numero) {
+          for (const k of ['montant', 'objet', 'mode', 'candidature', 'membre', 'echeance', 'numero', 'abonnementMois'])
+            data[k] = actuel[k]
+        }
+        if (data.statut === 'paye' && !actuel?.numero && !confirme) {
           data.numero = await prochainNumero(req.payload, 'recu', req)
           data.datePaiement = data.datePaiement || new Date().toISOString()
+          // Les effets de la confirmation (journal, rapprochement, abonnement, reçu) ne suivent que ce passage-là.
+          ;((context.recusAttribues as Set<number> | undefined) ?? (context.recusAttribues = new Set<number>())).add(Number(data.numero))
         }
         return data
       },
     ],
     afterChange: [
-      async ({ doc, previousDoc, req }) => {
+      async ({ context, doc, req }) => {
         const p = doc as Paiement
-        if (p.statut === 'paye' && previousDoc?.statut !== 'paye') {
+        const attribues = context.recusAttribues as Set<number> | undefined
+        if (p.statut === 'paye' && p.numero && attribues?.has(Number(p.numero))) {
+          attribues.delete(Number(p.numero))
           await logAction(req.payload, {
             req,
             categorie: 'paiement',
@@ -155,7 +179,8 @@ export const Payments: CollectionConfig = {
           // Abonnement « Annuaire détaillé » : prolongé de la durée enregistrée sur le paiement (ou de la durée en vigueur).
           if (p.objet === 'abonnement' && m) {
             const duree = Number((doc as { abonnementMois?: number }).abonnementMois) || (await offreAbonnement(req.payload, req))?.dureeMois
-            if (duree) await prolongerAbonnement(req.payload, m.id, duree, req)
+            // Idempotent par paiement : la prolongation n'est appliquée qu'une fois (marque `abonnementProlongeLe`).
+            if (duree) await prolongerAbonnement(req.payload, m.id, duree, req, p.id)
             else req.payload.logger.error({ paiement: p.id }, 'Abonnement payé sans durée : à prolonger à la main')
           }
           const destinataire = m?.email ?? c?.email
@@ -211,10 +236,6 @@ export const Payments: CollectionConfig = {
           overrideAccess: false,
           req,
         })
-        const esc = (v: unknown) => {
-          const s = String(v ?? '')
-          return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
-        }
         const lignes = (r.docs as unknown as Paiement[]).map((p) => {
           const m = typeof p.membre === 'object' ? p.membre : null
           const c = typeof p.candidature === 'object' ? p.candidature : null
@@ -229,7 +250,7 @@ export const Payments: CollectionConfig = {
             p.referenceOperateur,
             p.statut,
           ]
-            .map(esc)
+            .map((v) => celluleCsv(v))
             .join(';')
         })
         await logAction(req.payload, { req, categorie: 'export', action: `Export comptable : ${r.docs.length} paiement(s)` })
@@ -361,6 +382,15 @@ export const Payments: CollectionConfig = {
       label: 'Dernière réponse de l’opérateur',
       type: 'json',
       admin: { readOnly: true },
+    },
+    {
+      // Marque technique : date à laquelle la prolongation de l'abonnement payé a été appliquée (une seule fois).
+      // Posée par le serveur seulement ; jamais lisible par les membres.
+      name: 'abonnementProlongeLe',
+      label: 'Abonnement prolongé le',
+      type: 'date',
+      access: { read: ({ req }) => isStaff(req.user) },
+      admin: { readOnly: true, hidden: true },
     },
     {
       name: 'enregistrePar',

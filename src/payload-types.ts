@@ -637,6 +637,7 @@ export interface Payment {
     | number
     | boolean
     | null;
+  abonnementProlongeLe?: string | null;
   enregistrePar?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -3433,6 +3434,7 @@ export interface PaymentsSelect<T extends boolean = true> {
   datePaiement?: T;
   idOperateur?: T;
   journalOperateur?: T;
+  abonnementProlongeLe?: T;
   enregistrePar?: T;
   updatedAt?: T;
   createdAt?: T;

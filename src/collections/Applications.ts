@@ -27,6 +27,7 @@ import {
 } from '@/lib/adhesion/options'
 import { situationPaiement, type PaiementResume } from '@/lib/adhesion/paiement'
 import { logAction } from '@/lib/audit'
+import { celluleCsv } from '@/lib/csv'
 import { convertirCandidature } from '@/lib/membres/conversion'
 import { numeroDossier, numeroDossierCandidat, prochainNumero } from '@/lib/compteurs'
 
@@ -521,7 +522,8 @@ export const Applications: CollectionConfig = {
           depth: 1,
           sort: '-createdAt',
         })
-        const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
+        // Cellule toujours entre guillemets et neutralisée : une valeur saisie « =… » ne devient pas une formule.
+        const esc = (v: unknown) => celluleCsv(v, true)
         const cols = [
           'Dossier',
           'Reçue le',

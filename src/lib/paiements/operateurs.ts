@@ -5,7 +5,8 @@ import { randomUUID } from 'crypto'
  * et Airtel Money (API Collection). Environnement de test d'abord ; les comptes marchands sont à obtenir par REC 242.
  *
  * Variables d'environnement (voir .env.example) :
- * - PAIEMENT_MODE : « simulation » (défaut, aucun appel externe), « test » (bacs à sable des opérateurs) ou « production ».
+ * - PAIEMENT_MODE : « simulation » (défaut en développement, aucun appel externe ; interdite sur un serveur public),
+ *   « test » (bacs à sable des opérateurs) ou « production ».
  * - MTN : MTN_SUBSCRIPTION_KEY, MTN_API_USER, MTN_API_KEY, MTN_TARGET_ENV, MTN_CURRENCY, MTN_BASE_URL.
  * - Airtel : AIRTEL_CLIENT_ID, AIRTEL_CLIENT_SECRET, AIRTEL_COUNTRY, AIRTEL_CURRENCY, AIRTEL_BASE_URL.
  *
@@ -25,13 +26,46 @@ export type Demande = {
 
 const env = (k: string) => process.env[k]?.trim() || ''
 
+/** Vrai si l'adresse publique du site est locale (localhost, 127.0.0.1 ou [::1]) : essai d'une compilation de production. */
+export const adresseLocale = (url = process.env.NEXT_PUBLIC_SERVER_URL): boolean => {
+  try {
+    return ['localhost', '127.0.0.1', '[::1]'].includes(new URL(url || '').hostname)
+  } catch {
+    return false
+  }
+}
+
+export const MESSAGE_SIMULATION_INTERDITE =
+  'Paiement mobile : la simulation est interdite sur un serveur public. Renseignez PAIEMENT_MODE (test ou production) et les clés des opérateurs.'
+
+/**
+ * Mode de paiement d'un opérateur. En simulation, tout paiement passe « payé » sans prélèvement : en production
+ * (NODE_ENV=production), elle n'est donc acceptée que si l'adresse publique du site est locale (essai de
+ * `next start` sur http://localhost:3000). Sur un serveur public, elle lève une erreur, y compris quand
+ * PAIEMENT_MODE=test n'a pas de clés : jamais de repli silencieux.
+ */
 export const modePaiement = (op: Operateur): 'simulation' | 'test' | 'production' | 'indisponible' => {
-  // En production, la simulation n'est jamais choisie par défaut : il faut la demander (préproduction) ou fournir les clés.
-  const mode = env('PAIEMENT_MODE') || (process.env.NODE_ENV === 'production' ? 'production' : 'simulation')
-  if (mode === 'simulation') return 'simulation'
+  const prod = process.env.NODE_ENV === 'production'
+  // En production, la simulation n'est jamais choisie par défaut : il faut la demander (essai local) ou fournir les clés.
+  const mode = env('PAIEMENT_MODE') || (prod ? 'production' : 'simulation')
+  const simulation = () => {
+    if (prod && !adresseLocale()) throw new Error(MESSAGE_SIMULATION_INTERDITE)
+    return 'simulation' as const
+  }
+  if (mode === 'simulation') return simulation()
+  if (mode !== 'test' && mode !== 'production') throw new Error(`Paiement mobile : PAIEMENT_MODE inconnu (« ${mode} »).`)
   const cles = op === 'mtn' ? env('MTN_SUBSCRIPTION_KEY') && env('MTN_API_USER') && env('MTN_API_KEY') : env('AIRTEL_CLIENT_ID') && env('AIRTEL_CLIENT_SECRET')
-  if (!cles) return mode === 'production' ? 'indisponible' : 'simulation'
+  if (!cles) return mode === 'production' ? 'indisponible' : simulation()
   return mode === 'production' ? 'production' : 'test'
+}
+
+/** Comme `modePaiement`, sans lever d'erreur : une configuration interdite rend l'opérateur indisponible. */
+const modeSur = (op: Operateur) => {
+  try {
+    return modePaiement(op)
+  } catch {
+    return 'indisponible' as const
+  }
 }
 
 const urlRappel = (op: Operateur) => `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/api/paiements/${op}`
@@ -183,7 +217,7 @@ export async function statutPaiement(
 ): Promise<{ statut: StatutOperateur; detail: unknown }> {
   if (id.startsWith('SIM-')) {
     // Un identifiant de simulation n'est jamais validé hors simulation.
-    if (modePaiement(op) !== 'simulation') return { statut: 'echoue', detail: { simulation: 'refusée hors mode simulation' } }
+    if (modeSur(op) !== 'simulation') return { statut: 'echoue', detail: { simulation: 'refusée hors mode simulation' } }
     return simulationStatut(id, contexte.telephone, contexte.creeLe)
   }
   return op === 'mtn' ? mtnStatut(id) : airtelStatut(id)

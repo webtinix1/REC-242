@@ -1,7 +1,7 @@
 import type { Payload } from 'payload'
 
 import type { Role } from '@/access/roles'
-import { media } from './lib'
+import { media, motDePasseSeed } from './lib'
 
 /**
  * Comptes d'administration de démonstration (docs/04-roles-et-droits.md, titulaires actuels).
@@ -23,7 +23,7 @@ export const DEMO_USERS: { name: string; email: string; roles: Role[] }[] = [
 ]
 
 export async function seedUsers(payload: Payload): Promise<void> {
-  const password = process.env.SEED_PASSWORD || 'Rec242-demo-2026'
+  const password = motDePasseSeed()
   for (const u of DEMO_USERS) {
     const existing = await payload.find({
       collection: 'users',

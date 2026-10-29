@@ -4,6 +4,7 @@ import { atLeast } from '@/access/roles'
 import { categorie, emailNormalise, telephoneAffiche, telephoneInternational } from '@/lib/adhesion/categories'
 import { archiveImprimeur } from '@/lib/annuaire/imprime'
 import { logAction } from '@/lib/audit'
+import { celluleCsv } from '@/lib/csv'
 import { envoyerActivation } from '@/lib/membres/conversion'
 import { STATUTS_MEMBRE } from '@/lib/membres/options'
 
@@ -129,10 +130,8 @@ const fin: Endpoint = {
 }
 
 const COLONNES = ['numero_adherent', 'prenom', 'nom', 'email', 'telephone', 'categorie', 'entreprise', 'secteurs', 'ville', 'quartier', 'statut', 'date_adhesion']
-const esc = (v: unknown) => {
-  const s = String(v ?? '')
-  return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
-}
+// Cellule neutralisée : une valeur saisie « =… » ne devient pas une formule dans le tableur.
+const esc = (v: unknown) => celluleCsv(v)
 
 /** Écran 05 : export CSV des fiches (droit « Exports de données personnelles »), inscrit au journal. */
 const exporter: Endpoint = {

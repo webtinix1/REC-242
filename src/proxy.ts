@@ -3,6 +3,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 /**
  * Espace membre : session de 30 minutes sans activité quand « Rester connecté » n'est pas coché.
  * Chaque page visitée prolonge le cookie de 30 minutes ; sans visite, il expire et la page de connexion affiche « Session expirée ».
+ * La même limite vaut côté serveur, indépendamment du cookie : la session en base échoit après 30 minutes sans requête
+ * authentifiée (strategieEcheanceSession, src/lib/membres/session.ts). Les limites de débit des routes d'authentification
+ * sont appliquées par les hooks des collections (src/lib/request.ts), pas ici.
  * Le chemin demandé est transmis aux pages pour revenir au même endroit après la reconnexion.
  */
 export function proxy(request: NextRequest) {

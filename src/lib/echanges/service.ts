@@ -35,16 +35,34 @@ export async function nonLus(payload: Payload, membre: number): Promise<Record<O
   return { ...r, total: Object.values(r).reduce((a, b) => a + b, 0) }
 }
 
-/** Retire le membre de la liste des non-lus d'un fil. */
+/** Retire le membre de la liste des non-lus d'un fil, seulement si ce fil est le sien (sinon rien n'est écrit). */
 export async function marquerLu(payload: Payload, onglet: Onglet, id: number, membre: number) {
+  const collection =
+    onglet === 'experts' ? 'expertRequests' : onglet === 'relations' ? 'connectionRequests' : onglet === 'annonces' ? 'opportunityReplies' : 'networkMessages'
+  const doc = (await payload
+    .findByID({ collection: collection as never, id, depth: onglet === 'annonces' ? 1 : 0, overrideAccess: true })
+    .catch(() => null)) as unknown as {
+    nonLuPar?: unknown[]
+    luPar?: unknown[]
+    membre?: unknown
+    tous?: boolean
+    demandeur?: unknown
+    destinataire?: unknown
+    opportunite?: { membre?: unknown } | null
+  } | null
+  if (!doc) return
+  const sien =
+    onglet === 'experts'
+      ? idDe(doc.membre) === membre
+      : onglet === 'relations'
+        ? idDe(doc.demandeur) === membre || idDe(doc.destinataire) === membre
+        : onglet === 'annonces'
+          ? idDe(doc.membre) === membre || idDe(doc.opportunite?.membre) === membre
+          : Boolean(doc.tous) || idDe(doc.membre) === membre
+  if (!sien) return
   if (onglet === 'experts') {
     await payload.db.updateOne({ collection: 'expertRequests', id, data: { nonLuMembre: false }, returning: false })
     return
-  }
-  const collection = onglet === 'relations' ? 'connectionRequests' : onglet === 'annonces' ? 'opportunityReplies' : 'networkMessages'
-  const doc = (await payload.findByID({ collection: collection as never, id, depth: 0, overrideAccess: true })) as unknown as {
-    nonLuPar?: unknown[]
-    luPar?: unknown[]
   }
   if (onglet === 'reseau') {
     const lus = (doc.luPar ?? []).map(idDe)

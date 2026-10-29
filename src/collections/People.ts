@@ -76,7 +76,7 @@ export const People: CollectionConfig = {
           label: 'E-mail (questions des membres)',
           type: 'email',
           // Jamais publié : sert à transmettre les questions des membres (lot 10).
-          access: { read: ({ req }) => Boolean(req.user && req.user.collection === 'users') },
+          access: { read: ({ req }) => isStaff(req.user) },
           admin: { description: 'Reçoit les questions posées depuis « Solliciter un expert ». Jamais affiché sur le site.' },
         },
         {

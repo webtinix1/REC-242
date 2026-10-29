@@ -16,10 +16,12 @@ import { seedEvenements } from './evenements'
 import { seedMembres } from './membres'
 import { seedMessages } from './messages'
 import { seedOpportunites } from './opportunites'
+import { verifierEnvironnementSeed } from './lib'
 import { purgerTests } from './purge'
 import { seedUsers } from './users'
 
 export async function seed(payload: Payload): Promise<void> {
+  verifierEnvironnementSeed()
   await purgerTests(payload)
   await seedUsers(payload)
   await seedEmailTemplates(payload)

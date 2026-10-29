@@ -1,6 +1,7 @@
-import { APIError, type Access, type CollectionConfig, type Field, type FieldAccess } from 'payload'
+import { APIError, type Access, type CollectionConfig, type Field, type FieldAccess, type Validate } from 'payload'
 
 import { atLeast, hasRole } from '@/access/roles'
+import { masquerCoordonnees } from '@/lib/echanges/masquage'
 import { logAction } from '@/lib/audit'
 import { slugField } from '@/fields/slug'
 import { EFFECTIFS, FORMES } from '@/lib/adhesion/options'
@@ -17,6 +18,29 @@ const equipeSeulement: FieldAccess = ({ req }) => atLeast(req.user, 'membres', '
 
 /** Réglages de visibilité : le membre seul (ou le serveur, sans utilisateur, à l'activation). */
 const choixDuMembre: FieldAccess = ({ req }) => !req.user || (req.user as { collection?: string }).collection === 'members'
+
+const estMembre = (u: unknown) => (u as { collection?: string } | null)?.collection === 'members'
+
+/** Longueur maximale des textes écrits par le membre (celle de la présentation dans l'espace membre). */
+const TEXTE_MAX = 1200
+const LIEN_MAX = 300
+
+/** Valeur inchangée : jamais bloquée, pour ne pas empêcher l'équipe d'enregistrer une fiche plus ancienne. */
+const inchange = (value: unknown, previousValue: unknown) => (value ?? '') === (previousValue ?? '')
+
+const texteBorne: Validate = (value, { previousValue }) =>
+  inchange(value, previousValue) || String(value ?? '').length <= TEXTE_MAX || `${TEXTE_MAX.toLocaleString('fr-FR')} caractères au maximum.`
+
+/** Lien public de la fiche : adresse http ou https seulement (ni « javascript: », ni « data: »), longueur bornée. */
+const lienValide: Validate = (value, { previousValue }) => {
+  if (inchange(value, previousValue)) return true
+  const s = String(value ?? '').trim()
+  if (!s) return true
+  if (s.length > LIEN_MAX) return `${LIEN_MAX} caractères au maximum.`
+  return /^https?:\/\/[^\s.]+\.[^\s]+$/i.test(s) || 'Adresse invalide : elle doit commencer par http:// ou https://.'
+}
+
+const idDe = (x: unknown) => (x && typeof x === 'object' ? (x as { id?: number }).id : (x as number | null | undefined))
 
 /** Entreprises (fiches de l'annuaire). Les champs vérifiés ne changent que par une demande validée. */
 export const Companies: CollectionConfig = {
@@ -64,7 +88,16 @@ export const Companies: CollectionConfig = {
     beforeChange: [
       ({ data, originalDoc, req }) => {
         // Le membre propose une présentation : elle est relue par le secrétariat avant publication.
-        const membre = (req.user as { collection?: string } | null)?.collection === 'members'
+        const membre = estMembre(req.user)
+        if (membre) {
+          // Textes publiés écrits par le membre : les coordonnées restent sur la plateforme (annuaire détaillé).
+          for (const k of ['presentationProposee', 'services'] as const)
+            if (typeof data[k] === 'string') data[k] = masquerCoordonnees(data[k])
+          // Le logo ne change que depuis l'espace membre : l'action serveur crée le média puis le rattache par l'API
+          // locale. Par l'API REST, le membre pourrait désigner n'importe quel média de la médiathèque.
+          if (data.logo !== undefined && idDe(data.logo) !== idDe(originalDoc?.logo) && data.logo !== null && req.payloadAPI !== 'local')
+            throw new APIError('Le logo se change depuis votre espace membre.', 403, null, true)
+        }
         if (membre && data.presentationProposee !== undefined && data.presentationProposee !== (originalDoc?.presentation ?? '')) {
           data.presentationEnRelecture = true
         }
@@ -109,16 +142,17 @@ export const Companies: CollectionConfig = {
       ],
     },
     { name: 'presentation', label: 'Présentation publiée', type: 'textarea', access: { update: equipeSeulement } },
-    { name: 'presentationProposee', label: 'Présentation proposée par le membre', type: 'textarea' },
+    { name: 'presentationProposee', label: 'Présentation proposée par le membre', type: 'textarea', validate: texteBorne },
     { name: 'presentationEnRelecture', label: 'Présentation en relecture', type: 'checkbox', defaultValue: false, access: { update: equipeSeulement } },
-    { name: 'services', label: 'Services proposés', type: 'textarea' },
-    { name: 'recherches', label: 'Ce que l’entreprise recherche', type: 'textarea' },
+    { name: 'services', label: 'Services proposés', type: 'textarea', validate: texteBorne },
+    // Absent de la liste des champs que le membre modifie lui-même (docs/04-roles-et-droits.md, « Le membre »).
+    { name: 'recherches', label: 'Ce que l’entreprise recherche', type: 'textarea', validate: texteBorne, access: { update: equipeSeulement } },
     {
       type: 'row',
       fields: [
-        { name: 'siteWeb', label: 'Site internet', type: 'text' },
-        { name: 'linkedin', label: 'LinkedIn', type: 'text' },
-        { name: 'facebook', label: 'Facebook', type: 'text' },
+        { name: 'siteWeb', label: 'Site internet', type: 'text', validate: lienValide },
+        { name: 'linkedin', label: 'LinkedIn', type: 'text', validate: lienValide },
+        { name: 'facebook', label: 'Facebook', type: 'text', validate: lienValide },
       ],
     },
     {

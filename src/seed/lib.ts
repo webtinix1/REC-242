@@ -5,7 +5,29 @@ import type { Payload } from 'payload'
 export const ROOT = process.cwd()
 export const SEED_DIR = path.join(ROOT, 'seed')
 
-export const readSeed = <T = Record<string, unknown>>(name: string): T =>
+/** Mot de passe de démonstration utilisé en développement quand SEED_PASSWORD n'est pas renseigné. */
+const MOT_DE_PASSE_DEMO = 'Rec242-demo-2026'
+
+/**
+ * Le seed crée des comptes au mot de passe connu : il est refusé en production, sauf demande explicite
+ * (SEED_EN_PRODUCTION=oui), et dans ce cas SEED_PASSWORD est obligatoire (12 caractères minimum).
+ * `payload run` ne fixe pas NODE_ENV : en développement local, la commande habituelle continue de fonctionner.
+ */
+export function verifierEnvironnementSeed(env: NodeJS.ProcessEnv = process.env): void {
+  if (env.NODE_ENV !== 'production') return
+  if (env.SEED_EN_PRODUCTION !== 'oui')
+    throw new Error('Seed refusé en production : il crée des comptes de démonstration. Pour le lancer quand même : SEED_EN_PRODUCTION=oui et SEED_PASSWORD.')
+  if (!env.SEED_PASSWORD || env.SEED_PASSWORD.length < 12)
+    throw new Error('Seed en production : SEED_PASSWORD (12 caractères minimum) est obligatoire.')
+}
+
+/** Mot de passe des comptes de démonstration (administration et membres). */
+export function motDePasseSeed(env: NodeJS.ProcessEnv = process.env): string {
+  verifierEnvironnementSeed(env)
+  return env.SEED_PASSWORD || MOT_DE_PASSE_DEMO
+}
+
+export const readSeed =<T = Record<string, unknown>>(name: string): T =>
   JSON.parse(fs.readFileSync(path.join(SEED_DIR, `${name}.json`), 'utf-8')) as T
 
 /** Trouve un document par un champ, ou le crée. Idempotent. */
