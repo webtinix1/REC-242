@@ -3,6 +3,8 @@ import Link from 'next/link'
 import React, { startTransition, useActionState } from 'react'
 
 import { inscrireMembre, inscrireVisiteur, type EtatInscription } from '@/lib/evenements/actions'
+import type { QuestionAffichee } from '@/lib/evenements/formulaire'
+import { QuestionsFormulaire } from './QuestionsFormulaire'
 
 /** Champ piège invisible (même nom que le formulaire de contact : `site_web`). */
 const Piege = () => (
@@ -42,8 +44,25 @@ export const EtatReussite = ({ etat, slug }: { etat: EtatInscription; slug: stri
     </>
   )
 
-/** Inscription d'un visiteur : nom, e-mail, WhatsApp, entreprise. La saisie reste en place en cas d'erreur. */
-export const AgendaInscription = ({ evenement, slug, jeton, complet }: { evenement: number; slug: string; jeton: string; complet: boolean }) => {
+/** Mention sous le bouton en mode aperçu : le formulaire se remplit, rien n'est envoyé. */
+const NoteApercu = () => <p className="small muted">Aperçu : le bouton est désactivé, aucune inscription n’est enregistrée.</p>
+
+/** Inscription d'un visiteur : nom, e-mail, WhatsApp, entreprise, questions de l'événement. La saisie reste en place en cas d'erreur. */
+export const AgendaInscription = ({
+  evenement,
+  slug,
+  jeton,
+  complet,
+  questions = [],
+  apercu = false,
+}: {
+  evenement: number
+  slug: string
+  jeton: string
+  complet: boolean
+  questions?: QuestionAffichee[]
+  apercu?: boolean
+}) => {
   const [etat, action, envoi] = useActionState<EtatInscription, FormData>(inscrireVisiteur, {})
   const e = etat.erreurs ?? {}
   if (etat.ok) return <EtatReussite etat={etat} slug={slug} />
@@ -52,6 +71,7 @@ export const AgendaInscription = ({ evenement, slug, jeton, complet }: { eveneme
       noValidate
       onSubmit={(ev) => {
         ev.preventDefault()
+        if (apercu) return
         const fd = new FormData(ev.currentTarget)
         startTransition(() => action(fd))
       }}
@@ -68,9 +88,11 @@ export const AgendaInscription = ({ evenement, slug, jeton, complet }: { eveneme
       <Champ id="b-ev-mail" nom="email" label="E-mail" type="email" autoComplete="email" erreur={e.email} />
       <Champ id="b-ev-tel" nom="telephone" label="Téléphone WhatsApp" type="tel" placeholder="+242" autoComplete="tel" />
       <Champ id="b-ev-ent" nom="entreprise" label="Entreprise" autoComplete="organization" />
-      <button type="submit" className="rec-btn rec-btn--primary" disabled={envoi}>
+      <QuestionsFormulaire questions={questions} erreurs={e} />
+      <button type="submit" className="rec-btn rec-btn--primary" disabled={envoi || apercu}>
         {envoi ? 'Envoi…' : complet ? 'M’inscrire sur la liste d’attente' : 'M’inscrire'}
       </button>
+      {apercu && <NoteApercu />}
       <p className="small muted">
         Déjà membre ? <Link prefetch={false} className="linkbtn" href={`/espace-membre/connexion?retour=/agenda/${slug}`}>Connectez-vous</Link> pour vous inscrire en un clic.
       </p>
@@ -78,14 +100,28 @@ export const AgendaInscription = ({ evenement, slug, jeton, complet }: { eveneme
   )
 }
 
-/** « M'inscrire en un clic » pour un membre actif connecté. */
-export const AgendaInscriptionMembre = ({ evenement, slug, complet }: { evenement: number; slug: string; complet: boolean }) => {
+/** « M'inscrire en un clic » pour un membre actif connecté, précédé des questions de l'événement s'il en a. */
+export const AgendaInscriptionMembre = ({
+  evenement,
+  slug,
+  complet,
+  questions = [],
+  apercu = false,
+}: {
+  evenement: number
+  slug: string
+  complet: boolean
+  questions?: QuestionAffichee[]
+  apercu?: boolean
+}) => {
   const [etat, action, envoi] = useActionState<EtatInscription, FormData>(inscrireMembre, {})
   if (etat.ok) return <EtatReussite etat={etat} slug={slug} />
   return (
     <form
+      noValidate
       onSubmit={(ev) => {
         ev.preventDefault()
+        if (apercu) return
         const fd = new FormData(ev.currentTarget)
         startTransition(() => action(fd))
       }}
@@ -96,9 +132,11 @@ export const AgendaInscriptionMembre = ({ evenement, slug, complet }: { evenemen
           <p>{etat.general}</p>
         </div>
       )}
-      <button type="submit" className="rec-btn rec-btn--primary" disabled={envoi}>
-        {envoi ? 'Envoi…' : complet ? 'M’inscrire sur la liste d’attente' : 'M’inscrire en un clic'}
+      <QuestionsFormulaire questions={questions} erreurs={etat.erreurs} />
+      <button type="submit" className="rec-btn rec-btn--primary" disabled={envoi || apercu}>
+        {envoi ? 'Envoi…' : complet ? 'M’inscrire sur la liste d’attente' : questions.length ? 'M’inscrire' : 'M’inscrire en un clic'}
       </button>
+      {apercu && <NoteApercu />}
     </form>
   )
 }

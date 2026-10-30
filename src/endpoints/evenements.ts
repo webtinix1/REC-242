@@ -69,16 +69,26 @@ const exporter: Endpoint = {
     exiger(req, 'read')
     if (!atLeast(req.user, 'exports', 'partial')) throw new APIError('Export non autorisé pour votre rôle.', 403)
     const ev = Number(new URL(req.url ?? '', 'http://x').searchParams.get('evenement'))
-    const e = (await req.payload.findByID({ collection: 'events', id: ev, depth: 0, overrideAccess: false, req })) as unknown as { titre: string; slug?: string }
+    const e = (await req.payload.findByID({ collection: 'events', id: ev, depth: 0, overrideAccess: false, req })) as unknown as { titre: string; slug?: string; questions?: { id?: string; libelle: string }[] | null }
     const r = await req.payload.find({ collection: 'registrations', where: { evenement: { equals: ev } }, depth: 2, limit: 5000, sort: 'createdAt', overrideAccess: false, req })
     // Cellule neutralisée : un nom saisi « =… » ne devient pas une formule dans le tableur.
     const esc = (v: unknown) => celluleCsv(v)
+    // Une colonne par question : celles de l'événement, puis celles retirées depuis mais qui ont reçu des réponses.
+    type Rep = { question?: string; libelle?: string; valeur?: string; fichier?: { filename?: string } | number | null }
+    const colonnes = new Map((e.questions ?? []).map((q) => [q.id ?? '', q.libelle]))
+    for (const d of r.docs as unknown as { reponses?: Rep[] | null }[])
+      for (const x of d.reponses ?? []) if (x.question && !colonnes.has(x.question)) colonnes.set(x.question, x.libelle ?? '')
+    const cellule = (x?: Rep) => {
+      const nom = x && typeof x.fichier === 'object' ? x.fichier?.filename : undefined
+      return nom ? `${req.payload.config.serverURL}/api/inscriptionFichiers/file/${encodeURIComponent(nom)}` : x?.valeur
+    }
     const lignes = r.docs.map((d) => {
       const x = d as unknown as {
         statut: string
         position?: number
         numeroBillet?: string
         pointeLe?: string
+        reponses?: Rep[] | null
         visiteur?: { nom?: string; email?: string; telephone?: string; entreprise?: string }
         membre?: { prenom?: string; nom?: string; email?: string; telephone?: string; entreprise?: { nom?: string } | null } | null
       }
@@ -92,12 +102,13 @@ const exporter: Endpoint = {
         x.statut === 'attente' ? `Liste d’attente (${x.position})` : x.statut,
         x.numeroBillet,
         x.pointeLe ? new Date(x.pointeLe).toISOString() : '',
+        ...[...colonnes.keys()].map((id) => cellule(x.reponses?.find((y) => y.question === id))),
       ]
         .map(esc)
         .join(';')
     })
     await logAction(req.payload, { req, categorie: 'export', action: `A exporté les inscrits : ${e.titre}` })
-    return new Response('﻿' + ['participant;profil;entreprise;email;telephone;statut;billet;pointe_le', ...lignes].join('\r\n'), {
+    return new Response('﻿' + [['participant;profil;entreprise;email;telephone;statut;billet;pointe_le', ...[...colonnes.values()].map(esc)].join(';'), ...lignes].join('\r\n'), {
       headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="inscrits-${e.slug ?? ev}.csv"` },
     })
   },
@@ -119,6 +130,7 @@ export const dupliquer: Endpoint = {
     copie.programme = strip(copie.programme)
     copie.intervenants = strip(copie.intervenants)
     copie.documents = strip(copie.documents)
+    copie.questions = strip(copie.questions)
     copie.titre = `${e.titre} (copie)`
     copie.statut = 'brouillon'
     const doc = await req.payload.create({ collection: 'events', data: copie as never, overrideAccess: false, req })

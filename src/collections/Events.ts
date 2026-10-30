@@ -4,6 +4,7 @@ import { atLeast, isStaff } from '@/access/roles'
 import { slugField } from '@/fields/slug'
 import { dupliquer } from '@/endpoints/evenements'
 import { logAction } from '@/lib/audit'
+import { AVEC_CHOIX, MAX_QUESTIONS, MAX_QUESTIONS_FICHIER, optionsDe, PUBLICS_QUESTION, TYPES_QUESTION, type Question } from '@/lib/evenements/formulaire'
 import { prevenirInscrits } from '@/lib/evenements/notifications'
 
 export const STATUTS_EVENEMENT = [
@@ -63,6 +64,12 @@ export const Events: CollectionConfig = {
         if ((data.statut === 'annule' || data.statut === 'reporte') && data.statut !== originalDoc?.statut && !String(data.messageInscrits ?? '').trim())
           throw new APIError('Écrivez le message envoyé aux inscrits.', 400, null, true)
         if (data.statut === 'reporte' && data.statut !== originalDoc?.statut && !data.nouvelleDate) throw new APIError('Indiquez la nouvelle date.', 400, null, true)
+        const questions = (data.questions ?? []) as Question[]
+        for (const q of questions)
+          if (AVEC_CHOIX.includes(q.type) && optionsDe(q).length < 2)
+            throw new APIError(`Question « ${q.libelle} » : indiquez au moins deux choix, un par ligne.`, 400, null, true)
+        if (questions.filter((q) => q.type === 'fichier').length > MAX_QUESTIONS_FICHIER)
+          throw new APIError(`${MAX_QUESTIONS_FICHIER} questions avec fichier joint au maximum.`, 400, null, true)
         return data
       },
     ],
@@ -198,6 +205,52 @@ export const Events: CollectionConfig = {
               ],
             },
           ],
+        },
+        {
+          label: 'Formulaire d’inscription',
+          description:
+            'Nom, e-mail, téléphone et entreprise sont toujours demandés aux visiteurs. Les questions ajoutées ici s’affichent à la suite, dans cet ordre (glissez une ligne pour la déplacer).',
+          fields: [
+            {
+              name: 'questions',
+              label: 'Questions',
+              labels: { singular: 'Question', plural: 'Questions' },
+              type: 'array',
+              maxRows: MAX_QUESTIONS,
+              admin: { components: { RowLabel: '@/components/admin/evenements/LibelleQuestion#LibelleQuestion' } },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'libelle', label: 'Question', type: 'text', required: true, maxLength: 200, admin: { width: '60%' } },
+                    { name: 'type', label: 'Type de réponse', type: 'select', required: true, defaultValue: 'texte', options: [...TYPES_QUESTION], admin: { width: '40%' } },
+                  ],
+                },
+                { name: 'aide', label: 'Texte d’aide (facultatif)', type: 'text', maxLength: 300 },
+                {
+                  name: 'options',
+                  label: 'Choix proposés',
+                  type: 'textarea',
+                  admin: {
+                    description: 'Un choix par ligne, deux au moins.',
+                    condition: (_, s) => AVEC_CHOIX.includes(s?.type),
+                  },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'obligatoire', label: 'Réponse obligatoire', type: 'checkbox', defaultValue: false },
+                    { name: 'pour', label: 'Posée aux', type: 'select', required: true, defaultValue: 'tous', options: [...PUBLICS_QUESTION] },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Aperçu',
+          description: 'La page telle qu’elle paraîtra, formulaire compris. Enregistrez pour y voir vos derniers changements. Les inscriptions y sont désactivées.',
+          fields: [{ name: 'apercu', type: 'ui', admin: { components: { Field: '@/components/admin/edition/Apercu#Apercu' } } }],
         },
         {
           label: 'Après l’événement',

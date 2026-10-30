@@ -34,7 +34,8 @@ const csp = (admin: boolean) => {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    ...(prod ? ['upgrade-insecure-requests'] : []),
+    // Seulement sur un site en HTTPS : sur une compilation essayée en http://localhost, elle bloquerait les cadres (onglet Aperçu).
+    ...(prod && process.env.NEXT_PUBLIC_SERVER_URL?.startsWith('https://') ? ['upgrade-insecure-requests'] : []),
   ].join('; ')
 }
 
@@ -53,6 +54,9 @@ const securite = (admin: boolean) => [
 ]
 
 const nextConfig: NextConfig = {
+  // Envois par les actions serveur (1 Mo par défaut) : le site annonce 5 Mo par pièce jointe, et un formulaire d'événement
+  // peut en porter trois.
+  experimental: { serverActions: { bodySizeLimit: '16mb' } },
   // Pas d'en-tête « X-Powered-By: Next.js » : inutile d'annoncer la technologie du serveur.
   poweredByHeader: false,
   // La règle de l'admin vient après la règle générale : pour une même clé, Next garde la dernière.

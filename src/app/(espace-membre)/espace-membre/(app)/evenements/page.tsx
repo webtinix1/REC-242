@@ -4,6 +4,7 @@ import React from 'react'
 
 import { EvenementsMes, type LigneInscription } from '@/components/espace/EvenementsMes'
 import { EvenementsSuggestions, type Suggestion } from '@/components/espace/EvenementsSuggestions'
+import { questionsPour, type Question } from '@/lib/evenements/formulaire'
 import { RichText } from '@/components/site/RichText'
 import { billetParId, placesParEvenement } from '@/lib/evenements/lecture'
 import { heureCourte, inscriptionsDe, jourMois, lieuEspace, maintenantMs, statutInscription, type InscriptionMembre } from '@/lib/evenements/espace'
@@ -64,12 +65,14 @@ export default async function EvenementsPage({ searchParams }: { searchParams: P
       depth: 1,
       overrideAccess: true,
     })
-    const evs = (r.docs as unknown as (InscriptionMembre['evenement'] & { capacite?: number | null; acces?: string })[]).filter((e) => !inscrits.has(e.id))
+    const evs = (r.docs as unknown as (InscriptionMembre['evenement'] & { capacite?: number | null; acces?: string; slug?: string; questions?: Question[] | null })[]).filter((e) => !inscrits.has(e.id))
     const places = await placesParEvenement(evs)
     suggestions = evs.slice(0, 4).map((e) => {
       const p = places.get(e.id)
       return {
         id: e.id,
+        // Un événement avec des questions se remplit sur sa fiche : pas d'inscription en un clic.
+        formulaire: questionsPour(e.questions, 'membres').length ? `/agenda/${e.slug}` : undefined,
         ...jourMois(e.debut),
         titre: e.titre,
         type: nomType(e.type),

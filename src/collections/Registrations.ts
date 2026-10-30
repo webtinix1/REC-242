@@ -6,6 +6,7 @@ import { endpointsInscriptions } from '@/endpoints/evenements'
 import { logAction } from '@/lib/audit'
 import { prochainNumero, verrouiller } from '@/lib/compteurs'
 import { numeroBillet } from '@/lib/evenements/billets'
+import { questionsPour, verifierReponses, type Question, type Saisies } from '@/lib/evenements/formulaire'
 import { promouvoir } from '@/lib/evenements/inscriptions'
 import { envoyerConfirmation, type Evenement, type Inscription } from '@/lib/evenements/notifications'
 
@@ -75,7 +76,7 @@ export const Registrations: CollectionConfig = {
           // Une inscription à la fois par événement : les places ne peuvent pas être dépassées.
           await verrouiller(req.payload, 'events', evId, req)
           const e = (await req.payload.findByID({ collection: 'events', id: evId, depth: 0, overrideAccess: true, req }).catch(() => null)) as unknown as
-            | (Evenement & { acces: string; capacite?: number | null; cloture?: string | null; listeAttente?: boolean })
+            | (Evenement & { acces: string; capacite?: number | null; cloture?: string | null; listeAttente?: boolean; questions?: Question[] | null })
             | null
           if (!e || !['publie', 'complet'].includes(e.statut ?? '')) throw new APIError('Les inscriptions ne sont pas ouvertes.', 400, null, true)
           if (e.cloture && new Date(e.cloture) < new Date()) throw new APIError('Les inscriptions sont closes.', 400, null, true)
@@ -116,6 +117,15 @@ export const Registrations: CollectionConfig = {
             req,
           })
           if (doublon.totalDocs) throw new APIError('Vous êtes déjà inscrit à cet événement.', 400, null, true)
+          // Réponses au formulaire : transmises par l'action du site (contexte), jamais reprises de la demande. Par l'API,
+          // un membre ne peut donc pas contourner une question obligatoire ; l'équipe peut inscrire sans réponses.
+          delete data.reponses
+          const saisies = req.context?.reponses as Saisies | undefined
+          if (saisies || !staff) {
+            const { erreurs, reponses } = verifierReponses(questionsPour(e.questions, data.membre ? 'membres' : 'visiteurs'), saisies ?? {})
+            if (Object.keys(erreurs).length) throw new APIError('Répondez aux questions du formulaire d’inscription.', 400, null, true)
+            data.reponses = reponses
+          }
           const occupees = (await req.payload.count({ collection: 'registrations', where: actives(evId), overrideAccess: true, req })).totalDocs
           if (!e.capacite || occupees < e.capacite) {
             data.statut = 'inscrit'
@@ -139,6 +149,7 @@ export const Registrations: CollectionConfig = {
             evenement: originalDoc?.evenement,
             membre: originalDoc?.membre,
             visiteur: originalDoc?.visiteur,
+            reponses: originalDoc?.reponses,
             numeroBillet: originalDoc?.numeroBillet,
             position: originalDoc?.position,
             pointeLe: originalDoc?.pointeLe,
@@ -230,6 +241,21 @@ export const Registrations: CollectionConfig = {
         { name: 'numeroBillet', label: 'Numéro de billet', type: 'text', index: true, admin: { readOnly: true } },
         { name: 'pointeLe', label: 'Pointé le', type: 'date', admin: { readOnly: true } },
         { name: 'pointePar', label: 'Pointé par', type: 'text', admin: { readOnly: true } },
+      ],
+    },
+    {
+      // Écrites par le serveur à la création seulement. Le libellé est recopié : il reste lisible si la question change.
+      name: 'reponses',
+      label: 'Réponses au formulaire',
+      type: 'array',
+      admin: { readOnly: true },
+      access: { create: () => false, update: () => false },
+      fields: [
+        { name: 'question', label: 'Identifiant de la question', type: 'text' },
+        { name: 'libelle', label: 'Question', type: 'text' },
+        { name: 'type', label: 'Type', type: 'text' },
+        { name: 'valeur', label: 'Réponse', type: 'textarea' },
+        { name: 'fichier', label: 'Fichier joint', type: 'upload', relationTo: 'inscriptionFichiers' },
       ],
     },
     { name: 'annuleLe', label: 'Annulée le', type: 'date', admin: { readOnly: true } },

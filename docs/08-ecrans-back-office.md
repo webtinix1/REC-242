@@ -70,7 +70,7 @@ Compteur, « Créer un événement » (formulaire complet de `events`), cartes :
 En-tête (date, titre, inscrits, statut). Onglets :
 - **Inscrits** : compteur de présents, « Scanner les cartes de membre » (caméra du téléphone, lecture du QR de la carte ou du billet, résultat vert ou rouge, marche hors connexion avec synchronisation), exports CSV et Excel, tableau participant, profil (membre, visiteur), téléphone, case de présence.
 - **Liste d'attente** : ordre, « Promouvoir » manuel, e-mail automatique à la promotion.
-- **Fiche** : formulaire complet de l'événement (statut, annuler ou reporter avec message aux inscrits).
+- **Fiche** : formulaire complet de l'événement, dont les onglets « Formulaire d'inscription » (questions) et « Aperçu » (statut, annuler ou reporter avec message aux inscrits, « Prévisualiser »).
 - **Après l'événement** : compte rendu, nombre de participants, galerie, documents, actualité liée (création d'un brouillon « Retour sur événement »).
 
 ### 09 Actualités

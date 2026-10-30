@@ -70,6 +70,7 @@ Fin d'adhésion (article 14) : démission écrite, décès, non-paiement après 
 
 - Accès : ouvert à tous, réservé aux membres, sur invitation. Capacité fixe ; au-delà, liste d'attente automatique et promotion de la première personne en attente à chaque désistement (e-mail).
 - Inscription : un clic pour un membre connecté ; nom, e-mail, téléphone, entreprise pour un visiteur. Confirmation par e-mail avec fichier calendrier (.ics), billet avec QR code et lien d'annulation. Rappel la veille.
+- Formulaire d'inscription : l'équipe ajoute à chaque événement ses propres questions (texte, nombre, e-mail, téléphone, date, choix, case à cocher, fichier joint), obligatoires ou non, posées aux visiteurs, aux membres ou aux deux. Nom, e-mail, téléphone et entreprise restent demandés aux visiteurs. Les réponses sont contrôlées côté serveur et gardent le libellé de la question. Un membre répond sur la fiche de l'événement dès qu'une question le concerne.
 - Pointage le jour J : case sur la liste ou scan du QR code (carte de membre ou billet). Fonctionne avec une connexion faible et se synchronise ensuite.
 - Annulation ou report : les inscrits sont prévenus automatiquement.
 - Après l'événement : compte rendu, galerie, nombre de participants (affiché seulement s'il est renseigné).

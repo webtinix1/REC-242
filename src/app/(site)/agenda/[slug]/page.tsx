@@ -10,6 +10,7 @@ import { RichText } from '@/components/site/RichText'
 import { Share } from '@/components/site/Share'
 import { Words } from '@/components/site/Words'
 import { jetonFormulaire } from '@/lib/antispam'
+import { questionsPour } from '@/lib/evenements/formulaire'
 import { placesRestantes } from '@/lib/evenements/lecture'
 import { jourLong } from '@/lib/evenements/notifications'
 import {
@@ -25,16 +26,17 @@ import {
 } from '@/lib/evenements/site'
 import { membreConnecte } from '@/lib/membres/espace'
 import { docHref } from '@/lib/site/data'
-import { block, getPage, mediaUrl } from '@/lib/site/payload'
+import { block, getPage, isPreview, mediaUrl } from '@/lib/site/payload'
 import { breadcrumbLd, metadataFor, siteUrl } from '@/lib/site/seo'
 
 export const dynamic = 'force-dynamic'
 
 type Params = Promise<{ slug: string }>
+type Recherche = Promise<{ profil?: string }>
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params
-  const e = await evenementParSlug(slug)
+  const e = await evenementParSlug(slug, await isPreview())
   if (!e) return {}
   return metadataFor(`/agenda/${slug}`, {
     title: e.titre,
@@ -56,11 +58,37 @@ const docsVisibles = (e: EvenementSite) =>
     .filter((d) => d.visibilite !== 'inscrits' && d.document && typeof d.document !== 'number')
     .map((d) => ({ ...(d.document as { id: number; titre?: string }), titre: d.libelle || (d.document as { titre?: string }).titre }))
 
-export default async function Evenement({ params }: { params: Params }) {
+export default async function Evenement({ params, searchParams }: { params: Params; searchParams: Recherche }) {
   const { slug } = await params
-  const e = await evenementParSlug(slug)
+  const apercu = await isPreview()
+  const e = await evenementParSlug(slug, apercu)
   if (!e) notFound()
-  return e.statut === 'termine' ? <EvenementPasse e={e} /> : <Fiche e={e} />
+  if (e.statut === 'termine') return <EvenementPasse e={e} />
+  const { profil } = await searchParams
+  return <Fiche e={e} apercu={apercu ? (profil === 'membre' ? 'membre' : 'visiteur') : null} />
+}
+
+/** Mode aperçu : le formulaire tel que le voit chaque public (les questions peuvent différer), sans enregistrement possible. */
+function PanneauApercu({ e, profil }: { e: EvenementSite; profil: 'visiteur' | 'membre' }) {
+  const lien = (cible: 'visiteur' | 'membre', texte: string) => (
+    <Link prefetch={false} href={`/agenda/${e.slug}${cible === 'membre' ? '?profil=membre' : ''}`} scroll={false} className={`chip${profil === cible ? ' is-on' : ''}`} aria-current={profil === cible ? 'true' : undefined}>
+      {texte}
+    </Link>
+  )
+  return (
+    <>
+      <h2 className="h-s">Je m’inscris</h2>
+      <div className="chips chips-sm">
+        {lien('visiteur', 'Vu par un visiteur')}
+        {lien('membre', 'Vu par un membre')}
+      </div>
+      {profil === 'membre' ? (
+        <AgendaInscriptionMembre evenement={e.id} slug={e.slug} complet={false} questions={questionsPour(e.questions, 'membres')} apercu />
+      ) : (
+        <AgendaInscription evenement={e.id} slug={e.slug} jeton="" complet={false} questions={questionsPour(e.questions, 'visiteurs')} apercu />
+      )}
+    </>
+  )
 }
 
 /** Écran 16 : événement passé. */
@@ -160,7 +188,7 @@ const STATUT_SCHEMA: Record<string, string> = {
 }
 
 /** Écran 15 : fiche d'un événement à venir. */
-async function Fiche({ e }: { e: EvenementSite }) {
+async function Fiche({ e, apercu }: { e: EvenementSite; apercu: 'visiteur' | 'membre' | null }) {
   const [restantes, membre, accueil] = await Promise.all([
     placesRestantes(e.id, e.capacite),
     membreConnecte(),
@@ -183,7 +211,8 @@ async function Fiche({ e }: { e: EvenementSite }) {
   const peutAttendre = e.listeAttente !== false
 
   let panneau: React.ReactNode = null
-  if (!annule) {
+  if (apercu) panneau = <PanneauApercu e={e} profil={apercu} />
+  else if (!annule) {
     if (e.acces === 'invitation') {
       panneau = (
         <>
@@ -238,10 +267,10 @@ async function Fiche({ e }: { e: EvenementSite }) {
                 </b>
                 {actif.entreprise?.nom ? ` · ${actif.entreprise.nom}` : ''}. Vos informations sont déjà remplies.
               </p>
-              <AgendaInscriptionMembre evenement={e.id} slug={e.slug} complet={complet} />
+              <AgendaInscriptionMembre evenement={e.id} slug={e.slug} complet={complet} questions={questionsPour(e.questions, 'membres')} />
             </>
           ) : (
-            <AgendaInscription evenement={e.id} slug={e.slug} jeton={jetonFormulaire()} complet={complet} />
+            <AgendaInscription evenement={e.id} slug={e.slug} jeton={jetonFormulaire()} complet={complet} questions={questionsPour(e.questions, 'visiteurs')} />
           )}
         </>
       )

@@ -5,6 +5,7 @@ import type { Where } from 'payload'
 import { ACCES, VISIBLES } from '@/collections/Events'
 import { dateDisque } from '@/lib/site/format'
 import { getPayloadClient, type Media } from '@/lib/site/payload'
+import type { Question } from './formulaire'
 import { placesParEvenement } from './lecture'
 import { heureFr } from './notifications'
 
@@ -35,6 +36,7 @@ export type EvenementSite = {
   capacite?: number | null
   cloture?: string | null
   listeAttente?: boolean | null
+  questions?: Question[] | null
   tarif?: string | null
   programme?: { id?: string; heure?: string | null; intitule: string }[] | null
   intervenants?: { id?: string; nom: string; fonction?: string | null; photo?: Media | number | null }[] | null
@@ -93,14 +95,15 @@ export async function prochainsEvenements(n: number) {
   return { evs, places: await placesParEvenement(evs) }
 }
 
-export async function evenementParSlug(slug: string): Promise<EvenementSite | null> {
+/** `apercu` (équipe connectée, voir isPreview) : l'événement est lu quel que soit son statut, brouillon compris. */
+export async function evenementParSlug(slug: string, apercu = false): Promise<EvenementSite | null> {
   const payload = await getPayloadClient()
   const r = await payload.find({
     collection: 'events',
-    where: { and: [{ slug: { equals: slug } }, { statut: { in: VISIBLES } }] },
+    where: apercu ? { slug: { equals: slug } } : { and: [{ slug: { equals: slug } }, { statut: { in: VISIBLES } }] },
     limit: 1,
     depth: 2,
-    overrideAccess: false,
+    overrideAccess: apercu,
     user: null,
   })
   return (r.docs[0] as unknown as EvenementSite) ?? null

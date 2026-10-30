@@ -24,6 +24,7 @@ import { Dues } from './collections/Dues'
 import { Events } from './collections/Events'
 import { ExpertRequests } from './collections/ExpertRequests'
 import { Fichiers } from './collections/Fichiers'
+import { InscriptionFichiers } from './collections/InscriptionFichiers'
 import { Opportunities } from './collections/Opportunities'
 import { OpportunityReplies } from './collections/OpportunityReplies'
 import { Registrations } from './collections/Registrations'
@@ -135,6 +136,7 @@ export default buildConfig({
     Opportunities,
     OpportunityReplies,
     Fichiers,
+    InscriptionFichiers,
     ExpertRequests,
     CommissionRequests,
     Dues,

@@ -14,11 +14,13 @@ type Reg = {
   statut: string
   position?: number
   numeroBillet?: string
+  reponses?: { id?: string; libelle?: string; valeur?: string; fichier?: { filename?: string } | number | null }[] | null
   visiteur?: { nom?: string; telephone?: string; entreprise?: string }
   membre?: { prenom?: string; nom?: string; telephone?: string; photo?: { url?: string; sizes?: { vignette?: { url?: string } } } | null } | null
 }
 type Ev = {
   id: number
+  slug?: string
   titre: string
   chapeau?: string
   debut: string
@@ -71,6 +73,10 @@ export const EvenementView = async (props: DocumentViewServerProps) => {
       profil: m ? 'Membre' : 'Visiteur',
       photo: m?.photo?.sizes?.vignette?.url || m?.photo?.url || undefined,
       telephone: telephoneAffiche((m ? m.telephone : r.visiteur?.telephone) ?? undefined) ?? '',
+      reponses: (r.reponses ?? []).map((x) => {
+        const nom = typeof x.fichier === 'object' ? x.fichier?.filename : undefined
+        return { libelle: x.libelle ?? '', valeur: x.valeur ?? '', lien: nom ? `/api/inscriptionFichiers/file/${encodeURIComponent(nom)}` : undefined }
+      }),
     } satisfies Participant
   })
   const inscrits = lignes.filter((l) => l.statut === 'inscrit' || l.statut === 'present').length
@@ -98,6 +104,7 @@ export const EvenementView = async (props: DocumentViewServerProps) => {
       </div>
       <EvenementGestion
         id={e.id}
+        slug={e.slug ?? ''}
         titre={e.titre}
         chapeau={e.chapeau ?? ''}
         statut={e.statut}

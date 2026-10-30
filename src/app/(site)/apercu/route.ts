@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     return new Response('Aperçu réservé à l’équipe connectée au back-office.', { status: 403 })
   ;(await draftMode()).enable()
   if (type === 'news') redirect(`/actualites/${encodeURIComponent(slug)}`)
+  if (type === 'events') redirect(`/agenda/${encodeURIComponent(slug)}`)
   const page = await payload.find({
     collection: 'pages',
     where: { slug: { equals: slug } },

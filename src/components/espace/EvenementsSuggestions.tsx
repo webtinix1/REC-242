@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useActionState, useEffect, useState } from 'react'
 
@@ -7,6 +8,8 @@ import { inscrireMembre } from '@/lib/evenements/actions'
 
 export type Suggestion = {
   id: number
+  /** Adresse de la fiche quand l'événement pose des questions aux membres. */
+  formulaire?: string
   jour: string
   mois: string
   titre: string
@@ -58,9 +61,15 @@ function Carte({ e, onMessage }: { e: Suggestion; onMessage: (m: string, ok: boo
         {e.lieu} · {e.heure}
         {e.places ? ` · ${e.places}` : ''}
       </p>
-      <button type="submit" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} disabled={enCours}>
-        M&apos;inscrire en un clic
-      </button>
+      {e.formulaire ? (
+        <Link prefetch={false} href={e.formulaire} className="rec-btn rec-btn--primary" style={{ width: 'max-content' }}>
+          M&apos;inscrire
+        </Link>
+      ) : (
+        <button type="submit" className="rec-btn rec-btn--primary" style={{ width: 'max-content' }} disabled={enCours}>
+          M&apos;inscrire en un clic
+        </button>
+      )}
     </form>
   )
 }

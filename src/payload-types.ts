@@ -80,6 +80,7 @@ export interface Config {
     opportunities: Opportunity;
     opportunityReplies: OpportunityReply;
     fichiers: Fichier;
+    inscriptionFichiers: InscriptionFichier;
     expertRequests: ExpertRequest;
     commissionRequests: CommissionRequest;
     dues: Due;
@@ -131,6 +132,7 @@ export interface Config {
     opportunities: OpportunitiesSelect<false> | OpportunitiesSelect<true>;
     opportunityReplies: OpportunityRepliesSelect<false> | OpportunityRepliesSelect<true>;
     fichiers: FichiersSelect<false> | FichiersSelect<true>;
+    inscriptionFichiers: InscriptionFichiersSelect<false> | InscriptionFichiersSelect<true>;
     expertRequests: ExpertRequestsSelect<false> | ExpertRequestsSelect<true>;
     commissionRequests: CommissionRequestsSelect<false> | CommissionRequestsSelect<true>;
     dues: DuesSelect<false> | DuesSelect<true>;
@@ -940,6 +942,31 @@ export interface Event {
         id?: string | null;
       }[]
     | null;
+  questions?:
+    | {
+        libelle: string;
+        type:
+          | 'texte'
+          | 'paragraphe'
+          | 'nombre'
+          | 'email'
+          | 'telephone'
+          | 'date'
+          | 'choix-unique'
+          | 'choix-multiple'
+          | 'liste'
+          | 'case'
+          | 'fichier';
+        aide?: string | null;
+        /**
+         * Un choix par ligne, deux au moins.
+         */
+        options?: string | null;
+        obligatoire?: boolean | null;
+        pour: 'tous' | 'visiteurs' | 'membres';
+        id?: string | null;
+      }[]
+    | null;
   compteRendu?: {
     root: {
       type: string;
@@ -1572,10 +1599,38 @@ export interface Registration {
   numeroBillet?: string | null;
   pointeLe?: string | null;
   pointePar?: string | null;
+  reponses?:
+    | {
+        question?: string | null;
+        libelle?: string | null;
+        type?: string | null;
+        valeur?: string | null;
+        fichier?: (number | null) | InscriptionFichier;
+        id?: string | null;
+      }[]
+    | null;
   annuleLe?: string | null;
   rappelEnvoye?: boolean | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inscriptionFichiers".
+ */
+export interface InscriptionFichier {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2092,6 +2147,10 @@ export interface PayloadLockedDocument {
         value: number | Fichier;
       } | null)
     | ({
+        relationTo: 'inscriptionFichiers';
+        value: number | InscriptionFichier;
+      } | null)
+    | ({
         relationTo: 'expertRequests';
         value: number | ExpertRequest;
       } | null)
@@ -2520,6 +2579,17 @@ export interface EventsSelect<T extends boolean = true> {
         libelle?: T;
         id?: T;
       };
+  questions?:
+    | T
+    | {
+        libelle?: T;
+        type?: T;
+        aide?: T;
+        options?: T;
+        obligatoire?: T;
+        pour?: T;
+        id?: T;
+      };
   compteRendu?: T;
   participants?: T;
   galerie?:
@@ -2555,6 +2625,16 @@ export interface RegistrationsSelect<T extends boolean = true> {
   numeroBillet?: T;
   pointeLe?: T;
   pointePar?: T;
+  reponses?:
+    | T
+    | {
+        question?: T;
+        libelle?: T;
+        type?: T;
+        valeur?: T;
+        fichier?: T;
+        id?: T;
+      };
   annuleLe?: T;
   rappelEnvoye?: T;
   updatedAt?: T;
@@ -2625,6 +2705,23 @@ export interface FichiersSelect<T extends boolean = true> {
   visibilite?: T;
   proprietaire?: T;
   destinataire?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inscriptionFichiers_select".
+ */
+export interface InscriptionFichiersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   url?: T;

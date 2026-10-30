@@ -31,6 +31,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { LibelleQuestion as LibelleQuestion_d253553e1926bc023369f5d1eb3fef40 } from '@/components/admin/evenements/LibelleQuestion'
+import { Apercu as Apercu_a63084282fab2566147348f4a7f7266c } from '@/components/admin/edition/Apercu'
 import { EvenementView as EvenementView_6fd93fe3290981b0c7da679ea79136ba } from '@/components/admin/evenements/EvenementView'
 import { EvenementsView as EvenementsView_79b62736a8f6acb47807deddf6dd49fc } from '@/components/admin/evenements/EvenementsView'
 import { ApercuOpportunite as ApercuOpportunite_86bc0748eed059d17b48984c68b51fe8 } from '@/components/admin/edition/Opportunite'
@@ -52,7 +54,6 @@ import { MiseAJourCell as MiseAJourCell_01c377a8c13fc4c4f0ebf3cb149af892 } from 
 import { ContenusTabs as ContenusTabs_2e475e29fa6edc6a833865437e7b964d } from '@/components/admin/ContenusTabs'
 import { BarreListe as BarreListe_15873ff3c4b33bb7aa4b1dc72d71c1cb } from '@/components/admin/liste/BarreListe'
 import { BoutonPrevisualiser as BoutonPrevisualiser_cc1adb9238459d8ecd42ae02f9ec8ded } from '@/components/admin/edition/BarreDocument'
-import { Apercu as Apercu_a63084282fab2566147348f4a7f7266c } from '@/components/admin/edition/Apercu'
 import { NewsStatusCell as NewsStatusCell_6d278d179a4d2cd24d8588af4b60bb13 } from '@/components/admin/NewsStatusCell'
 import { AuteurCell as AuteurCell_01c377a8c13fc4c4f0ebf3cb149af892 } from '@/components/admin/liste/cells'
 import { PublicationCell as PublicationCell_01c377a8c13fc4c4f0ebf3cb149af892 } from '@/components/admin/liste/cells'
@@ -119,6 +120,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/evenements/LibelleQuestion#LibelleQuestion": LibelleQuestion_d253553e1926bc023369f5d1eb3fef40,
+  "@/components/admin/edition/Apercu#Apercu": Apercu_a63084282fab2566147348f4a7f7266c,
   "@/components/admin/evenements/EvenementView#EvenementView": EvenementView_6fd93fe3290981b0c7da679ea79136ba,
   "@/components/admin/evenements/EvenementsView#EvenementsView": EvenementsView_79b62736a8f6acb47807deddf6dd49fc,
   "@/components/admin/edition/Opportunite#ApercuOpportunite": ApercuOpportunite_86bc0748eed059d17b48984c68b51fe8,
@@ -140,7 +143,6 @@ export const importMap = {
   "@/components/admin/ContenusTabs#ContenusTabs": ContenusTabs_2e475e29fa6edc6a833865437e7b964d,
   "@/components/admin/liste/BarreListe#BarreListe": BarreListe_15873ff3c4b33bb7aa4b1dc72d71c1cb,
   "@/components/admin/edition/BarreDocument#BoutonPrevisualiser": BoutonPrevisualiser_cc1adb9238459d8ecd42ae02f9ec8ded,
-  "@/components/admin/edition/Apercu#Apercu": Apercu_a63084282fab2566147348f4a7f7266c,
   "@/components/admin/NewsStatusCell#NewsStatusCell": NewsStatusCell_6d278d179a4d2cd24d8588af4b60bb13,
   "@/components/admin/liste/cells#AuteurCell": AuteurCell_01c377a8c13fc4c4f0ebf3cb149af892,
   "@/components/admin/liste/cells#PublicationCell": PublicationCell_01c377a8c13fc4c4f0ebf3cb149af892,

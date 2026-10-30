@@ -14,10 +14,12 @@ export type Participant = {
   profil: string
   photo?: string
   telephone: string
+  reponses: { libelle: string; valeur: string; lien?: string }[]
 }
 
 type Props = {
   id: number
+  slug: string
   titre: string
   chapeau: string
   statut: string
@@ -29,6 +31,28 @@ type Props = {
 }
 
 const ONGLETS = ['Inscrits', 'Liste d’attente', 'Fiche', 'Après l’événement']
+
+/** Réponses d'un inscrit au formulaire de l'événement, repliées pour garder le tableau lisible. */
+const Reponses = ({ l }: { l: Participant }) =>
+  l.reponses.length ? (
+    <details className="rel-conv">
+      <summary>
+        {l.reponses.length} réponse{l.reponses.length > 1 ? 's' : ''}
+      </summary>
+      {l.reponses.map((r, i) => (
+        <div key={i}>
+          <p className="small muted">{r.libelle}</p>
+          {r.lien ? (
+            <a className="linkbtn" href={r.lien} target="_blank" rel="noopener">
+              {r.valeur || 'Ouvrir le fichier'}
+            </a>
+          ) : (
+            <p className="small">{r.valeur}</p>
+          )}
+        </div>
+      ))}
+    </details>
+  ) : null
 
 /** Onglets de l'écran 08 : inscrits et pointage, liste d'attente, fiche (annulation, report), après l'événement. */
 export const EvenementGestion = (p: Props) => {
@@ -46,6 +70,7 @@ export const EvenementGestion = (p: Props) => {
   const attente = p.lignes.filter((l) => l.statut === 'attente').sort((a, b) => a.position - b.position)
   const presents = inscrits.filter((l) => l.statut === 'present').length
   const base = `/admin/collections/events/${p.id}`
+  const avecReponses = p.lignes.some((l) => l.reponses.length)
   const clos = p.statut === 'annule' || p.statut === 'termine'
 
   const agir = async (fn: () => Promise<unknown>, succes = '') => {
@@ -132,6 +157,7 @@ export const EvenementGestion = (p: Props) => {
                     <th scope="col">Participant</th>
                     <th scope="col">Profil</th>
                     <th scope="col">Téléphone</th>
+                    {avecReponses && <th scope="col">Réponses</th>}
                     <th scope="col">Présence</th>
                   </tr>
                 </thead>
@@ -151,6 +177,11 @@ export const EvenementGestion = (p: Props) => {
                         <td data-label="Téléphone" className="mono">
                           {l.telephone}
                         </td>
+                        {avecReponses && (
+                          <td data-label="Réponses">
+                            <Reponses l={l} />
+                          </td>
+                        )}
                         <td data-label="Présence">
                           <button
                             type="button"
@@ -191,6 +222,7 @@ export const EvenementGestion = (p: Props) => {
                     <th scope="col">Participant</th>
                     <th scope="col">Profil</th>
                     <th scope="col">Téléphone</th>
+                    {avecReponses && <th scope="col">Réponses</th>}
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -207,6 +239,11 @@ export const EvenementGestion = (p: Props) => {
                       <td data-label="Téléphone" className="mono">
                         {l.telephone}
                       </td>
+                      {avecReponses && (
+                        <td data-label="Réponses">
+                          <Reponses l={l} />
+                        </td>
+                      )}
                       <td data-label="Action">
                         {p.modifiable && (
                           <button
@@ -234,11 +271,16 @@ export const EvenementGestion = (p: Props) => {
           <div className="grid2">
             <section className="panel">
               <h3 className="h3">Fiche de l&apos;événement</h3>
-              <p className="small muted">Titre, dates, lieu, programme, intervenants, capacité et publication se modifient dans le formulaire de l&apos;événement.</p>
+              <p className="small muted">Titre, dates, lieu, programme, intervenants, capacité, formulaire d’inscription et publication se modifient dans le formulaire de l&apos;événement.</p>
               <div className="rec-row">
                 <Link className="rec-btn rec-btn--secondary" href={`${base}?vue=formulaire`}>
                   Modifier la fiche
                 </Link>
+                {p.slug && (
+                  <a className="rec-btn rec-btn--secondary" href={`/apercu?type=events&slug=${encodeURIComponent(p.slug)}`} target="_blank" rel="noopener">
+                    Prévisualiser
+                  </a>
+                )}
               </div>
             </section>
             <section className="panel">

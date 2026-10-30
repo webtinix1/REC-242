@@ -451,3 +451,24 @@ Reste à faire ou à décider :
 La limite de connexion par appareil ne compte que les échecs : une connexion réussie rend sa tentative (une équipe qui se connecte souvent depuis le même bureau n'est pas bloquée). Accessibilité : le texte indicatif de l'éditeur de texte riche passe au gris lisible (contraste relevé après la mise à jour de Payload). Tests de bout en bout mis à jour : adresse de liste de l'admin avec la pagination ajoutée par Payload 3.92.1, liste des messages en boutons depuis le lot 12.
 
 Vérifications : `tsc --noEmit` et ESLint sans erreur ; seed réussi ; tests d'intégration 162 / 162 (nouveaux fichiers : `acces-securite`, `auth-securite`, `paiements-securite`, `masquage`) ; `next build` réussi depuis un dossier `.next` vidé ; tests de bout en bout 75 / 75 sur la compilation de production (premier passage : 4 échecs, corrigés ci-dessus et repassés).
+
+## Formulaire d'inscription personnalisable et aperçu des événements (30/10/2026)
+
+Demande de Webtinix : personnaliser le formulaire d'un événement, comme un formulaire Google, et voir la page avant publication. Écart assumé avec la maquette (formulaire fixe de quatre champs, pas d'aperçu pour les événements).
+
+- Fiche de l'événement, onglet « Formulaire d'inscription » : questions à ajouter, ordonner et supprimer (texte court, texte long, nombre, e-mail, téléphone, date, choix unique, choix multiple, liste déroulante, case à cocher, fichier joint). Pour chacune : libellé, aide, caractère obligatoire, public (visiteurs, membres, ou les deux). 30 questions et 3 fichiers joints au maximum (réglages techniques, pas des règles de REC 242). « Dupliquer » copie les questions.
+- Nom, e-mail, téléphone et entreprise restent demandés aux visiteurs : ils servent au billet, aux rappels et à l'anti-doublon.
+- Règles côté serveur (`src/lib/evenements/formulaire.ts`, collection `registrations`) : les mêmes contrôles servent aux erreurs sous les champs et au contrôle final. Les réponses ne sont jamais reprises de la demande : par l'API, un membre ne contourne pas une question obligatoire et ne forge ni ne réécrit ses réponses. L'équipe peut inscrire quelqu'un sans réponses.
+- Réponses : enregistrées avec le libellé de la question, elles restent lisibles si la question change ou disparaît. Visibles dans les onglets Inscrits et Liste d'attente, et en colonnes de l'export CSV (formules neutralisées).
+- Fichiers joints : PDF, JPG ou PNG de 5 Mo au plus, format vérifié dans les octets, nom de fichier aléatoire, collection `inscriptionFichiers` hors du dossier public, lisible par l'équipe qui a le droit « Événements » seulement. Supprimés si l'inscription échoue.
+- Membres : l'inscription en un clic reste valable pour un événement sans question qui les concerne ; sinon le formulaire s'affiche sur la fiche, et le bouton de l'espace membre y mène.
+- Aperçu : onglet « Aperçu » de la fiche (rechargé à chaque enregistrement) et bouton « Prévisualiser » de l'onglet Fiche. Réservé à l'équipe, il montre aussi les brouillons, le formulaire vu par un visiteur ou par un membre, et le bouton d'inscription y est désactivé.
+- Limite d'envoi des actions serveur portée de 1 à 16 Mo (`next.config.ts`). Avec 1 Mo par défaut, les pièces jointes de plus de 1 Mo annoncées à 5 Mo échouaient aussi sur les candidatures, les annonces et les justificatifs.
+
+- Politique de sécurité du contenu : `upgrade-insecure-requests` seulement sur un site en HTTPS. Sur une compilation essayée en `http://localhost`, elle laissait l'onglet Aperçu blanc (actualités comprises).
+
+Vérifications : `tsc --noEmit` et ESLint sans erreur ; tests d'intégration 170 / 170 (nouveau fichier : `formulaire-evenement`) ; `next build` réussi depuis un dossier `.next` vidé ; tests de bout en bout du formulaire, des événements, de l'espace membre et de la sécurité réussis sur la compilation de production ; constructeur de questions et onglet Aperçu contrôlés à la main dans le navigateur.
+
+Migration : `20261030_161516_formulaire_evenement`. Documents modifiés : `docs/03-modele-de-donnees.md` (`events`, `registrations`), `docs/05-regles-metier.md` (§7), `docs/08-ecrans-back-office.md` (écran 08).
+
+Reste à faire : le guide du back-office (`docs/guide/`) ne décrit pas encore ces écrans. Les réponses ne figurent pas dans l'e-mail de confirmation ni dans le téléchargement « Mes données » du membre, qui ne contient pas non plus ses inscriptions.
