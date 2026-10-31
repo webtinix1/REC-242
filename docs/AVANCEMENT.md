@@ -472,3 +472,22 @@ Vérifications : `tsc --noEmit` et ESLint sans erreur ; tests d'intégration 170
 Migration : `20261030_161516_formulaire_evenement`. Documents modifiés : `docs/03-modele-de-donnees.md` (`events`, `registrations`), `docs/05-regles-metier.md` (§7), `docs/08-ecrans-back-office.md` (écran 08).
 
 Reste à faire : le guide du back-office (`docs/guide/`) ne décrit pas encore ces écrans. Les réponses ne figurent pas dans l'e-mail de confirmation ni dans le téléchargement « Mes données » du membre, qui ne contient pas non plus ses inscriptions.
+
+## Profils du comité (31/10/2026)
+
+Demande de Webtinix, à partir du profil de la présidente : une page par membre du comité, ouverte depuis la page Gouvernance. Écart assumé avec la maquette, qui n'a pas ces pages et où les cartes du comité ne sont pas cliquables.
+
+- Route `/le-reseau/gouvernance/[slug]`, pour la fondatrice et le comité de direction. Un expert, une adresse inconnue ou une fiche masquée renvoie la page 404.
+- Liens vers le profil : cartes du comité, bloc de la fondatrice, organigramme, personnes du comité dans le filtre par domaine, bandeau du comité de la page « Le réseau ».
+- Collection `people` : adresse (`slug`), onglets Fiche, Profil et Aperçu (les deux derniers masqués pour un expert). Profil : surtitre, lieu, présentation, chiffres clés, rubriques (chronologie ou cartes), compétences, domaines et outils. Toute personne du comité se remplit depuis le back-office, sans code.
+- Mise en page du profil transmis, reprise dans la charte REC 242 (couleurs, polices et composants du site), pas ses couleurs bordeaux ni ses polices Google. Les tirets cadratins de ses textes sont remplacés par la structure de la page.
+- L'adresse e-mail personnelle et le bouton « Copier » du profil transmis ne sont pas repris : règle « aucune coordonnée de membre dans les pages publiques » (question 16).
+- Seed : la fondatrice devient « Kamba Eve Ndinga-Oba », « Présidente fondatrice de REC 242 », avec sa photo et son profil (`seed/profils.json`). Une base déjà initialisée est complétée sans écraser ce qui a été saisi. Les autres fiches gardent une page réduite (question 15), non référencée et absente du plan du site.
+
+Vérifications : `tsc --noEmit` et ESLint sans erreur ; seed réussi ; tests d'intégration 173 / 173 (nouveau fichier : `profils-comite`) ; `next build` réussi depuis un dossier `.next` vidé ; 45 tests de bout en bout réussis et 1 ignoré sur la compilation de production (profils, site, accessibilité, interface, admin) ; profil et gouvernance contrôlés sur captures à 1440 et 390 px, sans débordement.
+
+Migration : `20261030_234442_profils_comite`, essayée sur une base temporaire. Elle remplit l'adresse des fiches existantes et départage les homonymes. La base de développement reste en mode « push » : ne pas y lancer `pnpm migrate`, dont la question de confirmation annonce une perte de données.
+
+Documents modifiés : `docs/03-modele-de-donnees.md` (`people`), `docs/06-ecrans-site.md` (écrans 03 et 03 bis), `docs/08-ecrans-back-office.md` (écran 14), `docs/QUESTIONS.md` (questions 15 et 16).
+
+Reste à faire : les mentions légales et les données de démonstration de l'agenda nomment encore « Eve ». Le guide du back-office (`docs/guide/`) ne décrit pas encore les onglets Profil et Aperçu.

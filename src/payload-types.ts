@@ -721,7 +721,7 @@ export interface Commission {
   createdAt: string;
 }
 /**
- * Fondatrice, comité de direction et experts du réseau, avec leurs étiquettes d’expertise.
+ * Fondatrice, comité de direction et experts du réseau, avec leurs étiquettes d’expertise. Chaque membre du comité a sa page de profil.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "people".
@@ -746,6 +746,58 @@ export interface Person {
    */
   membre?: (number | null) | Member;
   etiquettes?: (number | ExpertiseTag)[] | null;
+  /**
+   * Au-dessus du nom. Exemple : le métier et le pays.
+   */
+  accroche?: string | null;
+  lieu?: string | null;
+  presentation?: string | null;
+  chiffres?:
+    | {
+        valeur: string;
+        libelle: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Exemples : engagements, parcours, formation.
+   */
+  rubriques?:
+    | {
+        titre: string;
+        disposition: 'chronologie' | 'cartes';
+        entrees?:
+          | {
+              periode?: string | null;
+              lieu?: string | null;
+              titre: string;
+              organisation?: string | null;
+              description?: string | null;
+              /**
+               * Un point par ligne.
+               */
+              points?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  competences?:
+    | {
+        titre: string;
+        texte?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Un domaine par ligne.
+   */
+  domaines?: string | null;
+  /**
+   * Fin de l’adresse de la page de profil, remplie à partir du nom. Modifiable.
+   */
+  slug?: string | null;
   ordre?: number | null;
   visible?: boolean | null;
   updatedAt: string;
@@ -3311,6 +3363,43 @@ export interface PeopleSelect<T extends boolean = true> {
   email?: T;
   membre?: T;
   etiquettes?: T;
+  accroche?: T;
+  lieu?: T;
+  presentation?: T;
+  chiffres?:
+    | T
+    | {
+        valeur?: T;
+        libelle?: T;
+        id?: T;
+      };
+  rubriques?:
+    | T
+    | {
+        titre?: T;
+        disposition?: T;
+        entrees?:
+          | T
+          | {
+              periode?: T;
+              lieu?: T;
+              titre?: T;
+              organisation?: T;
+              description?: T;
+              points?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  competences?:
+    | T
+    | {
+        titre?: T;
+        texte?: T;
+        id?: T;
+      };
+  domaines?: T;
+  slug?: T;
   ordre?: T;
   visible?: T;
   updatedAt?: T;

@@ -15,6 +15,7 @@ import * as migration_20261028_170336_messagerie_membres from './20261028_170336
 import * as migration_20261028_183711_abonnement_annuaire from './20261028_183711_abonnement_annuaire';
 import * as migration_20261029_133310_securite_paiements from './20261029_133310_securite_paiements';
 import * as migration_20261030_161516_formulaire_evenement from './20261030_161516_formulaire_evenement';
+import * as migration_20261030_234442_profils_comite from './20261030_234442_profils_comite';
 
 export const migrations = [
   {
@@ -100,6 +101,11 @@ export const migrations = [
   {
     up: migration_20261030_161516_formulaire_evenement.up,
     down: migration_20261030_161516_formulaire_evenement.down,
-    name: '20261030_161516_formulaire_evenement'
+    name: '20261030_161516_formulaire_evenement',
+  },
+  {
+    up: migration_20261030_234442_profils_comite.up,
+    down: migration_20261030_234442_profils_comite.down,
+    name: '20261030_234442_profils_comite'
   },
 ];

@@ -19,6 +19,7 @@ Les contrôles marqués « Démo : » dans la maquette servent à montrer un ét
 | 01 | accueil | `/` | pages (accueil), events, members mis en avant, opportunities publiques mises en avant, news, partners, faq, keyFigures |
 | 02 | reseau | `/le-reseau` | pages, people, keyFigures, documents (statuts) |
 | 03 | gouvernance | `/le-reseau/gouvernance` | people, expertiseTags, documents |
+| 03 bis | profil d'un membre du comité | `/le-reseau/gouvernance/[slug]` | people |
 | 04 | commissions | `/le-reseau/commissions` | commissions, people |
 | 05 | antennes | `/le-reseau/antennes` | pages (blocs antennes), events |
 | 06 | ecosysteme | `/le-reseau/ecosysteme` | pages |
@@ -60,6 +61,10 @@ Vision, histoire, but (article 7), trois piliers, cinq objectifs (article 8), qu
 ### 03 Gouvernance
 Fondatrice, comité de direction avec pôle et étiquettes d'expertise, section « Experts et référents par domaine » avec filtre par étiquette (« Tous » affiche les experts du réseau, une étiquette affiche comité et experts qui la portent, compteur de personnes), organigramme par pôle, quatre organes, textes (statuts, règlement, charte).
 - Le bouton « Solliciter un expert » mène à la connexion de l'espace membre (écran Experts).
+- Les cartes du comité, la fondatrice, l'organigramme, les personnes du comité dans le filtre et le bandeau du comité de la page « Le réseau » mènent au profil de la personne.
+
+### 03 bis Profil d'un membre du comité
+Portrait, surtitre, nom, fonction, pôle, lieu, étiquettes, puis chiffres clés, présentation, rubriques du parcours, compétences, domaines et outils. Une partie sans contenu ne s'affiche pas. Aucune coordonnée. Un expert, une adresse inconnue ou une fiche masquée renvoie la page 404. Une fiche sans présentation reste consultable, sans être proposée aux moteurs de recherche.
 
 ### 04 Commissions
 Une carte par commission : objet, responsable, nombre d'experts rattachés, lien vers l'agenda filtré, bouton « Rejoindre la commission (membres) » qui mène à l'espace membre. Éthique et Vérification n'a pas ce bouton et porte la mention « sur désignation ».

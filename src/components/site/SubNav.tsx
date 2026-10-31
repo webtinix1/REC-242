@@ -13,6 +13,8 @@ const RESEAU = [
   ['/formalisation', 'Formalisation'],
 ]
 
+const GOUVERNANCE = '/le-reseau/gouvernance'
+
 /** Sous-navigation de la rubrique « Le réseau ». */
 export const SubNav = () => {
   const p = usePathname()
@@ -22,7 +24,7 @@ export const SubNav = () => {
         <Link prefetch={false}
           key={href}
           href={href}
-          className={`chip${p === href ? ' is-on' : ''}`}
+          className={`chip${p === href || (href === GOUVERNANCE && p.startsWith(`${href}/`)) ? ' is-on' : ''}`}
           aria-current={p === href ? 'page' : undefined}
         >
           {label}

@@ -1,0 +1,153 @@
+{
+ "Kamba Eve Ndinga-Oba": {
+  "accroche": "Dirigeante d’entreprises · République du Congo",
+  "lieu": "Brazzaville, République du Congo",
+  "presentation": "Entrepreneure implantée en République du Congo depuis 2012, formée en finance et passée par le crédit, l’assurance et la gestion en France. Fondatrice d’activités dans le travail temporaire, l’immobilier, l’imprimerie et l’agriculture, elle associe gestion d’entreprise, développement commercial et conduite d’opérations sur le terrain. À la tête de REC 242, elle met cette expérience au service des échanges entre entrepreneurs et de programmes adaptés à leurs besoins.",
+  "chiffres": [
+   { "valeur": "2012", "libelle": "Entrepreneure au Congo depuis" },
+   { "valeur": "5", "libelle": "Entreprises et structures fondées" },
+   { "valeur": "≈300", "libelle": "Employés au sein du cabinet NOBA" },
+   { "valeur": "≈500", "libelle": "Recrutements menés avec l’ONEMO" }
+  ],
+  "rubriques": [
+   {
+    "titre": "Direction et engagements",
+    "disposition": "cartes",
+    "entrees": [
+     {
+      "periode": "Depuis 2026",
+      "titre": "Présidente fondatrice et coordinatrice",
+      "organisation": "REC 242",
+      "description": "Réseau des Entrepreneurs Congolais 242",
+      "points": "Création et structuration du réseau ; coordination du comité de pilotage et définition de ses missions.\nDéveloppement d’une communauté d’entrepreneurs, recherche de partenaires, préparation de rencontres d’information, de mises en relation B2B et de programmes d’accompagnement."
+     },
+     {
+      "periode": "Depuis 2023",
+      "titre": "Vice-présidente de la FACIC",
+      "description": "Fédération des agents et courtiers immobiliers du Congo"
+     },
+     {
+      "periode": "Engagement",
+      "titre": "Présidente de la Fondation Antoine Ndinga Oba",
+      "description": "Fondation pour l’éducation"
+     }
+    ]
+   },
+   {
+    "titre": "Parcours entrepreneurial",
+    "disposition": "chronologie",
+    "entrees": [
+     {
+      "periode": "Depuis 2023",
+      "lieu": "~100 km de Brazzaville",
+      "titre": "Entrepreneure agricole",
+      "organisation": "Eve Business CG",
+      "points": "Agriculture et maraîchage : maïs, manioc, piment, arachide et pastèque.\nPorcherie d’environ 60 têtes et pisciculture en étangs (tilapias et silures) ; organisation des équipes et suivi des productions."
+     },
+     {
+      "periode": "Activité actuelle",
+      "lieu": "Brazzaville",
+      "titre": "Fondatrice",
+      "organisation": "Focus Print",
+      "points": "Imprimerie proposant supports de communication visuelle, impressions et articles personnalisés pour entreprises et particuliers."
+     },
+     {
+      "periode": "Depuis 2016",
+      "lieu": "Brazzaville",
+      "titre": "Fondatrice et dirigeante",
+      "organisation": "Focus Immobilier",
+      "points": "Agence immobilière : vente, achat, location, gestion locative, accompagnement des propriétaires et investisseurs.\nProspection de biens et de terrains, relation clientèle, coordination de travaux de rénovation, de finition et d’aménagement."
+     },
+     {
+      "periode": "2012 – 2016",
+      "lieu": "Brazzaville",
+      "titre": "Fondatrice et dirigeante",
+      "organisation": "Cabinet de recrutement et d’intérim NOBA",
+      "points": "Création et développement d’un cabinet ayant compté près de 300 employés ; prospection, relation entreprises et placement de personnel.\nPrestations pour de grandes entreprises, dont BCI, BCH et SC Log ; près de 500 recrutements en collaboration avec l’ONEMO."
+     }
+    ]
+   },
+   {
+    "titre": "Banque et gestion",
+    "disposition": "chronologie",
+    "entrees": [
+     {
+      "periode": "2012",
+      "lieu": "République du Congo",
+      "titre": "Expérience bancaire",
+      "organisation": "BCI"
+     },
+     {
+      "periode": "2011 – 2012",
+      "lieu": "Saint-Denis",
+      "titre": "Analyste crédit",
+      "organisation": "Société Générale",
+      "description": "Compagnie Générale d’Affacturage (CGA) · Service Risques Adhérents",
+      "points": "Étude des risques des dossiers de financement d’entreprises ; contrôle des pièces contractuelles, gestion des contrats et relation clientèle."
+     },
+     {
+      "periode": "2011",
+      "lieu": "Paris",
+      "titre": "Assistante de gestion commerciale",
+      "organisation": "Euler Hermès SFAC",
+      "points": "Gestion des comptes clients, recouvrement des créances, mise à jour des contrats d’assurance-crédit."
+     },
+     {
+      "periode": "2011",
+      "lieu": "Saint-Denis",
+      "titre": "Gestionnaire administrative",
+      "organisation": "Texa Service",
+      "description": "Cabinet d’expertise immobilière",
+      "points": "Gestion et suivi des dossiers d’expertise ; relation avec les clients et le réseau de partenaires."
+     },
+     {
+      "periode": "2010",
+      "lieu": "Châtillon",
+      "titre": "Chargée de gestion",
+      "organisation": "AXA Assistance",
+      "points": "Instruction et règlement des sinistres : contrôle des garanties, constitution des dossiers, calcul des indemnités dues."
+     },
+     {
+      "periode": "2009",
+      "lieu": "Versailles",
+      "titre": "Chargée de gestion",
+      "organisation": "CCI de Versailles",
+      "points": "Calcul de la taxe d’apprentissage, analyse des justificatifs et contrats, ventilation analytique des sommes dues."
+     },
+     {
+      "periode": "2008",
+      "lieu": "Montigny-le-Bretonneux",
+      "titre": "Technicienne au contrôle de gestion",
+      "organisation": "ETDE",
+      "points": "Tableaux de bord, analyse des données financières, reporting et consolidation des résultats des filiales."
+     }
+    ]
+   },
+   {
+    "titre": "Formation",
+    "disposition": "chronologie",
+    "entrees": [
+     {
+      "periode": "2008",
+      "lieu": "Montréal, Canada",
+      "titre": "Bachelor en administration des affaires, option finance",
+      "description": "Université du Québec à Montréal (UQAM)"
+     },
+     {
+      "periode": "2001",
+      "lieu": "Vaucresson (92), France",
+      "titre": "Baccalauréat scientifique",
+      "description": "Lycée privé Suger"
+     }
+    ]
+   }
+  ],
+  "competences": [
+   { "titre": "Direction et développement d’activités", "texte": "Création d’entreprises, organisation des opérations, coordination d’équipes, suivi de projets." },
+   { "titre": "Développement commercial", "texte": "Prospection, négociation, gestion de portefeuille clients, relations partenaires." },
+   { "titre": "Finance et gestion", "texte": "Analyse de dossiers de crédit, suivi contractuel, reporting et tableaux de bord." },
+   { "titre": "Recrutement et travail temporaire", "texte": "Présentation de candidats, placement de personnel, relations avec les entreprises utilisatrices." }
+  ],
+  "domaines": "Immobilier\nCommunication visuelle\nAgriculture\nÉlevage\nAnimation de réseau\nWord\nExcel\nPowerPoint\nOutlook\nOracle\nAS400\nAS80"
+ }
+}

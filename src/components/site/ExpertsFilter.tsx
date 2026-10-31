@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import React, { useState } from 'react'
 
 export type XPerson = {
@@ -9,6 +10,7 @@ export type XPerson = {
   fonction: string
   role: string
   tags: string[]
+  href?: string
 }
 
 /**
@@ -46,29 +48,40 @@ export const ExpertsFilter = ({ people, tags }: { people: XPerson[]; tags: strin
         {list.length} personne(s) · {tag === 'Tous' ? 'les experts du réseau' : `#${tag}`}
       </p>
       <div className="g3" data-m="cascade" data-m-stagger="">
-        {list.map((p) => (
-          <div className="card xcard" key={p.id}>
-            <div className="person">
-              <div className="av av-photo">
-                {p.ini}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {p.photo && <img src={p.photo} alt={p.nom} loading="lazy" />}
+        {list.map((p) => {
+          const contenu = (
+            <>
+              <div className="person">
+                <div className="av av-photo">
+                  {p.ini}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {p.photo && <img src={p.photo} alt={p.nom} loading="lazy" />}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p className="h-s">{p.nom}</p>
+                  <p className="small muted">{p.fonction}</p>
+                </div>
               </div>
-              <div style={{ minWidth: 0 }}>
-                <p className="h-s">{p.nom}</p>
-                <p className="small muted">{p.fonction}</p>
+              <span className="pill-type">{p.role}</span>
+              <div className="tagrow">
+                {p.tags.map((t) => (
+                  <span className="xtag" key={t}>
+                    #{t}
+                  </span>
+                ))}
               </div>
+            </>
+          )
+          return p.href ? (
+            <Link prefetch={false} href={p.href} className="card xcard" key={p.id}>
+              {contenu}
+            </Link>
+          ) : (
+            <div className="card xcard" key={p.id}>
+              {contenu}
             </div>
-            <span className="pill-type">{p.role}</span>
-            <div className="tagrow">
-              {p.tags.map((t) => (
-                <span className="xtag" key={t}>
-                  #{t}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </>
   )

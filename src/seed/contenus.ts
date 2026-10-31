@@ -5,6 +5,8 @@ import { slugify } from '@/fields/slug'
 import { dateFr, media, readSeed, rich, ROOT, upsert } from './lib'
 import { seedLiensActualites, seedPages } from './pages'
 
+type Fiche = { id: number; slug?: string | null; presentation?: string | null }
+
 type Personne = {
   ini: string
   nom: string
@@ -148,9 +150,31 @@ async function gouvernance(payload: Payload, tags: Record<string, number>) {
     commissions: { t: string; d: string; resp: string; ouverte: boolean }[]
     commissions_back_office: { nom: string; next: string }[]
   }>('gouvernance')
+  const profils = readSeed<Record<string, Record<string, unknown>>>('profils')
   const ids: Record<string, number> = {}
+  // Base déjà initialisée : une fiche sans adresse ou sans profil est complétée, le reste de ce qui a été saisi est conservé.
+  const completer = async (d: Fiche, p: Personne) => {
+    const profil = d.presentation ? undefined : profils[p.nom]
+    if (d.slug && !profil) return
+    await payload.update({
+      collection: 'people',
+      id: d.id,
+      data: {
+        slug: d.slug || slugify(p.nom),
+        ...(profil && { ...profil, fonction: p.fn, photo: await media(payload, p.photo, `Portrait de ${p.nom}`) }),
+      } as never,
+      overrideAccess: true,
+    })
+  }
+  // Base déjà initialisée : la fondatrice y porte encore le prénom de la maquette.
+  await payload.update({
+    collection: 'people',
+    where: { and: [{ nom: { equals: 'Eve' } }, { role: { equals: 'fondatrice' } }] },
+    data: { nom: g.comite[0].nom, slug: slugify(g.comite[0].nom) } as never,
+    overrideAccess: true,
+  })
   for (const [i, p] of g.comite.entries()) {
-    const d = await upsert<{ id: number }>(payload, 'people', 'nom', p.nom, {
+    const d = await upsert<Fiche>(payload, 'people', 'nom', p.nom, {
       nom: p.nom,
       initiales: p.ini,
       fonction: p.fn,
@@ -160,11 +184,13 @@ async function gouvernance(payload: Payload, tags: Record<string, number>) {
       photo: await media(payload, p.photo, `Portrait de ${p.nom}`),
       ordre: i + 1,
       visible: true,
+      ...profils[p.nom],
     })
+    await completer(d, p)
     ids[p.nom] = d.id
   }
   for (const [i, p] of g.experts.entries()) {
-    const d = await upsert<{ id: number }>(payload, 'people', 'nom', p.nom, {
+    const d = await upsert<Fiche>(payload, 'people', 'nom', p.nom, {
       nom: p.nom,
       initiales: p.ini,
       fonction: p.fn,
@@ -174,6 +200,7 @@ async function gouvernance(payload: Payload, tags: Record<string, number>) {
       ordre: 100 + i,
       visible: true,
     })
+    await completer(d, p)
     ids[p.nom] = d.id
   }
   for (const [i, c] of g.commissions.entries()) {

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { Avatar, Boutons, Btn, KeyFigures, SecHead } from '@/components/site/Blocks'
+import { Avatar, Boutons, Btn, KeyFigures, Lnk, SecHead } from '@/components/site/Blocks'
 import { Img } from '@/components/site/Blocks'
 import { JsonLd } from '@/components/site/JsonLd'
 import { SubNav } from '@/components/site/SubNav'
 import { Words } from '@/components/site/Words'
-import { getPeople } from '@/lib/site/data'
+import { getPeople, profilHref } from '@/lib/site/data'
 import { block, getPage, type CartesBlock } from '@/lib/site/payload'
 import { breadcrumbLd, pageMetadata } from '@/lib/site/seo'
 import { getKeyFigures } from '@/lib/site/settings'
@@ -162,13 +162,13 @@ export default async function LeReseau() {
             <SecHead surtitre={comite.surtitre} titre={comite.titre} bouton={comite.boutons?.[0]} />
             <div className="cdir-strip" data-m="gather" data-m-stagger="">
               {membresComite.map((c) => (
-                <div className="cdir-mini" key={c.id}>
+                <Lnk href={profilHref(c) ?? '/le-reseau/gouvernance'} className="cdir-mini" key={c.id}>
                   <Avatar nom={c.nom} initiales={c.initiales} photo={c.photo} />
                   <p className="small" style={{ fontWeight: 600 }}>
                     {c.nom}
                   </p>
                   <p className="xs muted">{c.fonction}</p>
-                </div>
+                </Lnk>
               ))}
             </div>
           </div>

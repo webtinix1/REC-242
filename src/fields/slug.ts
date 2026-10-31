@@ -11,7 +11,11 @@ export const slugify = (s: string): string =>
     .replace(/^-+|-+$/g, '')
 
 /** Champ « Adresse » rempli à partir du champ source s'il est vide. Unique et indexé. */
-export const slugField = (source = 'title', label = 'Adresse'): Field => ({
+export const slugField = (
+  source = 'title',
+  label = 'Adresse',
+  description = 'Rempli automatiquement à partir du titre. Modifiable.',
+): Field => ({
   name: 'slug',
   label,
   type: 'text',
@@ -19,7 +23,7 @@ export const slugField = (source = 'title', label = 'Adresse'): Field => ({
   unique: true,
   admin: {
     position: 'sidebar',
-    description: 'Rempli automatiquement à partir du titre. Modifiable.',
+    description,
   },
   hooks: {
     beforeValidate: [

@@ -8,7 +8,7 @@ import { SubNav } from '@/components/site/SubNav'
 import { Words } from '@/components/site/Words'
 import { POLES } from '@/collections/People'
 import { dateLong } from '@/lib/site/format'
-import { docHref, getPeople, getTextesOfficiels, tagNames } from '@/lib/site/data'
+import { docHref, getPeople, getTextesOfficiels, profilHref, tagNames } from '@/lib/site/data'
 import { block, getPage, getPayloadClient, mediaUrl, type CartesBlock } from '@/lib/site/payload'
 import { breadcrumbLd, pageMetadata } from '@/lib/site/seo'
 
@@ -57,6 +57,7 @@ export default async function Gouvernance() {
     fonction: p.fonction,
     role: ROLE_LABEL[p.role],
     tags: tagNames(p),
+    href: profilHref(p),
   }))
   const poles = POLES.filter((p) => p.value !== 'direction')
     .map((p) => ({ t: p.label, gens: comite.filter((c) => c.pole === p.value) }))
@@ -92,6 +93,11 @@ export default async function Gouvernance() {
                   <span className="eyebrow">Fondatrice</span>
                   <p className="h-l">{fondatrice.nom}</p>
                   <p className="muted">{fondatrice.fonction}</p>
+                  {profilHref(fondatrice) && (
+                    <Lnk href={profilHref(fondatrice)!} className="linkbtn">
+                      Voir le profil
+                    </Lnk>
+                  )}
                 </div>
               </div>
             )}
@@ -107,7 +113,7 @@ export default async function Gouvernance() {
             </h2>
             <div className="g3 cdir-grid" data-m="nodes" data-m-stagger="">
               {comite.map((c) => (
-                <div className="card cdir-card" key={c.id}>
+                <Lnk href={profilHref(c) ?? '/le-reseau/gouvernance'} className="card cdir-card" key={c.id}>
                   <Avatar nom={c.nom} initiales={c.initiales} photo={c.photo} />
                   <div className="stack" style={{ gap: 4, minWidth: 0 }}>
                     <p className="h-s">{c.nom}</p>
@@ -120,8 +126,9 @@ export default async function Gouvernance() {
                         </span>
                       ))}
                     </div>
+                    <span className="cdir-plus">Voir le profil</span>
                   </div>
-                </div>
+                </Lnk>
               ))}
               {contact && (
                 <div className="card-soft" style={{ justifyContent: 'center' }}>
@@ -191,17 +198,17 @@ export default async function Gouvernance() {
               {organigramme.titre}
             </h2>
             <div className="org" data-m="org">
-              <div className="org-node org-top">
+              <Lnk href={profilHref(fondatrice) ?? '/le-reseau/gouvernance'} className="org-node org-top">
                 {fondatrice.nom}
                 <span>{fondatrice.fonction}</span>
-              </div>
+              </Lnk>
               <div className="org-line" aria-hidden="true" />
               <div className="cdir-poles" data-m-stagger="">
                 {poles.map((p) => (
                   <div className="cdir-pole" key={p.t}>
                     <p className="cdir-pole-t">{p.t}</p>
                     {p.gens.map((g) => (
-                      <div className="cdir-person" key={g.id}>
+                      <Lnk href={profilHref(g) ?? '/le-reseau/gouvernance'} className="cdir-person" key={g.id}>
                         <Avatar
                           nom={g.nom}
                           initiales={g.initiales}
@@ -214,7 +221,7 @@ export default async function Gouvernance() {
                           </p>
                           <p className="xs muted">{g.fonction}</p>
                         </div>
-                      </div>
+                      </Lnk>
                     ))}
                   </div>
                 ))}

@@ -2,15 +2,15 @@
  "comite": [
   {
    "ini": "EV",
-   "nom": "Eve",
-   "fn": "Fondatrice de REC 242",
+   "nom": "Kamba Eve Ndinga-Oba",
+   "fn": "Présidente fondatrice de REC 242",
    "pole": "Direction",
    "lead": true,
    "tags": [
     "Entrepreneuriat",
     "Réseau"
    ],
-   "photo": "design/images/personnes/eve.webp"
+   "photo": "seed/fichiers/kamba-eve-ndinga-oba.webp"
   },
   {
    "ini": "AM",

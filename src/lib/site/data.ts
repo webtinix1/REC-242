@@ -18,6 +18,34 @@ export type Person = {
   role: 'fondatrice' | 'comite' | 'expert'
   pole?: string
   etiquettes?: (Tag | number)[]
+  slug?: string | null
+}
+
+export type Profil = Person & {
+  accroche?: string | null
+  lieu?: string | null
+  presentation?: string | null
+  chiffres?: { id?: string; valeur: string; libelle: string }[] | null
+  rubriques?:
+    | {
+        id?: string
+        titre: string
+        disposition: 'chronologie' | 'cartes'
+        entrees?:
+          | {
+              id?: string
+              periode?: string | null
+              lieu?: string | null
+              titre: string
+              organisation?: string | null
+              description?: string | null
+              points?: string | null
+            }[]
+          | null
+      }[]
+    | null
+  competences?: { id?: string; titre: string; texte?: string | null }[] | null
+  domaines?: string | null
 }
 
 export const tagNames = (p: { etiquettes?: (Tag | number)[] }): string[] =>
@@ -27,6 +55,23 @@ export const getPeople = cache(async (): Promise<Person[]> => {
   const payload = await getPayloadClient()
   const r = await payload.find({ collection: 'people', ...pub, sort: 'ordre', limit: 200 })
   return r.docs as unknown as Person[]
+})
+
+/** Adresse de la page de profil : réservée au comité (fondatrice comprise), les experts n'en ont pas. */
+export const profilHref = (p: Pick<Person, 'role' | 'slug'>): string | undefined =>
+  p.role !== 'expert' && p.slug ? `/le-reseau/gouvernance/${p.slug}` : undefined
+
+/** Profil d'un membre du comité, avec les droits du visiteur. En aperçu, l'équipe voit aussi une fiche masquée. */
+export const getProfil = cache(async (slug: string, apercu = false): Promise<Profil | null> => {
+  const payload = await getPayloadClient()
+  const r = await payload.find({
+    collection: 'people',
+    where: { and: [{ slug: { equals: slug } }, { role: { not_equals: 'expert' } }] },
+    limit: 1,
+    depth: 1,
+    overrideAccess: apercu,
+  })
+  return (r.docs[0] as unknown as Profil) ?? null
 })
 
 export type Commission = {

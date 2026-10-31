@@ -54,7 +54,9 @@ nom, slug, objet, responsable (relation `people`), ouverture (ouverte aux membre
 membre, commission, ce que le membre peut apporter, statut (en attente, acceptée, refusée), traitée par.
 
 ### `people` : gouvernance et experts
-nom, photo, fonction, rôle (fondatrice, comité de direction, expert), pôle (numérique et données, juridique, programme et relations avec les adhérents, communication et stratégie, relations extérieures), membre lié (pour un expert), étiquettes d'expertise, ordre d'affichage, visible sur le site.
+nom, photo, fonction, rôle (fondatrice, comité de direction, expert), pôle (numérique et données, juridique, programme et relations avec les adhérents, communication et stratégie, relations extérieures), membre lié (pour un expert), étiquettes d'expertise, ordre d'affichage, visible sur le site, adresse (`slug`, tirée du nom).
+
+Profil public du comité (fondatrice et comité de direction, pas les experts) : surtitre, lieu, présentation, chiffres clés (valeur, libellé ; quatre au plus), rubriques (titre, présentation en chronologie ou en cartes, entrées : période, lieu, titre, organisation, description, points clés), compétences (titre, texte), domaines et outils. L'e-mail de la fiche reste réservé à l'équipe et n'apparaît jamais sur le profil.
 
 ### `expertRequests` : questions aux experts
 membre, étiquette, personne sollicitée, question, préférence de réponse (WhatsApp, e-mail, rendez-vous au siège), statut (envoyée, transmise, en cours, répondue, sans réponse, réattribuée, clôturée), fil des messages (auteur, date, texte), relances, réattributions.

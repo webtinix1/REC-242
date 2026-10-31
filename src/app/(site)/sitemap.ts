@@ -9,7 +9,7 @@ import { siteUrl } from '@/lib/site/seo'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayloadClient()
   const base = siteUrl()
-  const [pages, news, fiches, evenements] = await Promise.all([
+  const [pages, news, fiches, evenements, profils] = await Promise.all([
     payload.find({
       collection: 'pages',
       where: { _status: { equals: 'published' } },
@@ -40,6 +40,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       depth: 0,
       overrideAccess: false,
     }),
+    payload.find({
+      collection: 'people',
+      where: { and: [{ role: { not_equals: 'expert' } }, { presentation: { exists: true } }] },
+      select: { slug: true, updatedAt: true },
+      limit: 100,
+      depth: 0,
+      overrideAccess: false,
+    }),
   ])
   const fixes = ['/actualites', '/presse', '/plan-du-site', '/membres', '/agenda', '/opportunites']
   return [
@@ -53,6 +61,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...news.docs.map((n) => ({
       url: `${base}/actualites/${(n as { slug: string }).slug}`,
       lastModified: n.updatedAt,
+    })),
+    ...profils.docs.map((p) => ({
+      url: `${base}/le-reseau/gouvernance/${(p as { slug: string }).slug}`,
+      lastModified: p.updatedAt,
     })),
     ...evenements.docs.map((e) => ({
       url: `${base}/agenda/${(e as { slug: string }).slug}`,

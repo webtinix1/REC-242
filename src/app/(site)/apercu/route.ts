@@ -19,6 +19,7 @@ export async function GET(req: Request) {
   ;(await draftMode()).enable()
   if (type === 'news') redirect(`/actualites/${encodeURIComponent(slug)}`)
   if (type === 'events') redirect(`/agenda/${encodeURIComponent(slug)}`)
+  if (type === 'people') redirect(`/le-reseau/gouvernance/${encodeURIComponent(slug)}`)
   const page = await payload.find({
     collection: 'pages',
     where: { slug: { equals: slug } },
